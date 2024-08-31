@@ -17,4 +17,5 @@ public class BaseModelListener extends AbstractMongoEventListener<BaseModel> {
         }
         model.setUpdatedAt(LocalDateTime.now());
     }
+
 }

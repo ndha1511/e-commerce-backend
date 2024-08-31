@@ -2,7 +2,6 @@ package com.code.ecommercebackend.models;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Set;

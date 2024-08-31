@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.Set;
 
 @Document(collection = "products")
 @Getter
@@ -25,8 +26,8 @@ public class Product extends BaseModel {
     @Field(name = "discount_id")
     private Discount discount;
     private String city;
-    @Field(name = "category_id")
-    private String categoryId;
+    @Field(name = "categories")
+    private Set<String> categories;
     @Field(name = "brand_id")
     private String brandId;
     @Field(name = "total_quantity")
