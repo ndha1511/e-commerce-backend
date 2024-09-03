@@ -14,7 +14,7 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Response handleValidationExceptions(
             MethodArgumentNotValidException ex) {
@@ -24,5 +24,13 @@ public class GlobalExceptionHandler {
             errors.add(errorMessage);
         });
         return new ResponseError(HttpStatus.BAD_REQUEST.value(), errors);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(FileNotSupportedException.class)
+    public Response handleFileTypeException(
+            FileNotSupportedException ex) {
+        List<String> errors = List.of(ex.getMessage());
+        return new ResponseError(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), errors);
     }
 }

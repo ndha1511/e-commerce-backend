@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "variants")
@@ -14,14 +15,16 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 public class Variant extends BaseModel {
     @Field(name = "product_id")
+    @DocumentReference
     private Product product;
     @Field(name = "attribute_value_1")
     private String attributeValue1;
     @Field(name = "attribute_value_2")
     private String attributeValue2;
-    private double price;
+    private Double price;
     private int quantity;
     @Field(name = "discount_id")
+    @DocumentReference
     private Discount discount;
 
 }

@@ -31,8 +31,8 @@ public class BaseServiceImpl<T, ID extends Serializable> extends PageQueryReposi
     }
 
     @Override
-    public <DTO> T save(DTO entity, Function<DTO, T> mapper) {
-        return repository.save(mapper.apply(entity));
+    public T save(T t) {
+        return repository.save(t);
     }
 
     @Override

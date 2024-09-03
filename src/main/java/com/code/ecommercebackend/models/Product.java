@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -20,8 +21,11 @@ public class Product extends BaseModel {
     private String productName;
     @Field(name = "regular_price")
     private double regularPrice;
-    @Field(name = "store_id")
-    private String storeId;
+    @Field(name = "shop_id")
+    private String shopId;
+    @Indexed(unique = true)
+    @Field(name = "url_path")
+    private String urlPath;
     @DocumentReference
     @Field(name = "discount_id")
     private Discount discount;
@@ -38,4 +42,9 @@ public class Product extends BaseModel {
     @Field(name = "buy_quantity")
     private int buyQuantity;
     private float rating;
+
+    public void createUrlPath() {
+        String productNameLowerCase = this.productName.toLowerCase().trim();
+        this.urlPath = productNameLowerCase.replace(" ", "-") + "-i" + this.getId();
+    }
 }

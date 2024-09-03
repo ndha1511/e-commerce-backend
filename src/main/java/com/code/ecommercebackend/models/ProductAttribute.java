@@ -6,8 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.Set;
+import java.util.List;
 
 @Document(collection = "product_attributes")
 @Getter
@@ -20,5 +19,5 @@ public class ProductAttribute extends BaseModel {
     @Field(name = "attribute_name")
     private String attributeName;
     @Field(name = "attribute_values")
-    private Set<AttributeValue> attributeValues;
+    private List<AttributeValue> attributeValues;
 }
