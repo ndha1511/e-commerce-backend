@@ -10,8 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PageResponse<T> {
-    private int page;
-    private int size;
-    private int total;
+    private int pageNumber;
+    private int pageSize;
+    private int totalPage;
     private List<T> items;
 }

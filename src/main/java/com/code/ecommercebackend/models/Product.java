@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 @Document(collection = "products")
@@ -44,7 +47,6 @@ public class Product extends BaseModel {
     private float rating;
 
     public void createUrlPath() {
-        String productNameLowerCase = this.productName.toLowerCase().trim();
-        this.urlPath = productNameLowerCase.replace(" ", "-") + "-i" + this.getId();
+        this.urlPath = URLEncoder.encode(this.productName.toLowerCase().trim(), StandardCharsets.UTF_8) + "-i" + this.getId();
     }
 }

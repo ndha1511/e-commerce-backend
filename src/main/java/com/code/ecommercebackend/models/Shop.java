@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Document(collection = "shops")
 @Getter
 @Setter
@@ -26,12 +29,13 @@ public class Shop extends BaseModel {
     private int numberOfFollowing;
     @Field(name = "number_of_rating")
     private int numberOfRating;
+    private String description;
     private float rating;
     private String logo;
     private Address address;
 
+
     public void createUrlPath() {
-        String storeNameLowerCase = this.storeName.toLowerCase().trim();
-        this.urlPath = storeNameLowerCase.replace(" ", "-");
+        this.urlPath = URLEncoder.encode(this.storeName.toLowerCase().trim(), StandardCharsets.UTF_8);
     }
 }
