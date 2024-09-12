@@ -36,10 +36,10 @@ public class GlobalExceptionHandler {
         return new ResponseError(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), errors);
     }
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
     public ResponseError handleAuthenticationException(AuthenticationException ex) {
-        return new ResponseError(HttpStatus.FORBIDDEN.value(), List.of(ex.getMessage()));
+        return new ResponseError(HttpStatus.UNAUTHORIZED.value(), List.of(ex.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -47,6 +47,7 @@ public class GlobalExceptionHandler {
     public ResponseError handleExpiredToken(ExpiredJwtException ex) {
         return new ResponseError(HttpStatus.UNAUTHORIZED.value(), List.of(ex.getMessage()));
     }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataNotMatchedException.class)
@@ -58,6 +59,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataExpiredException.class)
     public ResponseError handleDataExpiredException(DataExpiredException ex) {
         return new ResponseError(HttpStatus.BAD_REQUEST.value(), List.of(ex.getMessage()));
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(UserNotVerifyException.class)
+    public ResponseError handleNotVerifyEmail(UserNotVerifyException ex) {
+        return new ResponseError(HttpStatus.FORBIDDEN.value(), List.of(ex.getMessage()));
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseError handleDataNotFoundException(DataNotFoundException ex) {
+        return new ResponseError(HttpStatus.FORBIDDEN.value(), List.of(ex.getMessage()));
     }
 
 

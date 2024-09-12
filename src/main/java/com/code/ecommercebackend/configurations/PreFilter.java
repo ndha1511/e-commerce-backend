@@ -3,6 +3,7 @@ package com.code.ecommercebackend.configurations;
 
 import com.code.ecommercebackend.services.auth.JwtService;
 import com.code.ecommercebackend.services.user.UserDetailService;
+import com.code.ecommercebackend.utils.CookieHandler;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,6 +28,7 @@ public class PreFilter extends OncePerRequestFilter {
     private final UserDetailService userDetailService;
     private final JwtService jwtService;
     private HandlerExceptionResolver resolver;
+    private final CookieHandler cookieHandler;
 
     @Autowired
     public void setResolver(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
@@ -37,22 +39,23 @@ public class PreFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException, ExpiredJwtException {
-        final String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
+        String accessToken = cookieHandler.getCookie(request, "access_token");
+
+        if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
-        final String token = header.substring(7);
+
         String username;
         try {
-            username = jwtService.extractUsername(token);
+            username = jwtService.extractUsername(accessToken);
         } catch (IllegalArgumentException | ExpiredJwtException e) {
             resolver.resolveException(request, response, null, e);
             return;
         }
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailService.loadUserByUsername(username);
-            boolean validate = jwtService.validateToken(token, userDetails);
+            boolean validate = jwtService.validateToken(accessToken, userDetails);
             if(validate) {
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
@@ -66,4 +69,6 @@ public class PreFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+
 }

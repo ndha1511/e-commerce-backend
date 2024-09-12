@@ -8,8 +8,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
@@ -24,8 +22,6 @@ public class Product extends BaseModel {
     private String productName;
     @Field(name = "regular_price")
     private double regularPrice;
-    @Field(name = "shop_id")
-    private String shopId;
     @Indexed(unique = true)
     @Field(name = "url_path")
     private String urlPath;

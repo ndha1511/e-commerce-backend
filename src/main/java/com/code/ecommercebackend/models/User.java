@@ -28,7 +28,11 @@ public class User extends BaseModel{
     private String phoneNumber;
     private Gender gender;
     private String avatar;
+    @JsonIgnore
     private Boolean verify;
+    @Field(name = "verified_reset_password")
+    @JsonIgnore
+    private Boolean verifiedResetPassword;
     @Field(name = "google_account_id")
     @JsonIgnore
     private String googleAccountId;

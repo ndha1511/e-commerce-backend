@@ -20,8 +20,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    @Value("${jwt.expiryDate}")
+    @Value("${jwt.expiry-date}")
     private long expiryDate;
+    @Value("${jwt.expiry-date-refresh-token}")
+    private long expiryDateRefreshToken;
     @Value("${jwt.secret}")
     private String secret;
     private final TokenRepository tokenRepository;
@@ -81,7 +83,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (1000 * (86400 * 14))))
+                .setExpiration(new Date(System.currentTimeMillis() + (1000 * expiryDateRefreshToken)))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

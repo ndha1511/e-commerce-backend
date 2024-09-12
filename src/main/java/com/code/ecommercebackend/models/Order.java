@@ -21,8 +21,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class Order extends BaseModel {
     @DocumentReference
-    @Field(name = "shop_id")
-    private Shop shop;
     @Field(name = "user_id")
     private String userId;
     @Field(name = "payment_method")
