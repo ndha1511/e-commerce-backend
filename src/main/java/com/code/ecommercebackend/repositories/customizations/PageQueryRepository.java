@@ -36,7 +36,9 @@ public abstract class PageQueryRepository<T>  {
         }
 
         long total = mongoTemplate.count(query, clazz);
+        // define $skip: (pageNo - 1) * size $limit: size
         Pageable pageable = PageRequest.of(pageNo - 1, size);
+        // apply $skip $limit
         query.with(pageable);
         List<T> result = mongoTemplate.find(query, clazz);
 
@@ -49,7 +51,7 @@ public abstract class PageQueryRepository<T>  {
                 page.getContent()
         );
     }
-
+    // condition = 'field:value'
     private void addConditionQuery(Query query, String condition) {
         Matcher matcher = FILTER_PATTERN.matcher(condition);
         if (matcher.find()) {
@@ -59,7 +61,7 @@ public abstract class PageQueryRepository<T>  {
             query.addCriteria(getCriteria(field, operator, value));
         }
     }
-
+    // field:asc|desc
     private void addSort(Query query, String sort) {
         Matcher matcher = SORT_PATTERN.matcher(sort);
         if (matcher.find()) {
@@ -74,6 +76,9 @@ public abstract class PageQueryRepository<T>  {
     }
 
     private Criteria getCriteria(String field, String operator, String value) {
+        if(value.equals("null")) {
+            return Criteria.where(field).isNull();
+        }
         return switch (operator) {
             case "<" -> Criteria.where(field).lt(value);
             case ">" -> Criteria.where(field).gt(value);

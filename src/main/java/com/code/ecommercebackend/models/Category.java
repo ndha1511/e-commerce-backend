@@ -23,4 +23,6 @@ public class Category extends BaseModel {
     private String image;
     @Field(name = "parent_id")
     private String parentId;
+    private int children;
+    private int level;
 }

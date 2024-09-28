@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -15,5 +14,4 @@ public class VariantDto {
     private Double price;
     @Min(value = 1, message = "quantity must be greater than or equal to 1")
     private int quantity;
-    private MultipartFile image;
 }

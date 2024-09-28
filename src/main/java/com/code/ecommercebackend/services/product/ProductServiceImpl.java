@@ -3,6 +3,7 @@ package com.code.ecommercebackend.services.product;
 import com.code.ecommercebackend.dtos.request.product.CreateProductRequest;
 import com.code.ecommercebackend.dtos.request.product.ProductAttributeDto;
 import com.code.ecommercebackend.dtos.request.product.VariantDto;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.exceptions.FileNotSupportedException;
 import com.code.ecommercebackend.exceptions.FileTooLargeException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
@@ -51,13 +52,12 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Product save(CreateProductRequest productDto) throws FileTooLargeException, FileNotSupportedException, IOException {
+    public Product save(CreateProductRequest productDto) throws FileTooLargeException, FileNotSupportedException, IOException, DataNotFoundException {
         Product product = productMapper.toProduct(productDto);
         String productId = ObjectId.get().toString();
         product.setId(productId);
         product.createUrlPath();
         product.setTotalQuantity(productDto.getVariantsDto().stream().mapToInt(VariantDto::getQuantity).sum());
-
         saveProductDetails(productDto, product);
         saveProductAttribute(productDto, productId);
         saveProductVariant(productDto, product);
