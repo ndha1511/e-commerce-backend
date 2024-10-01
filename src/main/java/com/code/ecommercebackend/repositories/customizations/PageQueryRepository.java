@@ -52,7 +52,7 @@ public abstract class PageQueryRepository<T>  {
         );
     }
     // condition = 'field:value'
-    private void addConditionQuery(Query query, String condition) {
+    protected void addConditionQuery(Query query, String condition) {
         Matcher matcher = FILTER_PATTERN.matcher(condition);
         if (matcher.find()) {
             String field = matcher.group(1);
@@ -62,7 +62,7 @@ public abstract class PageQueryRepository<T>  {
         }
     }
     // field:asc|desc
-    private void addSort(Query query, String sort) {
+    protected void addSort(Query query, String sort) {
         Matcher matcher = SORT_PATTERN.matcher(sort);
         if (matcher.find()) {
             String field = matcher.group(1);
@@ -75,7 +75,7 @@ public abstract class PageQueryRepository<T>  {
         }
     }
 
-    private Criteria getCriteria(String field, String operator, String value) {
+    protected Criteria getCriteria(String field, String operator, String value) {
         if(value.equals("null")) {
             return Criteria.where(field).isNull();
         }

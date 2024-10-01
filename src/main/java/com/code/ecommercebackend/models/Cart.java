@@ -7,12 +7,17 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "app_vouchers")
+import java.util.List;
+
+
+@Document(collection = "carts")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class AppVoucher extends Voucher {
-    @Field(name = "max_discount_value")
-    private double maxDiscountValue;
+@AllArgsConstructor
+public class Cart extends BaseModel {
+    @Field(name = "user_id")
+    private String userId;
+    @Field(name = "product_carts")
+    private List<ProductCart> productCarts;
 }

@@ -1,7 +1,9 @@
 package com.code.ecommercebackend.mappers.category;
 
+import com.code.ecommercebackend.exceptions.DataExistsException;
 import com.code.ecommercebackend.exceptions.FileNotSupportedException;
 import com.code.ecommercebackend.exceptions.FileTooLargeException;
+import com.code.ecommercebackend.repositories.CategoryRepository;
 import com.code.ecommercebackend.utils.S3Upload;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Named;
@@ -14,11 +16,13 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class CategoryMapperHelper {
-    private final S3Upload s3Upload;
+    private final CategoryRepository categoryRepository;
 
-    @Named("uploadCategoryImage")
-    public String uploadCategoryImage(MultipartFile image) throws IOException,
-            FileNotSupportedException, FileTooLargeException {
-        return s3Upload.uploadImage(image);
+
+    @Named("checkCategoryName")
+    public String checkCategoryName(String categoryName) throws DataExistsException {
+        if(categoryRepository.existsByCategoryName(categoryName))
+            throw new DataExistsException("category name is exists");
+        return categoryName;
     }
 }

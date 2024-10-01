@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +19,8 @@ public class Message extends BaseModel {
     private String sender;
     private String receiver;
     private Object content;
+    @Field(name = "send_date")
     private LocalDateTime sendDate;
+    @Field(name = "message_type")
     private MessageType messageType;
 }

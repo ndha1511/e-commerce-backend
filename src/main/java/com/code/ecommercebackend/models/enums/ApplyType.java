@@ -1,6 +1,7 @@
 package com.code.ecommercebackend.models.enums;
 
-public enum VoucherApply {
+public enum ApplyType {
     ALL,
-    FOR_CATEGORY
+    FOR_CATEGORY,
+    FOR_PRODUCT
 }

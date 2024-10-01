@@ -51,6 +51,19 @@ public class S3Upload {
         return this.uploadFile(image);
     }
 
+    public String uploadVideo(MultipartFile video) throws IOException, FileNotSupportedException, FileTooLargeException {
+        if (video == null || video.isEmpty()) {
+            return null;
+        }
+        if(!Objects.requireNonNull(video.getContentType()).startsWith("video/")) {
+            throw new FileNotSupportedException("file is not an video");
+        }
+        if(video.getSize() > 30 * 1024 * 1024) {
+            throw new FileTooLargeException("file is too large");
+        }
+        return this.uploadFile(video);
+    }
+
     private String generateUniqueKey(String originalFileName) {
         return UUID.randomUUID() + "_" + originalFileName;
     }

@@ -1,6 +1,6 @@
-package com.code.ecommercebackend.mappers.product.variant;
+package com.code.ecommercebackend.mappers.attribute;
 
-import com.code.ecommercebackend.dtos.request.product.VariantDto;
+import com.code.ecommercebackend.dtos.request.attribute.VariantDto;
 import com.code.ecommercebackend.models.Variant;
 import org.mapstruct.Mapper;
 

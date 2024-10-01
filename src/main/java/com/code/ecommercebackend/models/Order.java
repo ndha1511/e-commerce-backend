@@ -31,13 +31,19 @@ public class Order extends BaseModel {
     private OrderStatus orderStatus;
     @Field(name = "payment_status")
     private PaymentStatus paymentStatus;
+    @Field(name = "total_amount")
     private double totalAmount;
-    private double shopVoucher;
-    private double appVoucher;
+    @Field(name = "voucher_amount")
+    private double voucherAmount;
+    @Field(name = "shipping_amount")
     private double shippingAmount;
+    @Field(name = "shipping_voucher")
     private double shippingVoucher;
+    @Field(name = "final_amount")
     private double finalAmount;
+    @Field(name = "product_orders")
     private Set<ProductOrder> productOrders;
+    @Field(name = "shipping_address")
     private ShippingAddress shippingAddress;
 
 
@@ -47,7 +53,7 @@ public class Order extends BaseModel {
             this.totalAmount += productOrder.getAmount();
         }
         double finalShippingAmount  = this.shippingAmount - this.shippingVoucher;
-        this.finalAmount = (this.finalAmount + finalShippingAmount) - (this.shopVoucher + this.appVoucher);
+        this.finalAmount = (this.finalAmount + finalShippingAmount) - (this.voucherAmount);
     }
 
 
