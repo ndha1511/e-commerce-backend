@@ -28,16 +28,12 @@ public class Promotion extends BaseModel {
     private DiscountType discountType;
     @Field(name = "discount_value")
     private Double discountValue;
-    @Field(name = "discount_price")
-    private Double discountedPrice;
+    @Field(name = "max_price")
+    private Double maxPrice;
     @Field(name = "start_date")
     private LocalDateTime startDate;
     @Field(name = "end_date")
     private LocalDateTime endDate;
-    @Field(name = "buy_x")
-    private Integer buyX;
-    @Field(name = "get_y")
-    private Integer getY;
     @Field(name = "loop_state")
     private LoopState loopState;
     private Condition condition;

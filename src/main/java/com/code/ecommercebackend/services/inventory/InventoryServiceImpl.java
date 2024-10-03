@@ -2,11 +2,14 @@ package com.code.ecommercebackend.services.inventory;
 
 import com.code.ecommercebackend.dtos.request.inventory.CreateInventoryRequest;
 import com.code.ecommercebackend.dtos.request.inventory.InventoryDto;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.inventory.InventoryMapper;
 import com.code.ecommercebackend.models.Inventory;
+import com.code.ecommercebackend.models.Product;
 import com.code.ecommercebackend.models.PurchaseOrder;
 import com.code.ecommercebackend.models.enums.InventoryStatus;
 import com.code.ecommercebackend.repositories.InventoryRepository;
+import com.code.ecommercebackend.repositories.ProductRepository;
 import com.code.ecommercebackend.repositories.PurchaseOrderRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -23,26 +26,33 @@ public class InventoryServiceImpl extends BaseServiceImpl<Inventory, String> imp
     private final InventoryRepository inventoryRepository;
     private final InventoryMapper inventoryMapper;
     private final PurchaseOrderRepository purchaseOrderRepository;
+    private final ProductRepository productRepository;
 
     public InventoryServiceImpl(MongoRepository<Inventory, String> repository,
                                 InventoryRepository inventoryRepository,
-                                InventoryMapper inventoryMapper, PurchaseOrderRepository purchaseOrderRepository) {
+                                InventoryMapper inventoryMapper, PurchaseOrderRepository purchaseOrderRepository, ProductRepository productRepository) {
         super(repository);
         this.inventoryRepository = inventoryRepository;
         this.inventoryMapper = inventoryMapper;
         this.purchaseOrderRepository = purchaseOrderRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveInventory(CreateInventoryRequest createInventoryRequest) {
+    public void saveInventory(CreateInventoryRequest createInventoryRequest) throws DataNotFoundException {
         List<InventoryDto> inventoriesDto = createInventoryRequest.getInventories();
         List<Inventory> inventories = inventoriesDto.stream()
                 .map(inventoryMapper::toInventory).toList();
-        inventories.forEach(i -> {
-            i.setImportDate(LocalDateTime.now());
-            i.setInventoryStatus(InventoryStatus.IN_STOCK);
-        });
+        for (Inventory inventory: inventories) {
+            inventory.setImportDate(LocalDateTime.now());
+            inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
+            Product product = productRepository.findById(inventory.getProductId())
+                    .orElseThrow(() -> new DataNotFoundException("product not found"));
+            product.setTotalQuantity(product.getTotalQuantity() + inventory.getImportQuantity());
+            productRepository.save(product);
+        }
+
         inventoryRepository.saveAll(inventories);
         savePurchaseOrder(inventories);
     }

@@ -14,10 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class Condition {
     @Field(name = "condition_type")
     private ConditionType conditionType;
-    @Field(name = "min_order")
-    private Double minOrder;
-    @Field(name = "max_price")
-    private Double maxPrice;
+    @Field(name = "min_price")
+    private Double minPrice;
     @Field(name = "buy_quantity")
     private Integer buyQuantity;
 

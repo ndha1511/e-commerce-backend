@@ -19,7 +19,8 @@ public class Inventory {
     private final InventoryService inventoryService;
 
     @PostMapping
-    public Response createInventory(@Valid @RequestBody CreateInventoryRequest request) {
+    public Response createInventory(@Valid @RequestBody CreateInventoryRequest request)
+    throws Exception {
         inventoryService.saveInventory(request);
         return new ResponseSuccess<>(
                 HttpStatus.NO_CONTENT.value(),

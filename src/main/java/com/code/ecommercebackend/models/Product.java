@@ -7,8 +7,6 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
@@ -32,9 +30,16 @@ public class Product extends BaseModel {
     private Set<Tag> tags;
     private List<String> images;
     private String video;
-    private boolean visible;
+    private int likes;
+    @Field(name = "regular_price")
+    private double regularPrice;
+    @Field(name = "total_quantity")
+    private int totalQuantity;
+    private int reviews;
+    private float rating;
+
 
     public void createUrlPath() {
-        this.urlPath = URLEncoder.encode(this.productName.toLowerCase().trim(), StandardCharsets.UTF_8);
+        this.urlPath = this.productName.toLowerCase().trim().replace(" ", "-");
     }
 }

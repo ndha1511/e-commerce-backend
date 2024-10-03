@@ -1,6 +1,7 @@
 package com.code.ecommercebackend.models.enums;
 
 public enum ConditionType {
-    PRICE,
-    QUANTITY
+    MINIMUM_PRICE,
+    MINIMUM_QUANTITY,
+    LIMIT_QUANTITY
 }

@@ -31,7 +31,7 @@ public class ProductController {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
-                productService.getPageData(page, size, search, sort, Product.class)
+                productService.getPageProduct(page, size, search, sort)
         );
     }
 
@@ -40,6 +40,7 @@ public class ProductController {
     throws Exception {
         Product product = productMapper.toProduct(createProductRequest);
         product.createUrlPath();
+        product.setThumbnail(product.getImages().get(0));
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
                 "success",
