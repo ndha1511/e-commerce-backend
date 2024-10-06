@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.dtos.response.product;
 
+import com.code.ecommercebackend.models.Promotion;
 import com.code.ecommercebackend.models.Tag;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class ProductResponse {
+    private String id;
     private String productName;
     private String urlPath;
     private Set<String> categories;
@@ -25,6 +27,5 @@ public class ProductResponse {
     private int buyQuantity;
     private int reviews;
     private float rating;
-    private double discountedPrice;
-    private float discountPercent;
+    private Promotion promotion;
 }

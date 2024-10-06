@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "variants")
@@ -12,8 +14,11 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Variant extends BaseModel {
-    private String product;
+public class Variant {
+    @Id
+    private String id;
+    @DocumentReference
+    private Product product;
     @Field(name = "attribute_value_1")
     private String attributeValue1;
     @Field(name = "attribute_value_2")

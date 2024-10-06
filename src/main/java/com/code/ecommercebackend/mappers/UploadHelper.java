@@ -36,6 +36,9 @@ public class UploadHelper {
     @Named("uploadVideo")
     public String uploadVideo(MultipartFile video)
             throws FileTooLargeException, FileNotSupportedException, IOException {
-        return s3Upload.uploadVideo(video);
+        if(video != null) {
+            return s3Upload.uploadVideo(video);
+        }
+        return null;
     }
 }

@@ -16,7 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Inventory extends BaseModel {
+    @Field(name = "product_id")
     private String productId;
+    @Field(name = "variant_id")
     private String variantId;
     @Field(name = "import_quantity")
     private int importQuantity;
