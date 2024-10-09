@@ -1,7 +1,9 @@
 package com.code.ecommercebackend.dtos.response.product;
 
+import com.code.ecommercebackend.models.ProductAttribute;
 import com.code.ecommercebackend.models.Promotion;
 import com.code.ecommercebackend.models.Tag;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +12,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductResponse {
     private String id;
     private String productName;
@@ -28,4 +31,5 @@ public class ProductResponse {
     private int reviews;
     private float rating;
     private Promotion promotion;
+    private List<ProductAttribute> attributes;
 }

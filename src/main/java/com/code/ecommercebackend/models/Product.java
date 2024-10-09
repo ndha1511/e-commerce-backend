@@ -35,6 +35,8 @@ public class Product extends BaseModel {
     private double regularPrice;
     @Field(name = "total_quantity")
     private int totalQuantity;
+    @Field(name = "buy_quantity")
+    private int buyQuantity;
     private int reviews;
     private float rating;
 

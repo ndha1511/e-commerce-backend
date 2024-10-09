@@ -57,4 +57,14 @@ public class ProductController {
                 "success"
         );
     }
+
+    @GetMapping("/{urlPath}")
+    public Response findByUrlPath(@PathVariable String urlPath)
+    throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                productService.findByUrl(urlPath)
+        );
+    }
 }

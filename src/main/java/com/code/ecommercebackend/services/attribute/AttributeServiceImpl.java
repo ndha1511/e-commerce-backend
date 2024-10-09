@@ -56,7 +56,7 @@ public class AttributeServiceImpl extends BaseServiceImpl<ProductAttribute, Stri
         List<ProductAttribute> productAttributes = new ArrayList<>();
         for (AttributeDto attributeDto : attributesDto) {
             ProductAttribute productAttribute = attributeMapper.toProductAttribute(attributeDto);
-            productAttribute.setProductId(productAttribute.getProductId());
+            productAttribute.setProductId(createAttributeRequest.getProductId());
             productAttributes.add(productAttribute);
         }
         productAttributeRepository.saveAll(productAttributes);

@@ -2,8 +2,11 @@ package com.code.ecommercebackend.services.product;
 
 import com.code.ecommercebackend.dtos.response.PageResponse;
 import com.code.ecommercebackend.dtos.response.product.ProductResponse;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.*;
+import com.code.ecommercebackend.repositories.ProductAttributeRepository;
+import com.code.ecommercebackend.repositories.ProductRepository;
 import com.code.ecommercebackend.repositories.PromotionRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -18,13 +21,17 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
 
     private final ProductMapper productMapper;
     private final PromotionRepository promotionRepository;
+    private final ProductRepository productRepository;
+    private final ProductAttributeRepository productAttributeRepository;
 
     public ProductServiceImpl(
             MongoRepository<Product, String> repository,
-            ProductMapper productMapper, PromotionRepository promotionRepository) {
+            ProductMapper productMapper, PromotionRepository promotionRepository, ProductRepository productRepository, ProductAttributeRepository productAttributeRepository) {
         super(repository);
         this.productMapper = productMapper;
         this.promotionRepository = promotionRepository;
+        this.productRepository = productRepository;
+        this.productAttributeRepository = productAttributeRepository;
     }
 
     @Override
@@ -38,6 +45,16 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
         pageResponse.setPageNumber(pageProduct.getPageNumber());
         pageResponse.setTotalPage(pageProduct.getTotalPage());
         return pageResponse;
+    }
+
+    @Override
+    public ProductResponse findByUrl(String url) throws DataNotFoundException {
+        Product product = productRepository.findByUrlPath(url)
+                .orElseThrow(() -> new DataNotFoundException("product not found"));
+        List<ProductAttribute> attributes = productAttributeRepository.findByProductId(product.getId());
+        ProductResponse productResponse = mapToProductResponse(product);
+        productResponse.setAttributes(attributes);
+        return productResponse;
     }
 
 
@@ -56,6 +73,16 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
             index++;
         }
         return productResponses;
+    }
+
+    public ProductResponse mapToProductResponse(Product product) {
+        ProductResponse productResponse = productMapper.toProductResponse(product);
+        Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId());
+        if(opPromotion.isPresent()) {
+            Promotion promotion = opPromotion.get();
+            productResponse.setPromotion(promotion);
+        }
+        return productResponse;
     }
 
 }

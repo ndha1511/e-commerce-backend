@@ -23,5 +23,7 @@ public class PurchaseOrder extends BaseModel {
     private double totalPrice;
     @Field(name = "order_date")
     private LocalDateTime orderDate;
+    @Field(name = "import_staff_name")
+    private String importStaffName;
     private Address address;
 }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("${api.prefix}/inventories")
 @RequiredArgsConstructor
-public class Inventory {
+public class InventoryController {
     private final InventoryService inventoryService;
 
     @PostMapping
