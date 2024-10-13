@@ -8,6 +8,7 @@ import com.code.ecommercebackend.services.cart.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('USER')")
     public Response getCartByUserId(@PathVariable("userId") String userId)
      {
         return new ResponseSuccess<>(
@@ -28,6 +30,7 @@ public class CartController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public Response addToCart(@Valid @RequestBody AddToCartRequest addToCartRequest) {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
@@ -37,12 +40,25 @@ public class CartController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('USER')")
     public Response updateCart(@Valid @RequestBody UpdateCartRequest updateCartRequest)
     throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
                 cartService.updateCart(updateCartRequest)
+        );
+    }
+
+    @DeleteMapping
+    @PreAuthorize("hasRole('USER')")
+    public Response removeItemCart(@RequestParam String userId,
+                                   @RequestParam String itemId)
+    throws Exception {
+        cartService.deleteCartItem(userId, itemId   );
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success"
         );
     }
 }

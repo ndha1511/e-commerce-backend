@@ -21,7 +21,7 @@ public class ProductResponse {
     private String brandId;
     private String thumbnail;
     private String description;
-    private Set<Tag> tags;
+    private List<Tag> tags;
     private List<String> images;
     private String video;
     private int likes;

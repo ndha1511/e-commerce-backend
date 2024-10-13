@@ -58,6 +58,15 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/attributes/{productId}")
+    public Response getProductAttributes(@PathVariable String productId) {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                attributeService.findByProductId(productId)
+        );
+    }
+
     @GetMapping("/{urlPath}")
     public Response findByUrlPath(@PathVariable String urlPath)
     throws Exception {

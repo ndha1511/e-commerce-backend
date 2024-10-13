@@ -44,5 +44,4 @@ public class User extends BaseModel{
     @JsonIgnore
     private LocalDateTime expiryDateOtp;
     private Set<Role> roles;
-    private Set<Address> addresses;
 }

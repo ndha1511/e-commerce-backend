@@ -62,6 +62,11 @@ public class AttributeServiceImpl extends BaseServiceImpl<ProductAttribute, Stri
         productAttributeRepository.saveAll(productAttributes);
     }
 
+    @Override
+    public List<ProductAttribute> findByProductId(String productId) {
+        return productAttributeRepository.findByProductId(productId);
+    }
+
     private void saveVariant(List<VariantDto> variantsDto, List<AttributeDto> attributesDto, String productId) throws DataNotMatchedException, DataNotFoundException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new DataNotFoundException("Product not found"));

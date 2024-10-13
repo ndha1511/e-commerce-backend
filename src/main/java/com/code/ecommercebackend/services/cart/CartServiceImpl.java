@@ -3,36 +3,35 @@ package com.code.ecommercebackend.services.cart;
 import com.code.ecommercebackend.dtos.request.cart.AddToCartRequest;
 import com.code.ecommercebackend.dtos.request.cart.UpdateCartRequest;
 import com.code.ecommercebackend.dtos.response.cart.ProductCartResponse;
+import com.code.ecommercebackend.dtos.response.variant.VariantResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.*;
 import com.code.ecommercebackend.repositories.CartRepository;
-import com.code.ecommercebackend.repositories.InventoryRepository;
 import com.code.ecommercebackend.repositories.PromotionRepository;
 import com.code.ecommercebackend.repositories.VariantRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
+import com.code.ecommercebackend.services.variant.VariantServiceImpl;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CartServiceImpl extends BaseServiceImpl<Cart, String> implements CartService {
     private final CartRepository cartRepository;
-    private final VariantRepository variantRepository;
-    private final InventoryRepository inventoryRepository;
     private final PromotionRepository promotionRepository;
+    private final VariantServiceImpl variantServiceImpl;
+    private final VariantRepository variantRepository;
 
     public CartServiceImpl(MongoRepository<Cart, String> repository,
                            CartRepository cartRepository,
-                           VariantRepository variantRepository, InventoryRepository inventoryRepository, PromotionRepository promotionRepository) {
+                           PromotionRepository promotionRepository,
+                           VariantServiceImpl variantServiceImpl, VariantRepository variantRepository) {
         super(repository);
         this.cartRepository = cartRepository;
-        this.variantRepository = variantRepository;
-        this.inventoryRepository = inventoryRepository;
         this.promotionRepository = promotionRepository;
+        this.variantServiceImpl = variantServiceImpl;
+        this.variantRepository = variantRepository;
     }
 
     @Override
@@ -75,6 +74,16 @@ public class CartServiceImpl extends BaseServiceImpl<Cart, String> implements Ca
     }
 
     @Override
+    public void deleteCartItem(String userId, String itemId) throws DataNotFoundException {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new DataNotFoundException("cart not found"));
+        List<ProductCart> productCarts = cart.getProductCarts();
+        List<ProductCart> newProductCarts = productCarts.stream().filter(c -> !c.getVariantId().equals(itemId)).toList();
+        cart.setProductCarts(newProductCarts);
+        cartRepository.save(cart);
+    }
+
+    @Override
     public List<ProductCartResponse> getCartByUserId(String userId) {
         Optional<Cart> opCart = cartRepository.findByUserId(userId);
         if (opCart.isPresent()) {
@@ -82,25 +91,22 @@ public class CartServiceImpl extends BaseServiceImpl<Cart, String> implements Ca
             List<String> variantIds = productCarts.stream().map(ProductCart::getVariantId).
                     filter(Objects::nonNull).
                     toList();
-            List<Variant> variants = variantRepository.findAllById(variantIds);
-            return mapToProductCartResponse(variants, productCarts);
+            return mapToProductCartResponse(variantIds, productCarts);
         }
         return new ArrayList<>();
     }
 
-    public List<ProductCartResponse> mapToProductCartResponse(List<Variant> variants, List<ProductCart> productCarts) {
+    public List<ProductCartResponse> mapToProductCartResponse(List<String> variantIds, List<ProductCart> productCarts) {
+        List<Variant> variants = variantRepository.findAllById(variantIds);
+        variants.sort(Comparator.comparing(v -> variantIds.indexOf(v.getId())));
         List<ProductCartResponse> productCartResponses = new ArrayList<>();
         for(int i = 0; i < variants.size(); i++) {
-            Variant variant = variants.get(i);
+            VariantResponse variant = variantServiceImpl.mapToVariantResponse(variants.get(i));
             Product product = variant.getProduct();
-            List<Inventory> inventories = inventoryRepository.findByVariantId(variant.getId());
-            int quantityInStock = inventories.stream()
-                    .mapToInt(Inventory::getImportQuantity).sum();
             Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId());
             ProductCartResponse productCartResponse = new ProductCartResponse();
-            productCartResponse.setVariant(variant);
+            productCartResponse.setVariantResponse(variant);
             productCartResponse.setQuantity(productCarts.get(i).getQuantity());
-            productCartResponse.setQuantityInStock(quantityInStock);
             opPromotion.ifPresent(productCartResponse::setPromotion);
             productCartResponses.add(productCartResponse);
         }

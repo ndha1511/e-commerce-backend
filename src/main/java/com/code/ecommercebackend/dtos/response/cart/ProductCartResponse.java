@@ -1,7 +1,7 @@
 package com.code.ecommercebackend.dtos.response.cart;
 
+import com.code.ecommercebackend.dtos.response.variant.VariantResponse;
 import com.code.ecommercebackend.models.Promotion;
-import com.code.ecommercebackend.models.Variant;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 public class ProductCartResponse {
     private int quantity;
-    private int quantityInStock;
-    private Variant variant;
+    private VariantResponse variantResponse;
     private Promotion promotion;
 }

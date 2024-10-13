@@ -12,5 +12,6 @@ import java.util.List;
 public interface CartService extends BaseService<Cart, String> {
     Cart addToCart(AddToCartRequest request);
     Cart updateCart(UpdateCartRequest request) throws DataNotFoundException;
+    void deleteCartItem(String userId, String itemId) throws DataNotFoundException;
     List<ProductCartResponse> getCartByUserId(String userId);
 }

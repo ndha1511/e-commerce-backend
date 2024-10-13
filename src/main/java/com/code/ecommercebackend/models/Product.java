@@ -27,7 +27,7 @@ public class Product extends BaseModel {
     private String brandId;
     private String thumbnail;
     private String description;
-    private Set<Tag> tags;
+    private List<Tag> tags;
     private List<String> images;
     private String video;
     private int likes;
@@ -38,6 +38,7 @@ public class Product extends BaseModel {
     @Field(name = "buy_quantity")
     private int buyQuantity;
     private int reviews;
+    private int weight;
     private float rating;
 
 

@@ -23,7 +23,9 @@ public class CreateProductRequest {
     @NotEmpty(message = "images must be not empty")
     private List<MultipartFile> images;
     private MultipartFile video;
+    @Min(value = 1, message = "weight must be greater than or equal to 1")
+    private int weight;
     @NotBlank(message = "description must be not blank")
     private String description;
-    private Set<Tag> tags;
+    private List<Tag> tags;
 }
