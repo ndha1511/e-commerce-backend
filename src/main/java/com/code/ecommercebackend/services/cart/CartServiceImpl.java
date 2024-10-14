@@ -11,6 +11,7 @@ import com.code.ecommercebackend.repositories.PromotionRepository;
 import com.code.ecommercebackend.repositories.VariantRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import com.code.ecommercebackend.services.variant.VariantServiceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +104,8 @@ public class CartServiceImpl extends BaseServiceImpl<Cart, String> implements Ca
         for(int i = 0; i < variants.size(); i++) {
             VariantResponse variant = variantServiceImpl.mapToVariantResponse(variants.get(i));
             Product product = variant.getProduct();
-            Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId());
+            Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
+                    Sort.by(Sort.Direction.DESC, "startDate"));
             ProductCartResponse productCartResponse = new ProductCartResponse();
             productCartResponse.setVariantResponse(variant);
             productCartResponse.setQuantity(productCarts.get(i).getQuantity());

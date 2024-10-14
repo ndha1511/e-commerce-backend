@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.controllers;
 
+import com.code.ecommercebackend.dtos.request.address.AddressDto;
 import com.code.ecommercebackend.dtos.request.address.UserAddressDto;
 import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseGHN;
@@ -7,8 +8,11 @@ import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.dtos.response.address.DistrictResponse;
 import com.code.ecommercebackend.dtos.response.address.ProvinceResponse;
 import com.code.ecommercebackend.dtos.response.address.WardResponse;
+import com.code.ecommercebackend.mappers.address.AddressMapper;
 import com.code.ecommercebackend.mappers.address.UserAddressMapper;
+import com.code.ecommercebackend.models.Address;
 import com.code.ecommercebackend.models.UserAddress;
+import com.code.ecommercebackend.services.address.AddressService;
 import com.code.ecommercebackend.services.address.RestAddressService;
 import com.code.ecommercebackend.services.address.UserAddressService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,8 @@ public class AddressController {
     private final RestAddressService restAddressService;
     private final UserAddressService userAddressService;
     private final UserAddressMapper userAddressMapper;
+    private final AddressMapper addressMapper;
+    private final AddressService addressService;
 
     @GetMapping("/provinces")
     public Response getProvinces() {
@@ -66,7 +72,7 @@ public class AddressController {
     }
 
     @PostMapping("/add-user-address")
-    public Response addAddress(@RequestBody UserAddressDto userAddressDto) {
+    public Response addUserAddress(@RequestBody UserAddressDto userAddressDto) {
         UserAddress userAddress = userAddressMapper.toUserAddress(userAddressDto);
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
@@ -74,4 +80,24 @@ public class AddressController {
                 userAddressService.save(userAddress)
         );
     }
+
+    @PostMapping
+    public Response addAddress(@RequestBody AddressDto addressDto) {
+        Address address = addressMapper.toAddress(addressDto);
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success",
+                addressService.save(address)
+        );
+    }
+
+    @GetMapping
+    public Response getAddress() {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                addressService.getAddress()
+        );
+    }
+
 }

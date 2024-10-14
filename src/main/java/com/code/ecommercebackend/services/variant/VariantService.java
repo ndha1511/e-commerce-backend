@@ -10,4 +10,5 @@ import java.util.List;
 public interface VariantService extends BaseService<Variant, String> {
     List<VariantResponse> findAllByVariantId(List<String> variantsId);
     VariantResponse findByProductIdAndAttribute(String productId, String attr1, String attr2) throws DataNotFoundException;
+    List<VariantResponse> findAllByProductId(String productId);
 }

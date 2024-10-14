@@ -21,12 +21,8 @@ import java.util.List;
 public class RestAddressServiceImpl implements RestAddressService{
     @Value("${api.ghn.url}")
     private String ghnUrl;
-    @Value("${api.ghtk.url}")
-    private String ghtkUrl;
     @Value("${api.ghn.token}")
     private String ghnToken;
-    @Value("${api.ghtk.token}")
-    private String ghtkToken;
     private final RestTemplate restTemplate;
 
     @Override

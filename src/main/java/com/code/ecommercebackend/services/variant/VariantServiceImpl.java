@@ -14,6 +14,7 @@ import com.code.ecommercebackend.services.BaseServiceImpl;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -59,12 +60,21 @@ public class VariantServiceImpl extends BaseServiceImpl<Variant, String> impleme
         return mapToVariantResponse(variant);
     }
 
+    @Override
+    public List<VariantResponse> findAllByProductId(String productId) {
+        List<Variant> variants = variantRepository.findAllByProductId(productId);
+        return variants.stream().map(this::mapToVariantResponse).toList();
+    }
+
     public VariantResponse mapToVariantResponse(Variant variant) {
         VariantResponse variantResponse = variantMapper.toVariantResponse(variant);
         List<Inventory> inventories = inventoryRepository.findByVariantId(variant.getId());
         int quantity = Math.max(0,
                 inventories.stream().mapToInt(i -> i.getImportQuantity() - i.getSaleQuantity()).sum());
+        int buyQuantity = Math.max(0,
+                inventories.stream().mapToInt(Inventory::getSaleQuantity).sum());
         variantResponse.setQuantity(quantity);
+        variantResponse.setBuyQuantity(buyQuantity);
         List<ProductAttribute> attributes = productAttributeRepository.findByProductId(variant.getProduct().getId());
         ProductAttribute attribute = attributes.get(0);
         List<AttributeValue> attributeValues = attribute.getAttributeValues();

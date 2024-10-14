@@ -16,17 +16,9 @@ public class ProductOrder {
     private String productName;
     private Set<String> attributes;
     private double price;
-    @Field(name = "discount_price")
-    private double discountPrice;
     private int quantity;
     private double amount;
     private String image;
-
-    public void calcAmount() {
-        this.amount = (this.price - this.discountPrice) * this.quantity;
-    }
-
-
 
 
 }

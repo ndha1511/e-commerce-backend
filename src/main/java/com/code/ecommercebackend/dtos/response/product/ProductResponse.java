@@ -30,6 +30,7 @@ public class ProductResponse {
     private int buyQuantity;
     private int reviews;
     private float rating;
+    private int weight;
     private Promotion promotion;
     private List<ProductAttribute> attributes;
 }

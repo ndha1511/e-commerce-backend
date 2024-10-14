@@ -15,4 +15,5 @@ public class VariantResponse {
     private double price;
     private String sku;
     private int quantity;
+    private int buyQuantity;
 }

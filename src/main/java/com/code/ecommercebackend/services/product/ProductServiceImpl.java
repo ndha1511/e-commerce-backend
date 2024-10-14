@@ -9,6 +9,7 @@ import com.code.ecommercebackend.repositories.ProductAttributeRepository;
 import com.code.ecommercebackend.repositories.ProductRepository;
 import com.code.ecommercebackend.repositories.PromotionRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +64,8 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
                 .stream().map(productMapper::toProductResponse).toList());
         int index = 0;
         for (Product product : products) {
-            Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId());
+            Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
+                    Sort.by(Sort.Direction.DESC, "startDate"));
             if(opPromotion.isPresent()) {
                 Promotion promotion = opPromotion.get();
                 ProductResponse newProductResponse = productResponses.get(index);
@@ -77,7 +79,8 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
 
     public ProductResponse mapToProductResponse(Product product) {
         ProductResponse productResponse = productMapper.toProductResponse(product);
-        Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId());
+        Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
+                Sort.by(Sort.Direction.DESC, "startDate"));
         if(opPromotion.isPresent()) {
             Promotion promotion = opPromotion.get();
             productResponse.setPromotion(promotion);
