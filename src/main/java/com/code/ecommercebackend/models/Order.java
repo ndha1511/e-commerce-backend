@@ -3,6 +3,7 @@ package com.code.ecommercebackend.models;
 import com.code.ecommercebackend.models.enums.OrderStatus;
 import com.code.ecommercebackend.models.enums.PaymentMethod;
 import com.code.ecommercebackend.models.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -39,6 +41,9 @@ public class Order extends BaseModel {
     private List<ProductOrder> productOrders;
     @Field(name = "shipping_address")
     private UserAddress shippingAddress;
+    @Field(name = "payment_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private LocalDateTime paymentDate;
     private String note;
 
     public void calcFinalAmount() {

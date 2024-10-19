@@ -4,7 +4,7 @@ import com.code.ecommercebackend.dtos.request.payment.OrderRequest;
 import com.code.ecommercebackend.dtos.response.payment.Fee;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.Order;
-
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface PaymentService {
     Fee calcFee(String pickProvince,
@@ -13,4 +13,6 @@ public interface PaymentService {
                 String district,
                 int weight, int value);
     Order order(OrderRequest orderRequest) throws DataNotFoundException;
+    String payment(HttpServletRequest req);
+    boolean paymentSuccess(HttpServletRequest req) throws DataNotFoundException;
 }

@@ -4,6 +4,8 @@ import com.code.ecommercebackend.dtos.request.payment.OrderRequest;
 import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.services.payment.PaymentService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,5 +40,30 @@ public class PaymentController {
                 paymentService.order(orderRequest)
         );
     }
+
+    @GetMapping("/vnp")
+    public Response vnpPayment(HttpServletRequest request) {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                paymentService.payment(request)
+        );
+    }
+
+    @GetMapping("/success")
+    public void successPayment(HttpServletRequest request, HttpServletResponse response)
+    throws Exception {
+        boolean rs = paymentService.paymentSuccess(request);
+        String returnUrl = request.getParameter("return_url");
+        if(rs) {
+            returnUrl += "?success=true";
+        } else {
+            returnUrl += "?success=false";
+        }
+        response.sendRedirect(returnUrl);
+
+    }
+
+
 
 }

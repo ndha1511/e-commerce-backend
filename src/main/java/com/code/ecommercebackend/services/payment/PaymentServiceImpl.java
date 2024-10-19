@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.payment;
 
+import com.code.ecommercebackend.configurations.VnpayConfig;
 import com.code.ecommercebackend.dtos.request.payment.OrderItem;
 import com.code.ecommercebackend.dtos.request.payment.OrderRequest;
 import com.code.ecommercebackend.dtos.response.ResponseGHTK;
@@ -11,6 +12,7 @@ import com.code.ecommercebackend.models.enums.OrderStatus;
 import com.code.ecommercebackend.models.enums.PaymentMethod;
 import com.code.ecommercebackend.models.enums.PaymentStatus;
 import com.code.ecommercebackend.repositories.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -22,6 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -40,6 +46,9 @@ public class PaymentServiceImpl implements PaymentService {
     private String ghtkUrl;
     @Value("${api.ghtk.token}")
     private String ghtkToken;
+    @Value("${front-end-url}")
+    private String vnp_ReturnUrl;
+
     @Override
     public Fee calcFee(String pickProvince,
                        String pickDistrict,
@@ -100,7 +109,13 @@ public class PaymentServiceImpl implements PaymentService {
                                 .build();
                         productOrders.add(productOrder);
                         pCarts.remove(pCart);
+                        if(pCarts.isEmpty()) {
+                            break;
+                        }
                     }
+                }
+                if(pCarts.isEmpty()) {
+                    break;
                 }
             }
             cart.setProductCarts(pCarts);
@@ -146,6 +161,100 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = getOrder(orderRequest, totalAmount, productOrders);
 
         return orderRepository.save(order);
+    }
+
+    @Override
+    public String payment(HttpServletRequest req)  {
+        String vnp_Version = "2.1.0";
+        String vnp_Command = "pay";
+        String orderType = "other";
+        long amount = Integer.parseInt(req.getParameter("amount"))* 100L;
+
+        String orderId = req.getParameter("orderId");
+
+        String vnp_TxnRef = VnpayConfig.getRandomNumber(8);
+        String vnp_IpAddr = VnpayConfig.getIpAddress(req);
+        String bankCode = req.getParameter("bankCode");
+
+        String vnp_TmnCode = VnpayConfig.vnp_TmnCode;
+
+        Map<String, String> vnp_Params = new HashMap<>();
+        vnp_Params.put("vnp_Version", vnp_Version);
+        vnp_Params.put("vnp_Command", vnp_Command);
+        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_Amount", String.valueOf(amount));
+        vnp_Params.put("vnp_CurrCode", "VND");
+
+        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_OrderType", orderType);
+        if (bankCode != null && !bankCode.isEmpty()) {
+            vnp_Params.put("vnp_BankCode", bankCode);
+        }
+
+        vnp_Params.put("vnp_Locale", "vn");
+        String vnp_ReturnUrl_rs = vnp_ReturnUrl;
+        vnp_ReturnUrl_rs += "/payment/result";
+        String APP_RETURN_URL = "http://localhost:8080/api/v1/payment/success";
+        vnp_Params.put("vnp_ReturnUrl", APP_RETURN_URL + "?orderId=" + orderId +
+                "&return_url=" + vnp_ReturnUrl_rs);
+        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+
+        cld.add(Calendar.MINUTE, 15);
+        String vnp_ExpireDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        Iterator<String> itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = itr.next();
+            String fieldValue = vnp_Params.get(fieldName);
+            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
+                //Build hash data
+                hashData.append(fieldName);
+                hashData.append('=');
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                //Build query
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
+                query.append('=');
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                if (itr.hasNext()) {
+                    query.append('&');
+                    hashData.append('&');
+                }
+            }
+        }
+        String queryUrl = query.toString();
+        String vnp_SecureHash = VnpayConfig.hmacSHA512(VnpayConfig.secretKey, hashData.toString());
+        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+        return VnpayConfig.vnp_PayUrl  + "?" + queryUrl;
+    }
+
+    @Override
+    public boolean paymentSuccess(HttpServletRequest req) {
+        String vnpResponseCode = req.getParameter("vnp_ResponseCode");
+        if(vnpResponseCode == null || !vnpResponseCode.equals("00")) {
+            return false;
+        }
+        String orderId = req.getParameter("orderId");
+        if(orderId == null) return false;
+        Optional<Order> order = orderRepository.findById(orderId);
+        if(order.isPresent()) {
+            Order orderInfo = order.get();
+            orderInfo.setPaymentStatus(PaymentStatus.PAID);
+            orderInfo.setPaymentDate(LocalDateTime.now());
+            orderRepository.save(orderInfo);
+            return true;
+        }
+        return false;
     }
 
     private Order getOrder(OrderRequest orderRequest, double totalAmount, List<ProductOrder> productOrders) {
