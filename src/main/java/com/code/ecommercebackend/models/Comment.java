@@ -25,6 +25,7 @@ public class Comment extends BaseModel {
     private int rating;
     @Field(name = "product_id")
     private String productId;
+    private List<String> attributes;
     @DocumentReference
     @Field(name = "user_id")
     private User user;

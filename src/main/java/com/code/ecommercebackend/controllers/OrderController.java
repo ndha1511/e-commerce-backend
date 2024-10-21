@@ -53,4 +53,15 @@ public class OrderController {
         );
     }
 
+    @PutMapping("/confirm-received/{orderId}")
+    public Response confirmReceived(@PathVariable String orderId)
+    throws Exception {
+        orderService.confirmReceived(orderId);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success"
+        );
+    }
+
+
 }

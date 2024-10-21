@@ -75,7 +75,8 @@ public class PaymentServiceImpl implements PaymentService {
             List<ProductCart> pCarts = cart.getProductCarts();
             List<ProductOrder> productOrders = new ArrayList<>();
             double totalAmount = 0;
-            for (ProductCart pCart : pCarts) {
+            for (int i = pCarts.size() - 1; i >= 0;  i--) {
+                ProductCart pCart = pCarts.get(i);
                 double amount;
                 double discount = 0;
                 for(OrderItem item: orderRequest.getOrderItems()) {
@@ -109,9 +110,6 @@ public class PaymentServiceImpl implements PaymentService {
                                 .build();
                         productOrders.add(productOrder);
                         pCarts.remove(pCart);
-                        if(pCarts.isEmpty()) {
-                            break;
-                        }
                     }
                 }
                 if(pCarts.isEmpty()) {
