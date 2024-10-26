@@ -27,23 +27,26 @@ public class CommentMapperHelper {
     @Named("uploadCommentFile")
     public List<CommentMedia> uploadCommentFile(final List<MultipartFile> files)
             throws FileTooLargeException, FileNotSupportedException, IOException {
-        List<CommentMedia> comments = new ArrayList<>();
-        for (MultipartFile file : files) {
-            CommentMedia commentMedia = new CommentMedia();
-            MediaType mediaType = getMediaType(file);
-            if (mediaType != null) {
-                commentMedia.setMediaType(mediaType);
-                String url = "";
-                if (mediaType.equals(MediaType.IMAGE)) {
-                    url = s3Upload.uploadImage(file);
-                } else {
-                    url = s3Upload.uploadVideo(file);
+        if(files != null && !files.isEmpty()) {
+            List<CommentMedia> comments = new ArrayList<>();
+            for (MultipartFile file : files) {
+                CommentMedia commentMedia = new CommentMedia();
+                MediaType mediaType = getMediaType(file);
+                if (mediaType != null) {
+                    commentMedia.setMediaType(mediaType);
+                    String url = "";
+                    if (mediaType.equals(MediaType.IMAGE)) {
+                        url = s3Upload.uploadImage(file);
+                    } else {
+                        url = s3Upload.uploadVideo(file);
+                    }
+                    commentMedia.setPath(url);
+                    comments.add(commentMedia);
                 }
-                commentMedia.setPath(url);
-                comments.add(commentMedia);
             }
+            return comments;
         }
-        return comments;
+        return null;
     }
 
     @Named("mapCommentUser")

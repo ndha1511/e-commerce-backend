@@ -17,7 +17,7 @@ public class OrderRequest {
     private List<OrderItem> orderItems;
     @NotBlank(message = "user id must be not blank")
     private String userId;
-    private String voucherId;
+    private String voucherCode;
     @NotNull(message = "payment method must be not null")
     private PaymentMethod paymentMethod;
     @NotNull(message = "user address must be not null")

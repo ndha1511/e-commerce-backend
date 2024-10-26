@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.Optional;
 
 public interface PromotionRepository extends MongoRepository<Promotion, String> {
-    @Query("{'startDate': { $lt: ?#{T(java.time.LocalDateTime).now()} }, 'endDate': { $gt: ?#{T(java.time.LocalDateTime).now()} }, 'applyFor': { $in: [?0] } }")
+    @Query("{ 'startDate': { $lt: ?#{T(java.time.LocalDateTime).now()} }, 'endDate': { $gt: ?#{T(java.time.LocalDateTime).now()} }, $or: [ { 'applyAll': true }, { 'applyFor': { $in: [?0] } } ] }")
     Optional<Promotion> findFirstByCurrentDateAndProductId(String productId, Sort sort);
 
 }

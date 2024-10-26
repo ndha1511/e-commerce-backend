@@ -1,6 +1,5 @@
 package com.code.ecommercebackend.models;
 
-import com.code.ecommercebackend.models.enums.InventoryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,6 @@ public class Inventory extends BaseModel {
     private LocalDateTime importDate;
     @Field(name = "import_price")
     private double importPrice;
-    @Field(name = "inventory_status")
-    private InventoryStatus inventoryStatus;
+
 
 }

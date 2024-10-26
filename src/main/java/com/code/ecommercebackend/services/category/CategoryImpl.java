@@ -1,10 +1,16 @@
 package com.code.ecommercebackend.services.category;
 
+import com.code.ecommercebackend.dtos.response.category.CategoryResponse;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.repositories.CategoryRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryImpl extends BaseServiceImpl<Category, String> implements CategoryService {
@@ -19,6 +25,9 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
 
     @Override
     public Category save(Category category) {
+        long count = categoryRepository.count();
+        count++;
+        category.setNumId(count);
         if(category.getParentId() != null) {
             Category parent = categoryRepository.findById(category.getParentId())
                     .orElse(null);
@@ -28,7 +37,37 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
                 category.setLevel(parent.getLevel() + 1);
             }
         }
+        category.createUrlPath();
 
         return super.save(category);
+    }
+
+    @Override
+    public CategoryResponse findCategoryByRoot(String rootId) throws DataNotFoundException {
+        CategoryResponse categoryResponse = new CategoryResponse();
+        Category category = categoryRepository.findById(rootId)
+                .orElseThrow(() -> new DataNotFoundException("category not found"));
+        categoryResponse.setCategoryName(category.getCategoryName());
+        categoryResponse.setImage(category.getImage());
+        if(category.getChildren() > 0) {
+            categoryResponse.setChildren(getSubCategories(category.getId()));
+        }
+
+        return categoryResponse;
+    }
+
+    private List<CategoryResponse> getSubCategories(String parentId) {
+        List<Category> subCategories = categoryRepository.findByParentId(parentId);
+        List<CategoryResponse> subCategoriesResponse = new ArrayList<>();
+        for(Category subCategory : subCategories) {
+            CategoryResponse subCategoryResponse = new CategoryResponse();
+            subCategoryResponse.setCategoryName(subCategory.getCategoryName());
+            subCategoryResponse.setImage(subCategory.getImage());
+            if(subCategory.getChildren() > 0) {
+                subCategoryResponse.setChildren(getSubCategories(subCategory.getId()));
+            }
+            subCategoriesResponse.add(subCategoryResponse);
+        }
+        return subCategoriesResponse;
     }
 }

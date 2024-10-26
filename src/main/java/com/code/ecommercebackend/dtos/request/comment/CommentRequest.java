@@ -14,4 +14,5 @@ public class CommentRequest {
     private String productId;
     private List<String> attributes;
     private String userId;
+    private String orderId;
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.Set;
+import java.util.List;
 
 
 @Getter
@@ -16,7 +16,7 @@ public class ProductOrder {
     private String productId;
     @Field(name = "product_name")
     private String productName;
-    private Set<String> attributes;
+    private List<String> attributes;
     private double price;
     private int quantity;
     private double amount;

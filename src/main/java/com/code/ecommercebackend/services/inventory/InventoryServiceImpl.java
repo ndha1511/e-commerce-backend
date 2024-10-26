@@ -7,7 +7,6 @@ import com.code.ecommercebackend.mappers.inventory.InventoryMapper;
 import com.code.ecommercebackend.models.Inventory;
 import com.code.ecommercebackend.models.Product;
 import com.code.ecommercebackend.models.PurchaseOrder;
-import com.code.ecommercebackend.models.enums.InventoryStatus;
 import com.code.ecommercebackend.repositories.InventoryRepository;
 import com.code.ecommercebackend.repositories.ProductRepository;
 import com.code.ecommercebackend.repositories.PurchaseOrderRepository;
@@ -46,7 +45,6 @@ public class InventoryServiceImpl extends BaseServiceImpl<Inventory, String> imp
                 .map(inventoryMapper::toInventory).toList();
         for (Inventory inventory: inventories) {
             inventory.setImportDate(LocalDateTime.now());
-            inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
             Product product = productRepository.findById(inventory.getProductId())
                     .orElseThrow(() -> new DataNotFoundException("product not found"));
             product.setTotalQuantity(product.getTotalQuantity() + inventory.getImportQuantity());

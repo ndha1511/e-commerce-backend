@@ -1,7 +1,6 @@
-package com.code.ecommercebackend.dtos.request.promotion;
+package com.code.ecommercebackend.dtos.request.voucher;
 
 import com.code.ecommercebackend.models.enums.DiscountType;
-import com.code.ecommercebackend.models.enums.LoopState;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -12,15 +11,19 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class CreatePromotionRequest {
-    @NotBlank(message = "promotion name must be not blank")
-    private String promotionName;
+public class VoucherRequest {
+    @NotBlank(message = "voucher name must be not blank")
+    private String voucherName;
+    @NotBlank(message = "code must be not blank")
+    private String code;
     @NotNull(message = "discount type must be not null")
     private DiscountType discountType;
-    private Double discountValue;
+    private double discountValue;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private LoopState loopState;
+    private int quantity;
+    private double minOrder;
+    private double maxPrice;
     private boolean applyAll;
     private Set<String> applyFor;
 }

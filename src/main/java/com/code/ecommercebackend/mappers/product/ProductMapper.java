@@ -1,6 +1,7 @@
 package com.code.ecommercebackend.mappers.product;
 
 import com.code.ecommercebackend.dtos.request.product.CreateProductRequest;
+import com.code.ecommercebackend.dtos.request.product.ProductExcel;
 import com.code.ecommercebackend.dtos.response.product.ProductResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.UploadHelper;
@@ -14,6 +15,6 @@ public interface ProductMapper {
     @Mapping(source = "images", target = "images", qualifiedByName = "uploadImages")
     @Mapping(source = "video", target = "video", qualifiedByName = "uploadVideo")
     Product toProduct(CreateProductRequest createProductRequest) throws DataNotFoundException;
-
     ProductResponse toProductResponse(Product product);
+    Product toProductFromProductExcel(ProductExcel productExcel);
 }

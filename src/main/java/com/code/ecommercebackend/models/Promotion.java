@@ -1,6 +1,5 @@
 package com.code.ecommercebackend.models;
 
-import com.code.ecommercebackend.models.enums.ApplyType;
 import com.code.ecommercebackend.models.enums.DiscountType;
 import com.code.ecommercebackend.models.enums.LoopState;
 import lombok.AllArgsConstructor;
@@ -32,8 +31,8 @@ public class Promotion extends BaseModel {
     private LocalDateTime endDate;
     @Field(name = "loop_state")
     private LoopState loopState;
-    @Field(name = "apply_type")
-    private ApplyType applyType;
+    @Field(name = "apply_all")
+    private boolean applyAll;
     @Field(name = "apply_for")
     @Indexed
     private Set<String> applyFor;
