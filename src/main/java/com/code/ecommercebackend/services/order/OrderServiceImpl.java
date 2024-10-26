@@ -32,4 +32,43 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
         order.setProductOrders(productOrders);
         orderRepository.save(order);
     }
+
+    @Override
+    public void confirmShipping(String orderId) throws DataNotFoundException {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new DataNotFoundException("Order not found"));
+        List<ProductOrder> productOrders = order.getProductOrders();
+        for (ProductOrder productOrder : productOrders) {
+            productOrder.setAllowComment(true);
+        }
+        order.setOrderStatus(OrderStatus.SHIPPING);
+        order.setProductOrders(productOrders);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void confirmShippedConfirmation(String orderId) throws DataNotFoundException {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new DataNotFoundException("Order not found"));
+        List<ProductOrder> productOrders = order.getProductOrders();
+        for (ProductOrder productOrder : productOrders) {
+            productOrder.setAllowComment(true);
+        }
+        order.setOrderStatus(OrderStatus.SHIPPED_CONFIRMATION);
+        order.setProductOrders(productOrders);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void confirmCancel(String orderId) throws DataNotFoundException {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new DataNotFoundException("Order not found"));
+        List<ProductOrder> productOrders = order.getProductOrders();
+        for (ProductOrder productOrder : productOrders) {
+            productOrder.setAllowComment(true);
+        }
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        order.setProductOrders(productOrders);
+        orderRepository.save(order);
+    }
 }
