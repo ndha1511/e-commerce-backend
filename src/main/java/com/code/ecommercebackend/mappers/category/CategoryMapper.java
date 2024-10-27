@@ -11,10 +11,9 @@ import org.mapstruct.Mapping;
 
 import java.io.IOException;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapperHelper.class, UploadHelper.class})
+@Mapper(componentModel = "spring", uses = {UploadHelper.class})
 public interface CategoryMapper {
     @Mapping(source = "image", target = "image", qualifiedByName = "uploadImage")
-    @Mapping(source = "categoryName", target = "categoryName", qualifiedByName = "checkCategoryName")
     Category toCategory(CreateCategoryRequest createCategoryRequest)
             throws FileTooLargeException, FileNotSupportedException, IOException, DataExistsException;
 }

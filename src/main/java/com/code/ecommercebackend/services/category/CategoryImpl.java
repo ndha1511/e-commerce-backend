@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CategoryImpl extends BaseServiceImpl<Category, String> implements CategoryService {
@@ -49,11 +48,32 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
                 .orElseThrow(() -> new DataNotFoundException("category not found"));
         categoryResponse.setCategoryName(category.getCategoryName());
         categoryResponse.setImage(category.getImage());
+        categoryResponse.setUrlPath(category.getUrlPath());
         if(category.getChildren() > 0) {
             categoryResponse.setChildren(getSubCategories(category.getId()));
         }
 
         return categoryResponse;
+    }
+
+    @Override
+    public CategoryResponse findCategoryByUrlRoot(String url) throws DataNotFoundException {
+        CategoryResponse categoryResponse = new CategoryResponse();
+        Category category = categoryRepository.findByUrlPath(url)
+                .orElseThrow(() -> new DataNotFoundException("category not found"));
+        categoryResponse.setCategoryName(category.getCategoryName());
+        categoryResponse.setImage(category.getImage());
+        if(category.getChildren() > 0) {
+            categoryResponse.setChildren(getSubCategories(category.getId()));
+        }
+
+        return categoryResponse;
+    }
+
+    @Override
+    public Category findByUrl(String url) throws DataNotFoundException {
+        return categoryRepository.findByUrlPath(url)
+                .orElseThrow(() -> new DataNotFoundException("category not found"));
     }
 
     private List<CategoryResponse> getSubCategories(String parentId) {
