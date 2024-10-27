@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @Getter
 public class ProductExcel {
-    private String id;
+    private String excelId;
     private String productName;
     private Set<String> categories;
     private String brandId;
@@ -30,7 +30,7 @@ public class ProductExcel {
     private int weight;
 
     public void init(ProductExcel productExcel) {
-        this.id = productExcel.getId();
+        this.excelId = productExcel.getExcelId();
         this.productName = productExcel.getProductName();
         this.categories = productExcel.getCategories();
         this.brandId = productExcel.getBrandId();
@@ -42,6 +42,7 @@ public class ProductExcel {
         this.attributes = productExcel.getAttributes();
         this.variants = productExcel.getVariants();
         this.weight = productExcel.getWeight();
+        this.totalQuantity = productExcel.getTotalQuantity();
     }
 
 
@@ -50,12 +51,12 @@ public class ProductExcel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductExcel that = (ProductExcel) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(excelId, that.excelId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(excelId);
     }
 
 

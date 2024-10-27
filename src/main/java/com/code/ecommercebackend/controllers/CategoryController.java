@@ -40,14 +40,16 @@ public class CategoryController {
         );
     }
 
-    @GetMapping("/{rootId}")
-    public Response getCategory(@PathVariable final String rootId)
+    @GetMapping("/{url}")
+    public Response getCategory(@PathVariable final String url)
     throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
-                categoryService.findCategoryByRoot(rootId)
+                categoryService.findCategoryByUrlRoot(url)
         );
     }
+
+
 
 }
