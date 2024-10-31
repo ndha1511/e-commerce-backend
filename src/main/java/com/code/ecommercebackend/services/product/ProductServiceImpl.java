@@ -5,10 +5,11 @@ import com.code.ecommercebackend.dtos.response.product.ProductResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.*;
-import com.code.ecommercebackend.repositories.ProductAttributeRepository;
-import com.code.ecommercebackend.repositories.ProductRepository;
-import com.code.ecommercebackend.repositories.PromotionRepository;
+import com.code.ecommercebackend.repositories.*;
 import com.code.ecommercebackend.services.BaseServiceImpl;
+import com.code.ecommercebackend.services.common.CommonFunction;
+import com.code.ecommercebackend.utils.CookieHandler;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -24,15 +25,32 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     private final PromotionRepository promotionRepository;
     private final ProductRepository productRepository;
     private final ProductAttributeRepository productAttributeRepository;
+    private final CookieHandler cookieHandler;
+    private final CommonFunction commonFunction;
+
 
     public ProductServiceImpl(
             MongoRepository<Product, String> repository,
-            ProductMapper productMapper, PromotionRepository promotionRepository, ProductRepository productRepository, ProductAttributeRepository productAttributeRepository) {
+            ProductMapper productMapper,
+            PromotionRepository promotionRepository,
+            ProductRepository productRepository,
+            ProductAttributeRepository productAttributeRepository,
+            CookieHandler cookieHandler,
+            CommonFunction commonFunction) {
         super(repository);
         this.productMapper = productMapper;
         this.promotionRepository = promotionRepository;
         this.productRepository = productRepository;
         this.productAttributeRepository = productAttributeRepository;
+        this.cookieHandler = cookieHandler;
+        this.commonFunction = commonFunction;
+    }
+
+    @Override
+    public Product save(Product product) {
+        long numId = productRepository.count() + 1;
+        product.setNumId(numId);
+        return super.save(product);
     }
 
     @Override
@@ -49,9 +67,11 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     }
 
     @Override
-    public ProductResponse findByUrl(String url) throws DataNotFoundException {
+    public ProductResponse findByUrl(String url, HttpServletRequest request) throws DataNotFoundException {
+        String token = cookieHandler.getCookie(request, "access_token");
         Product product = productRepository.findByUrlPath(url)
                 .orElseThrow(() -> new DataNotFoundException("product not found"));
+        commonFunction.saveUserBehavior(token, 1, product.getNumId(), null, null);
         List<ProductAttribute> attributes = productAttributeRepository.findByProductId(product.getId());
         ProductResponse productResponse = mapToProductResponse(product);
         productResponse.setAttributes(attributes);

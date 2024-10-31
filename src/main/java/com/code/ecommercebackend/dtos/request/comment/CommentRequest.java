@@ -12,6 +12,7 @@ public class CommentRequest {
     private List<MultipartFile> files;
     private int rating;
     private String productId;
+    private Long productNumId;
     private List<String> attributes;
     private String userId;
     private String orderId;

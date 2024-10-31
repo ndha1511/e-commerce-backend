@@ -49,6 +49,7 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
         categoryResponse.setCategoryName(category.getCategoryName());
         categoryResponse.setImage(category.getImage());
         categoryResponse.setUrlPath(category.getUrlPath());
+        categoryResponse.setId(category.getId());
         if(category.getChildren() > 0) {
             categoryResponse.setChildren(getSubCategories(category.getId()));
         }
@@ -63,6 +64,8 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
                 .orElseThrow(() -> new DataNotFoundException("category not found"));
         categoryResponse.setCategoryName(category.getCategoryName());
         categoryResponse.setImage(category.getImage());
+        categoryResponse.setUrlPath(category.getUrlPath());
+        categoryResponse.setId(category.getId());
         if(category.getChildren() > 0) {
             categoryResponse.setChildren(getSubCategories(category.getId()));
         }
@@ -83,6 +86,8 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
             CategoryResponse subCategoryResponse = new CategoryResponse();
             subCategoryResponse.setCategoryName(subCategory.getCategoryName());
             subCategoryResponse.setImage(subCategory.getImage());
+            subCategoryResponse.setUrlPath(subCategory.getUrlPath());
+            subCategoryResponse.setId(subCategory.getId());
             if(subCategory.getChildren() > 0) {
                 subCategoryResponse.setChildren(getSubCategories(subCategory.getId()));
             }

@@ -1,7 +1,6 @@
 package com.code.ecommercebackend.models;
 
 
-import com.code.ecommercebackend.models.enums.Behavior;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDateTime;
 
 @Document(collection = "user_behavior")
 @Getter
@@ -21,11 +19,15 @@ public class UserBehavior {
     @Id
     private String id;
     @Field(name = "user_id")
-    private String userId;
+    private long userId;
     @Field(name = "product_id")
-    private String productId;
-    private Behavior behavior;
-    private LocalDateTime time;
+    private long productId;
+    /**
+     * @value 1 = view
+     * @value 2 = buy
+     * @value 3 = comment
+     */
+    private int behavior;
     @Field(name = "buy_quantity")
     private Integer buyQuantity;
     private Integer rating;

@@ -5,14 +5,12 @@ import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.exceptions.FileNotSupportedException;
 import com.code.ecommercebackend.exceptions.FileTooLargeException;
 import com.code.ecommercebackend.mappers.comment.CommentMapper;
-import com.code.ecommercebackend.models.Comment;
-import com.code.ecommercebackend.models.Order;
-import com.code.ecommercebackend.models.Product;
-import com.code.ecommercebackend.models.ProductOrder;
-import com.code.ecommercebackend.repositories.CommentRepository;
-import com.code.ecommercebackend.repositories.OrderRepository;
-import com.code.ecommercebackend.repositories.ProductRepository;
+import com.code.ecommercebackend.models.*;
+import com.code.ecommercebackend.repositories.*;
 import com.code.ecommercebackend.services.BaseServiceImpl;
+import com.code.ecommercebackend.services.common.CommonFunction;
+import com.code.ecommercebackend.utils.CookieHandler;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,25 +24,41 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
     private final OrderRepository orderRepository;
     private final CommentRepository commentRepository;
     private final ProductRepository productRepository;
+    private final CookieHandler cookieHandler;
+    private final CommonFunction commonFunction;
+
 
     public CommentServiceImpl(MongoRepository<Comment, String> repository,
-                              CommentMapper commentMapper, OrderRepository orderRepository, CommentRepository commentRepository, ProductRepository productRepository) {
+                              CommentMapper commentMapper,
+                              OrderRepository orderRepository,
+                              CommentRepository commentRepository,
+                              ProductRepository productRepository,
+                              CookieHandler cookieHandler,
+                              CommonFunction commonFunction) {
         super(repository);
         this.commentMapper = commentMapper;
         this.orderRepository = orderRepository;
         this.commentRepository = commentRepository;
         this.productRepository = productRepository;
+        this.cookieHandler = cookieHandler;
+        this.commonFunction = commonFunction;
+
     }
 
 
     @Override
-    public Comment save(CommentRequest commentRequest)
+    public Comment save(CommentRequest commentRequest, HttpServletRequest request)
             throws DataNotFoundException, FileTooLargeException, FileNotSupportedException, IOException {
         Comment comment = commentMapper.toComment(commentRequest);
         comment.setCommentDate(LocalDateTime.now());
         Order order = orderRepository.findById(commentRequest.getOrderId())
                 .orElseThrow(() -> new DataNotFoundException("Order not found"));
         List<ProductOrder> productOrders = order.getProductOrders();
+        String token = cookieHandler.getCookie(request, "access_token");
+        commonFunction.saveUserBehavior(token, 3,
+                commentRequest.getProductNumId(),
+                null,
+                commentRequest.getRating());
         productOrders.forEach(po -> {
             if (po.getProductId().equals(commentRequest.getProductId())) {
                 if(po.getAttributes().equals(commentRequest.getAttributes())) {

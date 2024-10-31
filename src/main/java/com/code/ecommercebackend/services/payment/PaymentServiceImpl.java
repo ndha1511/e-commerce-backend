@@ -89,7 +89,7 @@ public class PaymentServiceImpl implements PaymentService {
                         AttributeValue attrValue = attrValues.stream().filter(value -> value.getValue()
                                 .equals(variant.getAttributeValue1())).findFirst().orElse(null);
                         String image = attrValue != null ? attrValue.getImage() : null;
-                        checkInventory(variant.getProduct().getId(), variant.getId(), pCart.getQuantity());
+                        String inventoryId = checkInventory(variant.getProduct().getId(), variant.getId(), pCart.getQuantity());
                         Optional<Promotion> optPromotion = promotionRepository.findFirstByCurrentDateAndProductId(variant.getProduct().getId(),
                                 Sort.by(Sort.Direction.DESC, "startDate"));
                         if (optPromotion.isPresent()) {
@@ -105,6 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
                         amount = (variant.getPrice() - discount) * pCart.getQuantity();
                         totalAmount += amount;
                         ProductOrder productOrder = ProductOrder.builder()
+                                .inventoryId(inventoryId)
                                 .price(variant.getPrice() - discount)
                                 .image((image != null) ? image : variant.getProduct().getThumbnail())
                                 .productId(variant.getProduct().getId())
@@ -134,7 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
             double discount = 0;
             Variant variant = variantRepository.findById(item.getVariantId())
                     .orElseThrow(() -> new DataNotFoundException("variant not found"));
-            checkInventory(variant.getProduct().getId(), variant.getId(), item.getQuantity());
+            String inventoryId = checkInventory(variant.getProduct().getId(), variant.getId(), item.getQuantity());
             Optional<Promotion> optPromotion = promotionRepository.findFirstByCurrentDateAndProductId(variant.getProduct().getId(),
                     Sort.by(Sort.Direction.DESC, "startDate"));
             if (optPromotion.isPresent()) {
@@ -150,6 +151,7 @@ public class PaymentServiceImpl implements PaymentService {
             amount = (variant.getPrice() - discount) * item.getQuantity();
             totalAmount += amount;
             ProductOrder productOrder = ProductOrder.builder()
+                    .inventoryId(inventoryId)
                     .price(variant.getPrice() - discount)
                     .image(variant.getProduct().getThumbnail())
                     .productId(variant.getProduct().getId())
@@ -322,9 +324,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
 
-    private void checkInventory(String productId, String variantId, int quantity) throws DataNotFoundException {
+    private String checkInventory(String productId, String variantId, int quantity) throws DataNotFoundException {
         List<Inventory> inventory = inventoryRepository.findByProductIdAndVariantIdOrderByImportDate(productId, variantId);
         boolean flag = false;
+        String inventoryId = "";
         if (inventory.isEmpty()) {
             throw new DataNotFoundException("out of in stock");
         } else {
@@ -338,6 +341,7 @@ public class PaymentServiceImpl implements PaymentService {
                     product.setTotalQuantity(product.getTotalQuantity() - quantity);
                     product.setBuyQuantity(product.getBuyQuantity() + quantity);
                     productRepository.save(product);
+                    inventoryId = inventoryItem.getId();
                     break;
                 }
             }
@@ -345,6 +349,7 @@ public class PaymentServiceImpl implements PaymentService {
                 throw new DataNotFoundException("out of in stock");
             }
         }
+        return inventoryId;
 
     }
 

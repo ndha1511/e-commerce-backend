@@ -16,6 +16,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product extends BaseModel {
+    @Indexed(unique = true)
+    @Field(name = "num_id")
+    private Long numId;
     @Field(name = "product_name")
     private String productName;
     @Indexed(unique = true)
@@ -30,7 +33,6 @@ public class Product extends BaseModel {
     private List<Tag> tags;
     private List<String> images;
     private String video;
-    private int likes;
     @Field(name = "regular_price")
     private double regularPrice;
     @Field(name = "total_quantity")
@@ -43,6 +45,6 @@ public class Product extends BaseModel {
 
 
     public void createUrlPath() {
-        this.urlPath = this.productName.toLowerCase().trim().replace(" ", "-");
+        this.urlPath = this.productName.toLowerCase().trim().replaceAll("[ ,.\\\\]+", "-");;
     }
 }

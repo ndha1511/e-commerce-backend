@@ -9,10 +9,13 @@ import com.code.ecommercebackend.dtos.response.category.CategoryResponse;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.models.Product;
+import com.code.ecommercebackend.models.enums.Role;
 import com.code.ecommercebackend.services.attribute.AttributeService;
 import com.code.ecommercebackend.services.category.CategoryService;
 import com.code.ecommercebackend.services.excel.ExcelService;
 import com.code.ecommercebackend.services.product.ProductService;
+import com.code.ecommercebackend.utils.CookieHandler;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -45,6 +48,12 @@ public class ProductController {
             @RequestParam(required = false) String[] search,
             @RequestParam(required = false) String[] sort
     ) {
+        List<String> searchList = new ArrayList<>();
+        searchList.add("inactive=false");
+        if(search != null) {
+            searchList.addAll(Arrays.asList(search));
+        }
+        search = searchList.toArray(new String[0]);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
@@ -55,6 +64,7 @@ public class ProductController {
     @PostMapping
     public Response createProduct(@Valid @ModelAttribute CreateProductRequest createProductRequest)
     throws Exception {
+
         Product product = productMapper.toProduct(createProductRequest);
         product.createUrlPath();
         product.setThumbnail(product.getImages().get(0));
@@ -85,12 +95,12 @@ public class ProductController {
     }
 
     @GetMapping("/{urlPath}")
-    public Response findByUrlPath(@PathVariable String urlPath)
+    public Response findByUrlPath(@PathVariable String urlPath, HttpServletRequest request)
     throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
-                productService.findByUrl(urlPath)
+                productService.findByUrl(urlPath, request)
         );
     }
 

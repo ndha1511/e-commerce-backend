@@ -5,6 +5,7 @@ import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.models.Comment;
 import com.code.ecommercebackend.services.comment.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,12 +42,12 @@ public class CommentController {
     }
 
     @PostMapping
-    public Response createComment(@ModelAttribute @Valid CommentRequest commentRequest)
+    public Response createComment(@ModelAttribute @Valid CommentRequest commentRequest, HttpServletRequest request)
     throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
                 "success",
-                commentService.save(commentRequest)
+                commentService.save(commentRequest, request)
         );
     }
 

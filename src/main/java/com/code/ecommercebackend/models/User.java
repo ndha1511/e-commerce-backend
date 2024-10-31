@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.Set;
 
 @Document(collection = "users")
@@ -18,6 +19,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class User extends BaseModel{
+    @Indexed(unique = true)
+    @Field(name = "num_id")
+    private Long numId;
     private String username;
     @JsonIgnore
     private String password;
@@ -44,4 +48,14 @@ public class User extends BaseModel{
     @JsonIgnore
     private LocalDateTime expiryDateOtp;
     private Set<Role> roles;
+
+    public void generateUsername() {
+        String character = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder username = new StringBuilder();
+        Random random = new Random();
+        for(int i = 0; i <= 10; i++) {
+            username.append(character.charAt(random.nextInt(character.length())));
+        }
+        this.username = username.toString();
+    }
 }
