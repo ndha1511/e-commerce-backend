@@ -9,12 +9,10 @@ import com.code.ecommercebackend.dtos.response.category.CategoryResponse;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.models.Product;
-import com.code.ecommercebackend.models.enums.Role;
 import com.code.ecommercebackend.services.attribute.AttributeService;
 import com.code.ecommercebackend.services.category.CategoryService;
 import com.code.ecommercebackend.services.excel.ExcelService;
 import com.code.ecommercebackend.services.product.ProductService;
-import com.code.ecommercebackend.utils.CookieHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +66,7 @@ public class ProductController {
         Product product = productMapper.toProduct(createProductRequest);
         product.createUrlPath();
         product.setThumbnail(product.getImages().get(0));
+        product.normalizerName();
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
                 "success",
