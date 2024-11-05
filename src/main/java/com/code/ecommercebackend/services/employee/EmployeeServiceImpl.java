@@ -23,6 +23,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         User user = new User();
         user.generateUsername();
         user.setVerify(true);
+        user.setNumId(userRepository.count() + 1);
         user.setPassword(passwordEncoder.encode(accountEmployee.getPassword()));
         user.setEmail(accountEmployee.getEmail());
         user.setRoles(Set.of(Role.ROLE_EMPLOYEE));
