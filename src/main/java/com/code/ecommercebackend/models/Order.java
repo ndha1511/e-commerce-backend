@@ -50,4 +50,5 @@ public class Order extends BaseModel {
         this.finalAmount = (this.totalAmount - this.voucherAmount) + this.shippingAmount;
     }
 
+
 }

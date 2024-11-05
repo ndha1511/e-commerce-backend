@@ -27,6 +27,6 @@ public class Brand extends BaseModel {
     private String urlPath;
 
     public void createUrlPath() {
-        this.urlPath = this.brandName.toLowerCase().trim().replace(" ", "-");
+        this.urlPath = this.brandName.toLowerCase().trim().replaceAll("[ ,.\\\\]+", "-");
     }
 }

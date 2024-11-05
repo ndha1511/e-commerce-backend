@@ -46,14 +46,15 @@ public class AuthServiceImpl implements AuthService {
         if(userRepository.existsByEmail(registerRequest.getEmail()))
             throw new DataExistsException("email already exists");
         User user = User.builder()
+                .numId(userRepository.count() + 1)
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .otp(generateOtp())
-                .username(generateUsername())
                 .roles(Set.of(Role.ROLE_USER))
                 .verify(false)
                 .expiryDateOtp(LocalDateTime.now().plusMinutes(5))
                 .build();
+        user.generateUsername();
         sendMail(user);
         userRepository.save(user);
     }
@@ -248,13 +249,5 @@ public class AuthServiceImpl implements AuthService {
         return otp.toString();
     }
 
-    private String generateUsername() {
-        String character = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder username = new StringBuilder();
-        Random random = new Random();
-        for(int i = 0; i <= 10; i++) {
-            username.append(character.charAt(random.nextInt(character.length())));
-        }
-        return username.toString();
-    }
+
 }

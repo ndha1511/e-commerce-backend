@@ -11,6 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("${api.prefix}/categories")
 @RequiredArgsConstructor
@@ -33,6 +37,12 @@ public class CategoryController {
                                 @RequestParam(defaultValue = "40") int size,
                                 @RequestParam(required = false) String[] search,
                                 @RequestParam(required = false) String[] sort) {
+        List<String> searchList = new ArrayList<>();
+        searchList.add("inactive=false");
+        if(search != null) {
+            searchList.addAll(Arrays.asList(search));
+        }
+        search = searchList.toArray(new String[0]);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",

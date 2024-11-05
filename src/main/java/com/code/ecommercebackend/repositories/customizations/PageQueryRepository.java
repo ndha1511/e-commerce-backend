@@ -84,7 +84,7 @@ public abstract class PageQueryRepository<T>  {
             case ">" -> Criteria.where(field).gt(value);
             case "<=" -> Criteria.where(field).lte(value);
             case ">=" -> Criteria.where(field).gte(value);
-            case "=" -> Criteria.where(field).is(value);
+            case "=" -> Criteria.where(field).is(value.equals("false") ? false : value.equals("true") ? true : value);
             case "!" -> Criteria.where(field).ne(value);
             case "-" -> Criteria.where(field).exists(false);
             default -> Criteria.where(field).regex(value.trim(), "i");

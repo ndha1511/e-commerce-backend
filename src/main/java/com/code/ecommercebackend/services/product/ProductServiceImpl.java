@@ -11,6 +11,9 @@ import com.code.ecommercebackend.repositories.ProductRepository;
 import com.code.ecommercebackend.repositories.PromotionRepository;
 import com.code.ecommercebackend.repositories.VariantRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
+import com.code.ecommercebackend.services.common.CommonFunction;
+import com.code.ecommercebackend.utils.CookieHandler;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -26,17 +29,34 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     private final PromotionRepository promotionRepository;
     private final ProductRepository productRepository;
     private final ProductAttributeRepository productAttributeRepository;
-    private  final VariantRepository    variantRepository;
+    private final CookieHandler cookieHandler;
+    private final CommonFunction commonFunction;
+    private final VariantRepository variantRepository;
 
     public ProductServiceImpl(
             MongoRepository<Product, String> repository,
-            ProductMapper productMapper, PromotionRepository promotionRepository, ProductRepository productRepository, ProductAttributeRepository productAttributeRepository, VariantRepository variantRepository) {
+            ProductMapper productMapper,
+            PromotionRepository promotionRepository,
+            ProductRepository productRepository,
+            ProductAttributeRepository productAttributeRepository,
+            CookieHandler cookieHandler,
+            VariantRepository variantRepository,
+            CommonFunction commonFunction) {
         super(repository);
         this.productMapper = productMapper;
         this.promotionRepository = promotionRepository;
         this.productRepository = productRepository;
         this.productAttributeRepository = productAttributeRepository;
         this.variantRepository = variantRepository;
+        this.cookieHandler = cookieHandler;
+        this.commonFunction = commonFunction;
+    }
+
+    @Override
+    public Product save(Product product) {
+        long numId = productRepository.count() + 1;
+        product.setNumId(numId);
+        return super.save(product);
     }
 
     @Override
@@ -53,9 +73,11 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     }
 
     @Override
-    public ProductResponse findByUrl(String url) throws DataNotFoundException {
+    public ProductResponse findByUrl(String url, HttpServletRequest request) throws DataNotFoundException {
+        String token = cookieHandler.getCookie(request, "access_token");
         Product product = productRepository.findByUrlPath(url)
                 .orElseThrow(() -> new DataNotFoundException("product not found"));
+        commonFunction.saveUserBehavior(token, 1, product.getNumId(), null, null);
         List<ProductAttribute> attributes = productAttributeRepository.findByProductId(product.getId());
         ProductResponse productResponse = mapToProductResponse(product);
         productResponse.setAttributes(attributes);
@@ -63,7 +85,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     }
 
     @Override
-    public AttributeResponse findAttributeByProductId(String productId) throws DataNotFoundException {
+    public AttributeResponse findAttributeByProductId(String productId)  {
         List<ProductAttribute> attributes = productAttributeRepository.findByProductId(productId);
         List<Variant> variants = variantRepository.findAllByProductId(productId);
         AttributeResponse attributeResponse = new AttributeResponse();

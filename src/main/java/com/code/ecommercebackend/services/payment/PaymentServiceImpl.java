@@ -1,6 +1,7 @@
 package com.code.ecommercebackend.services.payment;
 
 import com.code.ecommercebackend.configurations.VnpayConfig;
+import com.code.ecommercebackend.dtos.request.payment.KafkaMessageOrder;
 import com.code.ecommercebackend.dtos.request.payment.OrderItem;
 import com.code.ecommercebackend.dtos.request.payment.OrderRequest;
 import com.code.ecommercebackend.dtos.response.ResponseGHTK;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -33,15 +35,13 @@ import java.util.*;
 public class PaymentServiceImpl implements PaymentService {
 
     private final RestTemplate restTemplate;
-    private final CartRepository cartRepository;
-    private final VariantRepository variantRepository;
-    private final InventoryRepository inventoryRepository;
-    private final ProductRepository productRepository;
-    private final PromotionRepository promotionRepository;
     private final OrderRepository orderRepository;
-    private final ProductAttributeRepository productAttributeRepository;
     private final VoucherRepository voucherRepository;
     private final VoucherUsageRepository voucherUsageRepository;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final VariantRepository variantRepository;
+    private final ProductAttributeRepository productAttributeRepository;
+    private final PromotionRepository promotionRepository;
     @Value("${api.ghtk.url}")
     private String ghtkUrl;
     @Value("${api.ghtk.token}")
@@ -69,72 +69,21 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Order order(OrderRequest orderRequest) throws DataNotFoundException {
-        if (orderRequest.getOrderFrom().equals("cart")) {
-            Cart cart = cartRepository.findByUserId(orderRequest.getUserId())
-                    .orElseThrow(() -> new DataNotFoundException("cart not found"));
-            List<ProductCart> pCarts = cart.getProductCarts();
-            List<ProductOrder> productOrders = new ArrayList<>();
-            double totalAmount = 0;
-            for (int i = pCarts.size() - 1; i >= 0; i--) {
-                ProductCart pCart = pCarts.get(i);
-                double amount;
-                double discount = 0;
-                for (OrderItem item : orderRequest.getOrderItems()) {
-                    if (item.getVariantId().equals(pCart.getVariantId())) {
-                        Variant variant = variantRepository.findById(pCart.getVariantId())
-                                .orElseThrow(() -> new DataNotFoundException("variant not found"));
-                        ProductAttribute productAttribute = productAttributeRepository
-                                .findByProductId(variant.getProduct().getId()).get(0);
-                        List<AttributeValue> attrValues = productAttribute.getAttributeValues();
-                        AttributeValue attrValue = attrValues.stream().filter(value -> value.getValue()
-                                .equals(variant.getAttributeValue1())).findFirst().orElse(null);
-                        String image = attrValue != null ? attrValue.getImage() : null;
-                        checkInventory(variant.getProduct().getId(), variant.getId(), pCart.getQuantity());
-                        Optional<Promotion> optPromotion = promotionRepository.findFirstByCurrentDateAndProductId(variant.getProduct().getId(),
-                                Sort.by(Sort.Direction.DESC, "startDate"));
-                        if (optPromotion.isPresent()) {
-                            Promotion promotion = optPromotion.get();
-
-                            if (promotion.getDiscountType().equals(DiscountType.PERCENT)) {
-                                discount = variant.getPrice() * promotion.getDiscountValue();
-                            } else {
-                                discount = promotion.getDiscountValue();
-                            }
-
-                        }
-                        amount = (variant.getPrice() - discount) * pCart.getQuantity();
-                        totalAmount += amount;
-                        ProductOrder productOrder = ProductOrder.builder()
-                                .price(variant.getPrice() - discount)
-                                .image((image != null) ? image : variant.getProduct().getThumbnail())
-                                .productId(variant.getProduct().getId())
-                                .productName(variant.getProduct().getProductName())
-                                .attributes(List.of(variant.getAttributeValue1(),
-                                        variant.getAttributeValue2()))
-                                .quantity(pCart.getQuantity())
-                                .amount(amount)
-                                .build();
-                        productOrders.add(productOrder);
-                        pCarts.remove(pCart);
-                    }
-                }
-                if (pCarts.isEmpty()) {
-                    break;
-                }
-            }
-            cart.setProductCarts(pCarts);
-            cartRepository.save(cart);
-            Order order = getOrder(orderRequest, totalAmount, productOrders);
-            return orderRepository.save(order);
-        }
         double totalAmount = 0;
+        double amount;
+        double discount = 0;
         List<ProductOrder> productOrders = new ArrayList<>();
+
+
         for (OrderItem item : orderRequest.getOrderItems()) {
-            double amount;
-            double discount = 0;
             Variant variant = variantRepository.findById(item.getVariantId())
                     .orElseThrow(() -> new DataNotFoundException("variant not found"));
-            checkInventory(variant.getProduct().getId(), variant.getId(), item.getQuantity());
+            ProductAttribute productAttribute = productAttributeRepository
+                    .findByProductId(variant.getProduct().getId()).get(0);
+            List<AttributeValue> attrValues = productAttribute.getAttributeValues();
+            AttributeValue attrValue = attrValues.stream().filter(value -> value.getValue()
+                    .equals(variant.getAttributeValue1())).findFirst().orElse(null);
+            String image = attrValue != null ? attrValue.getImage() : null;
             Optional<Promotion> optPromotion = promotionRepository.findFirstByCurrentDateAndProductId(variant.getProduct().getId(),
                     Sort.by(Sort.Direction.DESC, "startDate"));
             if (optPromotion.isPresent()) {
@@ -151,7 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
             totalAmount += amount;
             ProductOrder productOrder = ProductOrder.builder()
                     .price(variant.getPrice() - discount)
-                    .image(variant.getProduct().getThumbnail())
+                    .image((image != null) ? image : variant.getProduct().getThumbnail())
                     .productId(variant.getProduct().getId())
                     .productName(variant.getProduct().getProductName())
                     .attributes(List.of(variant.getAttributeValue1(),
@@ -161,11 +110,20 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
             productOrders.add(productOrder);
 
+
         }
         Order order = getOrder(orderRequest, totalAmount, productOrders);
-
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        kafkaTemplate.send("order-topic", new KafkaMessageOrder(
+                order, orderRequest
+        ));
+        kafkaTemplate.send("inventory-topic", new KafkaMessageOrder(
+                order, orderRequest
+        ));
+//        kafkaTemplate.setMessageConverter(new KafkaMessageOrderConverter());
+        return order;
     }
+
 
     @Override
     public String payment(HttpServletRequest req) {
@@ -319,33 +277,6 @@ public class PaymentServiceImpl implements PaymentService {
         } else {
             order.setVoucherAmount(voucher.getDiscountValue());
         }
-    }
-
-
-    private void checkInventory(String productId, String variantId, int quantity) throws DataNotFoundException {
-        List<Inventory> inventory = inventoryRepository.findByProductIdAndVariantIdOrderByImportDate(productId, variantId);
-        boolean flag = false;
-        if (inventory.isEmpty()) {
-            throw new DataNotFoundException("out of in stock");
-        } else {
-            for (Inventory inventoryItem : inventory) {
-                if (inventoryItem.getImportQuantity() - inventoryItem.getSaleQuantity() >= quantity) {
-                    flag = true;
-                    inventoryItem.setSaleQuantity(inventoryItem.getSaleQuantity() + quantity);
-                    inventoryRepository.save(inventoryItem);
-                    Product product = productRepository.findById(inventoryItem.getProductId())
-                            .orElseThrow(() -> new DataNotFoundException("product not found"));
-                    product.setTotalQuantity(product.getTotalQuantity() - quantity);
-                    product.setBuyQuantity(product.getBuyQuantity() + quantity);
-                    productRepository.save(product);
-                    break;
-                }
-            }
-            if (!flag) {
-                throw new DataNotFoundException("out of in stock");
-            }
-        }
-
     }
 
 

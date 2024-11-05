@@ -34,6 +34,6 @@ public class Category extends BaseModel {
     private String urlPath;
 
     public void createUrlPath() {
-        this.urlPath = this.categoryName.toLowerCase().trim().replace(" ", "-") + "_" + this.numId;
+        this.urlPath = this.categoryName.toLowerCase().trim().replaceAll("[ ,.\\\\]+", "-") + "_" + this.numId;
     }
 }

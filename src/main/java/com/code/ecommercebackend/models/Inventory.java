@@ -1,5 +1,7 @@
 package com.code.ecommercebackend.models;
 
+import com.code.ecommercebackend.models.enums.InventoryStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +26,10 @@ public class Inventory extends BaseModel {
     @Field(name = "sale_quantity")
     private int saleQuantity;
     @Field(name = "import_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime importDate;
+    @Field(name = "inventory_status")
+    private InventoryStatus inventoryStatus;
     @Field(name = "import_price")
     private double importPrice;
 
