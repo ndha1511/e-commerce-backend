@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.controllers;
 
+import com.code.ecommercebackend.dtos.request.user.UserDto;
 import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.models.User;
@@ -21,6 +22,15 @@ public class UserController {
                 HttpStatus.OK.value(),
                 "success",
                 userService.findById(id)
+        );
+    }
+    @PutMapping("/{email}")
+    public Response updateUser(@PathVariable String email,@ModelAttribute UserDto userDto)
+            throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                userService.update(email,userDto)
         );
     }
 

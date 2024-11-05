@@ -6,6 +6,7 @@ import com.code.ecommercebackend.dtos.request.product.ImportExcelRequest;
 import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.dtos.response.category.CategoryResponse;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.models.Product;
@@ -81,6 +82,14 @@ public class ProductController {
                 HttpStatus.OK.value(),
                 "success",
                 attributeService.findByProductId(productId)
+        );
+    }
+    @GetMapping("/attribute/{productId}")
+    public Response getProductAttributesAndVariant(@PathVariable String productId) throws DataNotFoundException {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                productService.findAttributeByProductId(productId)
         );
     }
 

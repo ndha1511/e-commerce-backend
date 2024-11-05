@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -65,6 +66,19 @@ public class VariantServiceImpl extends BaseServiceImpl<Variant, String> impleme
         List<Variant> variants = variantRepository.findAllByProductId(productId);
         return variants.stream().map(this::mapToVariantResponse).toList();
     }
+
+    @Override
+    public List<VariantResponse> findAllByAttVal(String productId, String attVl1) {
+        List<Variant> variants = variantRepository.findAllByProductId(productId);
+
+        // Lọc và chuyển đổi danh sách Variant thành VariantResponse
+        List<VariantResponse> variantResponses = variants.stream()
+                .filter(variant -> variant.getAttributeValue1().equals(attVl1)) // Lọc theo attributeValue1
+                .map(this::mapToVariantResponse) // Sử dụng hàm mapToVariantResponse để chuyển đổi
+                .toList();
+        return variantResponses; // Trả về danh sách cuối cùng
+    }
+
 
     public VariantResponse mapToVariantResponse(Variant variant) {
         VariantResponse variantResponse = variantMapper.toVariantResponse(variant);

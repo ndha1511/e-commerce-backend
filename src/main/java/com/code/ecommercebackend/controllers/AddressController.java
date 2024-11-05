@@ -8,6 +8,7 @@ import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.dtos.response.address.DistrictResponse;
 import com.code.ecommercebackend.dtos.response.address.ProvinceResponse;
 import com.code.ecommercebackend.dtos.response.address.WardResponse;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.address.AddressMapper;
 import com.code.ecommercebackend.mappers.address.UserAddressMapper;
 import com.code.ecommercebackend.models.Address;
@@ -40,7 +41,6 @@ public class AddressController {
                 response.getData()
         );
     }
-
     @GetMapping("/districts")
     public Response getDistricts(@RequestParam(name = "province_id") int provinceId) {
         ResponseGHN<List<DistrictResponse>> response = restAddressService.getDistricts(provinceId);
@@ -72,17 +72,33 @@ public class AddressController {
     }
 
     @PostMapping("/add-user-address")
-    public Response addUserAddress(@RequestBody UserAddressDto userAddressDto) {
-        UserAddress userAddress = userAddressMapper.toUserAddress(userAddressDto);
+    public Response addUserAddress(@RequestBody UserAddressDto userAddressDto) throws DataNotFoundException {
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
                 "success",
-                userAddressService.save(userAddress)
+                userAddressService.saveUserAddress(userAddressDto)
+        );
+    }
+    @PutMapping("/update-user-address/{id}")
+    public Response upUserAddress(@RequestBody UserAddressDto userAddressDto, @PathVariable String id ) throws DataNotFoundException {
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success",
+                userAddressService.updateAddress(userAddressDto,id)
+        );
+    }
+    @DeleteMapping("/delete-user-address/{id}")
+    public Response removeUserAddress( @PathVariable String id ) throws DataNotFoundException {
+        userAddressService.deleteById(id);
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success"
+
         );
     }
 
     @PostMapping
-    public Response addAddress(@RequestBody AddressDto addressDto) {
+    public Response addAddress(@RequestBody AddressDto addressDto) throws DataNotFoundException {
         Address address = addressMapper.toAddress(addressDto);
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
