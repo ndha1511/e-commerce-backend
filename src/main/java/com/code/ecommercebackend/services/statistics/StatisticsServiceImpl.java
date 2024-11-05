@@ -40,10 +40,11 @@ public class StatisticsServiceImpl implements StatisticsService{
             revenue += currentRevenue;
             List<ProductOrder> productResponses = order.getProductOrders();
             for (ProductOrder productOrder : productResponses) {
-                String inventoryId = productOrder.getInventoryId();
-                Inventory inventory = inventoryRepository.findById(inventoryId)
-                        .orElseThrow(() -> new DataNotFoundException("inventory not found"));
-                profit += productOrder.getAmount() - (inventory.getImportPrice() * productOrder.getQuantity());
+                List<String> inventoryId = productOrder.getInventories();
+                for (Inventory inventory : inventoryRepository.findAllById(inventoryId)) {
+                    profit += productOrder.getAmount() - (inventory.getImportPrice() * productOrder.getQuantity());
+                }
+
             }
 
         }
@@ -69,10 +70,11 @@ public class StatisticsServiceImpl implements StatisticsService{
             double revenue = order.getTotalAmount() - order.getShippingAmount();
             List<ProductOrder> productResponses = order.getProductOrders();
             for (ProductOrder productOrder : productResponses) {
-                String inventoryId = productOrder.getInventoryId();
-                Inventory inventory = inventoryRepository.findById(inventoryId)
-                        .orElseThrow(() -> new DataNotFoundException("inventory not found"));
-                profit += productOrder.getAmount() - (inventory.getImportPrice() * productOrder.getQuantity());
+                List<String> inventoryId = productOrder.getInventories();
+                for (Inventory inventory : inventoryRepository.findAllById(inventoryId)) {
+                    profit += productOrder.getAmount() - (inventory.getImportPrice() * productOrder.getQuantity());
+                }
+
             }
             RevenueMonth revenueMonthObj = new RevenueMonth();
             revenueMonthObj.setMonth(month);

@@ -16,8 +16,8 @@ public class ProductOrder {
     private String productId;
     @Field(name = "product_name")
     private String productName;
-    @Field(name = "inventory_id")
-    private String inventoryId;
+    @Field(name = "inventories")
+    private List<String> inventories;
     private List<String> attributes;
     private double price;
     private int quantity;
