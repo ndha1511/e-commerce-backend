@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.models;
 
+import com.code.ecommercebackend.models.enums.MessageStatus;
 import com.code.ecommercebackend.models.enums.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,8 @@ public class Message extends BaseModel {
     private LocalDateTime sendDate;
     @Field(name = "message_type")
     private MessageType messageType;
+    @Field(name = "message_status")
+    private MessageStatus messageStatus;
+    @Field(name = "room_id")
+    private String roomId;
 }
