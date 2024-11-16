@@ -10,4 +10,5 @@ public interface BaseService<T, ID> {
     <DTO> DTO findDtoById(ID id, Function<T, DTO> mapper) throws DataNotFoundException;
     T save(T t);
     PageResponse<T> getPageData(int pageNo, int size, String[] search, String[] sort, Class<T> clazz);
+    void deleteById(ID id);
 }

@@ -1,11 +1,15 @@
 package com.code.ecommercebackend.services.product;
 
 import com.code.ecommercebackend.dtos.response.PageResponse;
+import com.code.ecommercebackend.dtos.response.attribute.AttributeResponse;
 import com.code.ecommercebackend.dtos.response.product.ProductResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.*;
-import com.code.ecommercebackend.repositories.*;
+import com.code.ecommercebackend.repositories.ProductAttributeRepository;
+import com.code.ecommercebackend.repositories.ProductRepository;
+import com.code.ecommercebackend.repositories.PromotionRepository;
+import com.code.ecommercebackend.repositories.VariantRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import com.code.ecommercebackend.services.common.CommonFunction;
 import com.code.ecommercebackend.utils.CookieHandler;
@@ -27,7 +31,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     private final ProductAttributeRepository productAttributeRepository;
     private final CookieHandler cookieHandler;
     private final CommonFunction commonFunction;
-
+    private final VariantRepository variantRepository;
 
     public ProductServiceImpl(
             MongoRepository<Product, String> repository,
@@ -36,12 +40,14 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
             ProductRepository productRepository,
             ProductAttributeRepository productAttributeRepository,
             CookieHandler cookieHandler,
+            VariantRepository variantRepository,
             CommonFunction commonFunction) {
         super(repository);
         this.productMapper = productMapper;
         this.promotionRepository = promotionRepository;
         this.productRepository = productRepository;
         this.productAttributeRepository = productAttributeRepository;
+        this.variantRepository = variantRepository;
         this.cookieHandler = cookieHandler;
         this.commonFunction = commonFunction;
     }
@@ -76,6 +82,16 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
         ProductResponse productResponse = mapToProductResponse(product);
         productResponse.setAttributes(attributes);
         return productResponse;
+    }
+
+    @Override
+    public AttributeResponse findAttributeByProductId(String productId)  {
+        List<ProductAttribute> attributes = productAttributeRepository.findByProductId(productId);
+        List<Variant> variants = variantRepository.findAllByProductId(productId);
+        AttributeResponse attributeResponse = new AttributeResponse();
+        attributeResponse.setAttributes(attributes);
+        attributeResponse.setVariants(variants);
+        return attributeResponse;
     }
 
     @Override

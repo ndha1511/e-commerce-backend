@@ -34,4 +34,11 @@ public class VariantController {
                 variantService.findAllByProductId(productId)
         );
     }
+    @GetMapping("/{productId}/byAttVal")
+    public Response findAllByAttVal(
+            @PathVariable String productId, // Nhận productId từ đường dẫn
+            @RequestParam String attVl1 // Nhận attributeValue1 từ query parameter
+    ) {
+        return new ResponseSuccess<>(HttpStatus.OK.value(), "success", variantService.findAllByAttVal(productId, attVl1)); // Trả về ResponseSuccess
+    }
 }

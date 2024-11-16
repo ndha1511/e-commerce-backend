@@ -5,14 +5,12 @@ import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.mappers.brand.BrandMapper;
 import com.code.ecommercebackend.models.Brand;
+import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.services.brand.BrandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.prefix}/brands")
@@ -30,6 +28,17 @@ public class BrandController {
                 HttpStatus.CREATED.value(),
                 "success",
                 brandService.save(brand)
+        );
+    }
+    @GetMapping
+    public Response getBrands(@RequestParam(defaultValue = "1") int pageNo,
+                                  @RequestParam(defaultValue = "40") int size,
+                                  @RequestParam(required = false) String[] search,
+                                  @RequestParam(required = false) String[] sort) {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                brandService.getPageData(pageNo, size, search, sort, Brand.class)
         );
     }
 }

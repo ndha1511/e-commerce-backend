@@ -55,8 +55,35 @@ public class OrderController {
 
     @PutMapping("/confirm-received/{orderId}")
     public Response confirmReceived(@PathVariable String orderId)
-    throws Exception {
+            throws Exception {
         orderService.confirmReceived(orderId);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success"
+        );
+    }
+    @PutMapping("/confirm-cancel/{orderId}")
+    public Response confirmCancel(@PathVariable String orderId)
+            throws Exception {
+        orderService.confirmCancel(orderId);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success"
+        );
+    }
+    @PutMapping("/confirm-shipping/{orderId}")
+    public Response confirmShipping(@PathVariable String orderId)
+            throws Exception {
+        orderService.confirmShipping(orderId);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success"
+        );
+    }
+    @PutMapping("/confirm-shipped-confirmation/{orderId}")
+    public Response confirm(@PathVariable String orderId)
+            throws Exception {
+        orderService.confirmShippedConfirmation(orderId);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success"

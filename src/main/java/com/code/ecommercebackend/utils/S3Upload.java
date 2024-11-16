@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -35,6 +36,30 @@ public class S3Upload {
                 .build();
         FileUpload fileUpload = s3TransferManager.uploadFile(uploadFileRequest);
         fileUpload.completionFuture().join();
+        return "https://" + bucketName + ".s3." + "ap-southeast-1" + ".amazonaws.com/" + key;
+    }
+
+    public String uploadFile(byte[] fileData, String originalFilename) throws IOException {
+        // Tạo file tạm thời từ byte[]
+        Path tempFile = Files.createTempFile("temp", originalFilename);
+        Files.write(tempFile, fileData, StandardOpenOption.CREATE);
+
+        // Tạo một key duy nhất cho file
+        String key = generateUniqueKey(originalFilename);
+
+        // Tạo request upload file
+        UploadFileRequest uploadFileRequest = UploadFileRequest.builder()
+                .putObjectRequest(b -> b.bucket(bucketName).key(key))
+                .source(tempFile)
+                .build();
+
+        // Sử dụng S3 Transfer Manager để upload
+        FileUpload fileUpload = s3TransferManager.uploadFile(uploadFileRequest);
+        fileUpload.completionFuture().join();
+
+        // Xóa file tạm sau khi upload hoàn tất
+        Files.deleteIfExists(tempFile);
+
         return "https://" + bucketName + ".s3." + "ap-southeast-1" + ".amazonaws.com/" + key;
     }
 

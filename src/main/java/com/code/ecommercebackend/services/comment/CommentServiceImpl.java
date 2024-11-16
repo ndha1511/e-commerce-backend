@@ -10,6 +10,7 @@ import com.code.ecommercebackend.repositories.*;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import com.code.ecommercebackend.services.common.CommonFunction;
 import com.code.ecommercebackend.utils.CookieHandler;
+import com.code.ecommercebackend.utils.SocketHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
     private final ProductRepository productRepository;
     private final CookieHandler cookieHandler;
     private final CommonFunction commonFunction;
+    private final SocketHandler socketHandler;
 
 
     public CommentServiceImpl(MongoRepository<Comment, String> repository,
@@ -34,7 +36,7 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
                               CommentRepository commentRepository,
                               ProductRepository productRepository,
                               CookieHandler cookieHandler,
-                              CommonFunction commonFunction) {
+                              CommonFunction commonFunction, SocketHandler socketHandler) {
         super(repository);
         this.commentMapper = commentMapper;
         this.orderRepository = orderRepository;
@@ -42,7 +44,7 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
         this.productRepository = productRepository;
         this.cookieHandler = cookieHandler;
         this.commonFunction = commonFunction;
-
+        this.socketHandler = socketHandler;
     }
 
 
@@ -68,9 +70,11 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
         calcRating(comment);
         order.setProductOrders(productOrders);
         orderRepository.save(order);
+        socketHandler.sendCommentToSocket(comment);
         return commentRepository.save(comment);
 
     }
+
 
     private void calcRating(Comment comment) throws DataNotFoundException {
         Product product = productRepository.findById(comment.getProductId())

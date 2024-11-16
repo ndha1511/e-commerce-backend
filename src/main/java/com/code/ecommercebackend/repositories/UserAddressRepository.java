@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface UserAddressRepository extends MongoRepository<UserAddress, String> {
     List<UserAddress> findByUserIdOrderByAddressDefault(String userId);
-    Optional<UserAddress> findByAddressDefault(boolean defaultAddress);
+    Optional<UserAddress> findByAddressDefaultAndUserId(boolean defaultAddress, String id);
+    long countByUserId(String id);
 }
