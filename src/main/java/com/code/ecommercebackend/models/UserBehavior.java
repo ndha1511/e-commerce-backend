@@ -22,13 +22,7 @@ public class UserBehavior {
     private long userId;
     @Field(name = "product_id")
     private long productId;
-    /**
-     * @value 1 = view
-     * @value 2 = buy
-     * @value 3 = comment
-     */
-    private int behavior;
-    @Field(name = "buy_quantity")
-    private Integer buyQuantity;
     private Integer rating;
+    @Field(name = "count_view")
+    private int countView;
 }

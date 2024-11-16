@@ -16,17 +16,21 @@ public class CommonFunctionImpl implements CommonFunction {
     private final UserBehaviorRepository userBehaviorRepository;
 
     @Override
-    public void saveUserBehavior(String token, long behavior, long productId, Integer quantity, Integer rating) {
+    public void saveUserBehavior(String token, long behavior, long productId, Integer rating) {
         if(token != null && !token.isEmpty()) {
             String username = jwtService.extractUsername(token);
             User user = userRepository.findByUsername(username).orElse(null);
             if(user != null) {
-                UserBehavior userBehavior = new UserBehavior();
-                userBehavior.setBehavior(1);
+                UserBehavior userBehavior = userBehaviorRepository.findByUserIdAndProductId(
+                        user.getNumId(), productId
+                ).orElse(new UserBehavior());
                 userBehavior.setUserId(user.getNumId());
                 userBehavior.setProductId(productId);
-                userBehavior.setRating(rating);
-                userBehavior.setBuyQuantity(quantity);
+                if(behavior != 1) {
+                    userBehavior.setCountView(userBehavior.getCountView() + 1);
+                } else {
+                    userBehavior.setRating(rating);
+                }
                 userBehaviorRepository.save(userBehavior);
             }
         }

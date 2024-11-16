@@ -10,9 +10,12 @@ import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.models.Product;
 import com.code.ecommercebackend.services.attribute.AttributeService;
+import com.code.ecommercebackend.services.auth.JwtService;
 import com.code.ecommercebackend.services.category.CategoryService;
 import com.code.ecommercebackend.services.excel.ExcelService;
+import com.code.ecommercebackend.services.historySearch.HistorySearchService;
 import com.code.ecommercebackend.services.product.ProductService;
+import com.code.ecommercebackend.utils.CookieHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,9 @@ public class ProductController {
     private final AttributeService attributeService;
     private final ExcelService excelService;
     private final CategoryService categoryService;
+    private final HistorySearchService historySearchService;
+    private final CookieHandler cookieHandler;
+    private final JwtService jwtService;
 
     @GetMapping
     public Response getProducts(
@@ -131,6 +137,33 @@ public class ProductController {
             searchList.addAll(Arrays.asList(search));
         }
         search = searchList.toArray(new String[0]);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                productService.getPageProduct(page, size, search, sort)
+        );
+
+    }
+
+    @GetMapping("/key-word/{keyWord}")
+    public Response getProductByKeyWord(@PathVariable String keyWord,
+                                        @RequestParam(defaultValue = "1") int page,
+                                        @RequestParam(defaultValue = "40") int size,
+                                        @RequestParam(required = false) String[] search,
+                                        @RequestParam(required = false) String[] sort,
+                                        HttpServletRequest request) {
+        List<String> searchList = new ArrayList<>();
+        searchList.add("searchNames:" + keyWord);
+        if(search != null) {
+            searchList.addAll(Arrays.asList(search));
+        }
+        search = searchList.toArray(new String[0]);
+        String userId = "";
+        String token = cookieHandler.getCookie(request, "refresh_token");
+        if(token != null) {
+            userId = jwtService.extractUsername(token);
+        }
+        historySearchService.saveHistorySearch(userId, keyWord);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",

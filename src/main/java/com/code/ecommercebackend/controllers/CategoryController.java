@@ -60,6 +60,18 @@ public class CategoryController {
         );
     }
 
+    @GetMapping("/list")
+    public Response getListCategory(@RequestParam String categoryId) {
+        List<String> categoryIdList = Arrays.stream(categoryId.split(";")).toList();
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                categoryService.findAllCategories(categoryIdList)
+        );
+    }
+
+
+
 
 
 }

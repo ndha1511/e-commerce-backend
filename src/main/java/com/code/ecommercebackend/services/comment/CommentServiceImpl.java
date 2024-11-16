@@ -55,9 +55,8 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
                 .orElseThrow(() -> new DataNotFoundException("Order not found"));
         List<ProductOrder> productOrders = order.getProductOrders();
         String token = cookieHandler.getCookie(request, "access_token");
-        commonFunction.saveUserBehavior(token, 3,
+        commonFunction.saveUserBehavior(token, 1,
                 commentRequest.getProductNumId(),
-                null,
                 commentRequest.getRating());
         productOrders.forEach(po -> {
             if (po.getProductId().equals(commentRequest.getProductId())) {

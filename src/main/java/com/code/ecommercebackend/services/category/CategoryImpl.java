@@ -79,6 +79,11 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
                 .orElseThrow(() -> new DataNotFoundException("category not found"));
     }
 
+    @Override
+    public List<Category> findAllCategories(List<String> categoryId) {
+        return categoryRepository.findAllById(categoryId);
+    }
+
     private List<CategoryResponse> getSubCategories(String parentId) {
         List<Category> subCategories = categoryRepository.findByParentId(parentId);
         List<CategoryResponse> subCategoriesResponse = new ArrayList<>();
