@@ -11,6 +11,7 @@ import com.code.ecommercebackend.services.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class UserController {
     private final UserService userService;
     private final EmployeeService employeeService;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public Response getUserById(@PathVariable String id)
     throws Exception {
@@ -33,6 +35,7 @@ public class UserController {
                 userService.findById(id)
         );
     }
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{email}")
     public Response updateUser(@PathVariable String email,@ModelAttribute UserDto userDto)
             throws Exception {
@@ -43,6 +46,7 @@ public class UserController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @GetMapping
     public Response getAllUsers(@RequestParam(defaultValue = "1") int pageNo,
                                 @RequestParam(defaultValue = "40") int size,
@@ -62,6 +66,7 @@ public class UserController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/employee")
     public Response getEmployee(@RequestParam(defaultValue = "1") int pageNo,
                                 @RequestParam(defaultValue = "40") int size,
@@ -82,6 +87,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-account-emp")
     public Response createAccount(@Valid @RequestBody EmployeeAccount employeeAccount) {
         return new ResponseSuccess<>(

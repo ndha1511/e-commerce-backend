@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
@@ -66,6 +67,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PostMapping
     public Response createProduct(@Valid @ModelAttribute CreateProductRequest createProductRequest)
     throws Exception {
@@ -81,6 +83,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping("/attributes")
     public Response createProductAttributes(@Valid @ModelAttribute CreateAttributeRequest createAttributeRequest)
         throws Exception {
@@ -118,6 +121,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/download-sample-excel")
     public ResponseEntity<InputStreamResource> downloadSampleExcel(
             @RequestParam String categoryId
@@ -181,7 +185,7 @@ public class ProductController {
 
     }
 
-
+//    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PostMapping("/import-excel")
     public Response importExcel(@ModelAttribute ImportExcelRequest importExcelRequest) throws Exception {
         excelService.importProductExcel(importExcelRequest.getFile());

@@ -9,6 +9,7 @@ import com.code.ecommercebackend.services.promotion.PromotionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ public class PromotionController {
     private final PromotionService promotionService;
     private final PromotionMapper promotionMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Response createPromotion(@Valid @RequestBody CreatePromotionRequest createPromotionRequest) {
         Promotion promotion = promotionMapper.toPromotion(createPromotionRequest);

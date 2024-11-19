@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     private final PaymentService paymentService;
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/fee")
     public Response getFee(@RequestParam(name = "prick_province") String pickProvince,
                            @RequestParam(name = "prick_district") String pickDistrict,
@@ -32,6 +34,7 @@ public class PaymentController {
 
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/order")
     public Response order(@Valid @RequestBody OrderRequest orderRequest) throws Exception {
         return new ResponseSuccess<>(
@@ -41,6 +44,7 @@ public class PaymentController {
         );
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/vnp")
     public Response vnpPayment(HttpServletRequest request) {
         return new ResponseSuccess<>(

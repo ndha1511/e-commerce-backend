@@ -6,6 +6,7 @@ import com.code.ecommercebackend.models.Order;
 import com.code.ecommercebackend.services.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @GetMapping
     public Response getOrders(
             @RequestParam(defaultValue = "1") int page,
@@ -33,6 +35,7 @@ public class OrderController {
         );
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{userId}")
     public Response getOrdersByUserId(
             @RequestParam(defaultValue = "1") int page,
@@ -53,6 +56,7 @@ public class OrderController {
         );
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/confirm-received/{orderId}")
     public Response confirmReceived(@PathVariable String orderId)
             throws Exception {
@@ -71,6 +75,7 @@ public class OrderController {
                 "success"
         );
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PutMapping("/confirm-shipping/{orderId}")
     public Response confirmShipping(@PathVariable String orderId)
             throws Exception {
@@ -80,6 +85,7 @@ public class OrderController {
                 "success"
         );
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PutMapping("/confirm-shipped-confirmation/{orderId}")
     public Response confirm(@PathVariable String orderId)
             throws Exception {

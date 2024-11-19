@@ -15,6 +15,10 @@ public class AttributeValue {
     private String value;
     private String image;
 
+    public AttributeValue(String value) {
+        this.value = value;
+    }
+
 
     @Override
     public boolean equals(Object o) {
