@@ -32,4 +32,31 @@ public class RoomController {
                 roomService.getPageData(pageNo,size,search,sort, Conversation.class)
         );
     }
+    @GetMapping("/id/{id}")
+    public Response getRoomById(@PathVariable String id,
+                             @RequestParam(defaultValue = "1") int pageNo,
+                             @RequestParam(defaultValue = "40") int size
+    )
+            throws Exception {
+        String emailSearch = "conversationId=" + id;
+        String[] search = {emailSearch};
+        String[] sort = {"isSeen:asc"};
+        return new ResponseSuccess<>(
+                HttpStatus.NO_CONTENT.value(),
+                "success",
+                roomService.getPageData(pageNo,size,search,sort, Conversation.class)
+        );
+    }
+    @PutMapping("/roomId/{id}")
+    public Response updateRoomById(@PathVariable String id
+
+    )
+            throws Exception {
+
+        return new ResponseSuccess<>(
+                HttpStatus.NO_CONTENT.value(),
+                "success",
+                roomService.updateRoomById(id)
+        );
+    }
 }

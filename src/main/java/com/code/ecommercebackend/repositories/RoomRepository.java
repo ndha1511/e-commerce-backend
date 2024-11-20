@@ -6,7 +6,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface RoomRepository extends MongoRepository<Conversation, Long> {
+public interface RoomRepository extends MongoRepository<Conversation, String> {
     List<Conversation> getRoomsBySender(String sender);
     Optional<Conversation> findBySenderAndReceiver(String sender, String receiver);
+    List<Conversation> findAllByConversationId(String roomId);
+
+
 }

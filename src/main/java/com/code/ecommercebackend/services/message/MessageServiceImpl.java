@@ -6,9 +6,11 @@ import com.code.ecommercebackend.dtos.request.message.MessageKafka;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.Conversation;
 import com.code.ecommercebackend.models.Message;
+import com.code.ecommercebackend.models.User;
 import com.code.ecommercebackend.models.enums.MessageStatus;
 import com.code.ecommercebackend.models.enums.MessageType;
 import com.code.ecommercebackend.repositories.RoomRepository;
+import com.code.ecommercebackend.repositories.UserRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import com.code.ecommercebackend.services.room.RoomService;
 import com.code.ecommercebackend.utils.SocketHandler;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -30,15 +33,17 @@ public class MessageServiceImpl extends BaseServiceImpl<Message,String> implemen
     private final RoomService roomservice;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final SocketHandler socketHandler;
+    private final UserRepository userRepository;
 
     public MessageServiceImpl(MongoRepository<Message,
-            String> repository, RoomRepository roomRepository, RoomService roomservice, KafkaTemplate<String, Object> kafkaTemplate, SocketHandler socketHandler) {
+            String> repository, RoomRepository roomRepository, RoomService roomservice, KafkaTemplate<String, Object> kafkaTemplate, SocketHandler socketHandler, UserRepository userRepository) {
         super(repository);
 
         this.roomRepository = roomRepository;
         this.roomservice = roomservice;
         this.kafkaTemplate = kafkaTemplate;
         this.socketHandler = socketHandler;
+        this.userRepository = userRepository;
     }
 
 
@@ -65,7 +70,20 @@ public class MessageServiceImpl extends BaseServiceImpl<Message,String> implemen
         Conversation roomReceiver =roomRepository.findBySenderAndReceiver(message.getReceiver(), message.getSender())
                 .orElseThrow(()-> new DataNotFoundException("There is no message with that sender and receiver"));
         roomReceiver.setSeen(false);
+        roomReceiver.setCount(roomReceiver.getCount() +1);
+        Optional<User> userReceiver = userRepository.findByEmail(message.getReceiver());
+        userReceiver.ifPresent(value -> roomReceiver.setAvatarReceiver(value.getAvatar()));
+        roomReceiver.setLastMessageReceiver(message.getContent());
+        roomReceiver.setSendDate(LocalDateTime.now());
+        Conversation roomSender =roomRepository.findBySenderAndReceiver(message.getSender(), message.getReceiver())
+                .orElseThrow(()-> new DataNotFoundException("There is no message with that sender and receiver"));
+        roomSender.setSeen(false);
+        roomSender.setLastMessageSender(message.getContent());
+        Optional<User> userSender = userRepository.findByEmail(message.getSender());
+        userSender.ifPresent(value -> roomReceiver.setAvatarReceiver(value.getAvatar()));
+        roomSender.setSendDate(LocalDateTime.now());
         roomRepository.save(roomReceiver);
+        roomRepository.save(roomSender);
         if(messageDto.getFile() == null){
             message.setMessageStatus(MessageStatus.SENT);
             super.save(message);

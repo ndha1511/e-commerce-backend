@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductOrder {
+public class  ProductOrder {
     @Field(name = "product_id")
     private String productId;
     @Field(name = "product_name")

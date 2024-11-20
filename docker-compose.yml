@@ -15,6 +15,7 @@ services:
     container_name: kafka
     depends_on:
       - zookeeper
+    restart: always
     ports:
       - '29092:29092'
     environment:

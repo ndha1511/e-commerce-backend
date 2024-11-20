@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.controllers;
 
+import com.code.ecommercebackend.dtos.request.comment.CommentReplyRequest;
 import com.code.ecommercebackend.dtos.request.comment.CommentRequest;
 import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
@@ -48,6 +49,15 @@ public class CommentController {
                 HttpStatus.CREATED.value(),
                 "success",
                 commentService.save(commentRequest, request)
+        );
+    }
+    @PutMapping("/{commentId}")
+    public Response replyComment(@PathVariable String commentId , @ModelAttribute CommentReplyRequest commentReplyRequest)
+            throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success",
+                commentService.reply(commentId, commentReplyRequest)
         );
     }
 
