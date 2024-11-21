@@ -1,0 +1,488 @@
+@import '../../../variables.scss';
+
+.btn-group {
+    width: 95%;
+    background-color: white;
+    border-radius: $border-radius-medium;
+}
+
+.btn-group-insert-product-seller {
+
+    width: 150px;
+    height: 50px;
+    padding: 10px;
+    border: none;
+    background-color: white;
+    position: relative;
+    overflow: hidden;
+    border-top-left-radius: $border-radius-medium;
+
+    &:hover {
+        color: $primary-color;
+        font-weight: 600;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0; // Bắt đầu từ 0
+        height: 3px;
+        background-color: $primary-color;
+        transition: width 0.3s ease; // Chỉ chuyển đổi độ rộng
+    }
+
+    &.active {
+        font-weight: 600;
+        color: $primary-color;
+
+        &::after {
+            width: 100%; // Kéo dài viền dưới ra toàn bộ chiều rộng khi kích hoạt
+        }
+    }
+
+}
+
+.radio-insert-product-seller {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 15px;
+    /* Đặt chiều rộng của radio button */
+    height: 15px;
+    /* Đặt chiều cao của radio button */
+    border: 2px solid #ccc;
+    /* Đặt viền bình thường cho radio button */
+    border-radius: 50%;
+    /* Tạo hình tròn */
+    background-color: #fff;
+    /* Màu nền */
+    transition: 0.2s all linear;
+    /* Hiệu ứng chuyển đổi mượt mà */
+}
+
+.radio-insert-product-seller:checked {
+    border-color: $primary-color;
+    /* Màu viền khi được chọn */
+    background-color: $primary-color;
+    /* Màu nền khi được chọn */
+
+}
+
+.radio-insert-product-seller:hover {
+    border-color: $primary-color;
+}
+
+.image-insert-product-seller {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed $primary-color;
+    cursor: pointer;
+}
+
+.icon-image-insert {
+    position: relative;
+    width: auto;
+}
+
+.input-basic-information-seller {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: $border-radius-small;
+
+    &:hover,
+    &:active {
+        border-color: $info-color
+    }
+
+    &:focus {
+        outline: 1px solid $info-color
+    }
+}
+
+.textarea-basic-information-seller {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: $border-radius-small;
+    resize: none;
+
+    &:hover {
+        border-color: $info-color
+    }
+
+    &:focus {
+        outline: 1px solid $info-color
+    }
+
+}
+
+.category-seller {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    input {
+        cursor: pointer;
+    }
+}
+
+.icon-delete {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    right: -6px;
+    cursor: pointer;
+    color: red;
+    background-color: white;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.img-container:hover .icon-delete {
+    display: block;
+}
+
+/* Định nghĩa animation cho bóng mờ */
+@keyframes scale-up {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+
+    to {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        /* Thay đổi kích thước và màu sắc của bóng mờ */
+    }
+}
+
+/* Hiệu ứng bóng mờ khi di chuyển ảnh */
+.draggable-shadow {
+    animation: scale-up 0.2s ease;
+}
+
+.btn-save-all-category-1 {
+    border: none;
+    width: 20%;
+    border-radius: $border-radius-small;
+    background-color: $primary-color;
+    color: white;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 500;
+
+    &:hover {
+        background-color: rgb(245, 78, 78);
+    }
+
+    // Khi nút bị khóa (disabled)
+    &:disabled {
+        background-color: rgb(239, 123, 123);
+        cursor: not-allowed; // Thay đổi con trỏ khi nút bị khóa
+    }
+}
+
+.custom-table-product>:not(caption)>*>* {
+    padding: 0;
+
+    &:nth-child(1) {
+        width: 5%;
+    }
+
+    &:nth-child(2) {
+        width: 10%;
+    }
+
+    &:nth-child(3) {
+        width: 35%;
+    }
+
+    &:nth-child(4) {
+        width: 15%;
+    }
+
+    &:nth-child(5) {
+        width: 5%;
+    }
+}
+
+.custom-table-product thead tr th {
+    vertical-align: middle;
+    text-align: center;
+    height: 50px;
+    background-color: #a6c9cf;
+}
+
+.custom-table-product tbody tr td {
+    vertical-align: middle;
+    height: 50px;
+    text-align: center;
+    // background-color: #a6c9cf;
+    font-size: $font-normal;
+    background-color: #ffffff;
+}
+
+.custom-table-product-stock>:not(caption)>*>* {
+    padding: 0;
+
+    &:nth-child(1) {
+        width: 5%;
+    }
+
+    &:nth-child(2) {
+        width: 10%;
+    }
+
+    &:nth-child(3) {
+        width: 35%;
+    }
+
+    &:nth-child(4) {
+        width: 15%;
+    }
+
+    &:nth-child(5) {
+        width: 15%;
+    }
+
+    &:nth-child(6) {
+        width: 15%;
+    }
+}
+
+.custom-table-product-stock thead tr th {
+    vertical-align: middle;
+    text-align: center;
+    height: 50px;
+    background-color: #a6c9cf;
+}
+
+.custom-table-product-stock tbody tr td {
+    vertical-align: middle;
+    text-align: center;
+    // background-color: #a6c9cf;
+    font-size: $font-normal;
+    background-color: #ffffff;
+}
+
+.custom-table-product-stock-import>:not(caption)>*>* {
+    padding: 0;
+
+    &:nth-child(1) {
+        width: 8%;
+    }
+
+    &:nth-child(2) {
+        width: 25%;
+    }
+
+    &:nth-child(3) {
+        width: 15%;
+    }
+
+    &:nth-child(4) {
+        width: 10%;
+    }
+
+    &:nth-child(5) {
+        width: 10%;
+    }
+
+    &:nth-child(6) {
+        width: 10%;
+    }
+
+    &:nth-child(7) {
+        width: 15%;
+    }
+    &:nth-child(8) {
+        width: 5%;
+    }
+}
+
+.custom-table-product-stock-import thead tr th {
+    vertical-align: middle;
+    text-align: center;
+    height: 50px;
+    background-color: #a6c9cf;
+}
+
+.custom-table-product-stock-import tbody tr td {
+    vertical-align: middle;
+    height: 50px;
+    text-align: center;
+    // background-color: #a6c9cf;
+    font-size: $font-normal;
+    background-color: #ffffff;
+}
+.custom-table-product-stock-cs thead tr th {
+    vertical-align: middle;
+    text-align: center;
+    height: 40px;
+    background-color: #a6c9cf;
+}
+.custom-table-product-stock-cs>:not(caption)>*>* {
+    padding: 0;
+
+    &:nth-child(1) {
+        width: 30%;
+    }
+
+    &:nth-child(2) {
+        width: 10%;
+    }
+
+    &:nth-child(3) {
+        width: 15%;
+    }
+
+    &:nth-child(4) {
+        width: 15%;
+    }
+
+    &:nth-child(5) {
+        width: 15%;
+    }
+
+    &:nth-child(6) {
+        width: 15%;
+    }
+}
+.custom-table-product-stock-cs tbody tr td {
+    vertical-align: middle;
+    text-align: center;
+    height: 50px;
+    // background-color: #a6c9cf;
+    font-size: $font-normal;
+    background-color: #ffffff;
+}
+.avatar-dropdown {
+    text-decoration: none;
+    color: black;
+}
+
+.search-list-product {
+    border: 0.5px solid rgb(180, 173, 173);
+    border-radius: $border-radius-small;
+    width: 33%;
+    padding: 3px 10px 3px 10px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    
+}
+
+.input-search-list-product {
+    position: relative;
+    border: none;
+    flex: 1;
+
+    &:focus {
+        outline: none;
+    }
+
+}
+
+.border-err {
+    border: 1px solid $primary-color !important;
+}
+
+.btn-stock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px 5px 10px;
+    border-radius: $border-radius-small;
+    color: #d45b1a;
+    border: 1px solid #d45b1a;
+    background-color: white;
+
+    &:hover {
+        background-color: #d45b1a;
+        color: white;
+    }
+
+    &:active {
+        opacity: 0.5;
+    }
+}
+
+.color-stock {
+    display: flex;
+    align-items: center;
+    min-width: 90px;
+}
+.color-stock1 {
+    display: flex;
+    align-items: center;
+    min-width: 20px;
+}
+
+.truncate-text {
+    display: inline-block;
+    max-width: 20ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.sticky-header{
+    position: sticky;
+    top:-1px;
+}
+@keyframes shadowPulse {
+    0% {
+        box-shadow: 0 4px 8px rgba(247, 141, 83, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 16px rgba(247, 141, 83, 0.5); /* Tăng kích thước bóng */
+    }
+    100% {
+        box-shadow: 0 4px 8px rgba(247, 141, 83, 0.3);
+    }
+}
+.inActiveProduct{
+    border: none;
+    display: inline-block;
+    padding: 5px 10px 5px 10px;
+    color: #ffffff;
+    background-color: #f78d53;
+    box-shadow: 0 4px 8px rgba(247, 141, 83, 0.2);
+    border-radius: 5px;
+    transition: box-shadow 0.3s ease;
+    animation: shadowPulse 0.8s infinite;
+}
+.search-result{
+    position: absolute;
+    padding: 10px;
+    border-radius: 5px;
+    top:40px;
+    width: 100%; // Chiều rộng đầy đủ của search-list-product
+    left: 0; // Để đảm bảo nó bắt đầu từ bên trái của search-list-product
+    z-index: 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .search-result-cs{
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 0.5px solid rgb(241, 144, 144);
+        border-radius: 4px;
+        cursor: pointer;
+        &:hover{
+            background-color: #f78d53;
+            color: white;
+        }
+    }
+}

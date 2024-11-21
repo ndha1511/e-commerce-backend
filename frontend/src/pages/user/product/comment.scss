@@ -1,0 +1,100 @@
+@import '../../../variables.scss'; // Custom variables
+.btn-comment {
+    border: 0.2px solid rgb(219, 210, 210);
+
+    &:hover,
+    &.selected {
+        border: 0.2px solid $primary-color;
+        background-color: #f9f9f9; // Bạn có thể thêm màu nền khác khi chọn
+
+    }
+}
+.row-center {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.row-rt{
+    background-color: #fffbf8;
+    border: 1px solid #f9ede5;
+}
+.custom-image-container {
+    margin-right: -1110px; /* Điều chỉnh khoảng cách giữa các ảnh */
+    margin-left: -10px;
+}
+
+.img-cm {
+    width: 100px;
+    height: 100px;
+    padding: 0; /* Loại bỏ padding nếu có */
+    margin: 0; /* Loại bỏ margin nếu có */
+}
+.custom-background {
+    position: relative;
+    background-color: #e7e7e7; /* Màu nền của div */
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+
+.custom-background::before {
+    content: "";
+    position: absolute;
+    top: -5px; /* Vị trí của mũi tên so với div */
+    left: 5%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #d13c13; /* Màu của mũi tên giống với màu nền */
+}
+.input-reply{
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-bottom: 1px solid gray;
+    outline: none;
+    &:focus{
+        border-bottom: 1px solid #333;
+    }
+}
+.btn-cancel{
+    background-color: #fff;
+    color: #333;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    &:hover{
+        background-color: #efeaea;
+    }
+}
+.btn-send{
+    background-color: #d0cfcf99;
+    color: #333;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    &:hover{
+        background-color: #efeaea;
+    }
+}
+.btn-reply{
+    background-color: white;
+    color: black;
+    font-weight: 500;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    &:hover{
+        background-color: #efeaea;
+    }
+}
+
+

@@ -1,0 +1,237 @@
+.motion-message {
+    width: 270px;
+    height: 410px;
+    border-radius: 15px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+
+    i {
+        color: rgb(222, 104, 49);
+    }
+}
+
+.motion-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://images2.thanhnien.vn/528068263637045248/2023/4/23/edit-truc-anh-16822518118551137084698.png');
+    /* Thay 'your-image-url.jpg' bằng URL của ảnh */
+    background-size: cover;
+    /* Đảm bảo ảnh phủ toàn bộ khối */
+    background-position: center;
+    /* Canh giữa ảnh */
+    filter: blur(0.5px);
+    /* Làm mờ ảnh nền */
+    z-index: -1;
+    border-radius: 15px;
+    /* Bo tròn ảnh nền */
+    /* Đảm bảo ảnh nền không chồng lên nội dung */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+
+.title-motion-ms {
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding-bottom: 8px;
+
+    i {
+        font-size: 20px;
+        cursor: pointer;
+        margin-top: -10px;
+        transition: color 0.3s ease;
+
+        &:hover {
+            color: rgb(255, 0, 0);
+            transform: scale(1.2);
+        }
+    }
+
+}
+
+.title-motion-ms::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+    /* Điều chỉnh khoảng cách từ bên trái */
+    right: 8px;
+    /* Điều chỉnh khoảng cách từ bên phải */
+    height: 1px;
+    background-color: rgb(204, 181, 181);
+}
+
+.icon-message {
+    border: none;
+
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: red;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: rgba(255, 0, 0, 0.8);
+    }
+
+    i {
+        margin-top: 5px;
+        font-size: 30px;
+        color: white;
+    }
+}
+
+.footer-motion {
+    padding: 5px;
+    // border: 1px solid red;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-top: 1px solid rgb(204, 181, 181);
+
+    i {
+        font-size: 20px;
+        cursor: pointer;
+
+    }
+
+    input {
+        padding: 5px;
+        border-radius: 10px;
+        border: none;
+
+        &:hover {
+            border: 1px solid rgb(238, 94, 94);
+        }
+
+        &:focus {
+            border: 1px solid rgb(222, 104, 49);
+            outline: none;
+        }
+
+    }
+}
+
+.message-list {
+    // border: 1px solid blue;
+    padding: 10px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 10px;
+    padding-bottom: 15px;
+    // overflow: auto;
+
+}
+
+.message-text-sender {
+    display: flex; // Use flex to control positioning
+    flex-direction: column; // Arrange children vertically
+
+    span {
+        color: white;
+        background-color: rgba(1, 11, 5, 0.785);
+        padding: 8px 12px;
+        border-radius: 10px 0 10px 10px;
+        word-wrap: break-word;
+    }
+
+    .img-message-sender {
+        width: 70%;
+        align-self: flex-end; // Align the image to the end
+        background-color: transparent;
+    }
+}
+
+.message-text-receiver {
+    display: flex; // Use flex to control positioning
+    flex-direction: column; // Arrange children vertically
+
+    span {
+        color: #333;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 8px 12px;
+        border-radius: 0 10px 10px 10px;
+        word-wrap: break-word;
+    }
+
+    .img-message-sender {
+        width: 70%;
+        align-self: flex-start; // Align the image to the end
+        background-color: transparent;
+    }
+}
+
+/* Tin nhắn của người gửi */
+.message-sender {
+    align-self: flex-end;
+    /* Căn tin nhắn bên phải */
+    border-radius: 10px 0 10px 10px;
+    max-width: 70%;
+
+}
+
+/* Tin nhắn của người nhận */
+.message-receiver {
+    align-self: flex-start;
+    /* Căn tin nhắn bên trái */
+    border-radius: 0 10px 10px 10px;
+    max-width: 70%;
+}
+
+.initial-message {
+    position: absolute;
+    bottom: 60px;
+    right: 15px;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.15);
+
+    i {
+        font-size: 18px;
+        margin-top: 3px;
+    }
+
+    &:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.message-time {
+    font-size: 10px;
+    color: rgb(156, 148, 148);
+    display: flex;
+    gap:3px;
+    align-items: center;
+    margin-right: -5px;
+
+}
+
+.small-spinner {
+    width: 10px;
+    height: 10px;
+    font-size: 2px;
+}

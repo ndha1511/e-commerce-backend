@@ -1,0 +1,100 @@
+@import '../../../variables.scss';
+
+.search-category-modal {
+    border: 1px solid rgb(180, 173, 173);
+    border-radius: $border-radius-small;
+    width: 33%;
+    padding: 3px 10px 3px 10px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    background-color: white
+}
+
+.input-search-category-modal {
+    border: none;
+    flex: 1;
+
+    &:focus {
+        // outline: 1px solid $info-color
+        outline: none;
+    }
+
+}
+
+.btn-category-list {
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgb(224, 220, 220);
+        color: $primary-color;
+    }
+
+    span {
+        font-size: 14px;
+        font-weight: 400;
+        // transition: color 0.3s, font-weight 0.3s; // Thêm hiệu ứng chuyển mượt mà
+    }
+
+    &.selected span {
+        color: $primary-color; // Màu chữ đỏ khi được chọn
+        font-weight: 500; // In đậm khi được chọn
+    }
+
+    &:active {
+        color: $primary-color;
+        font-weight: 600;
+    }
+
+}
+
+.custom-row>* {
+    /* Ghi đè các thuộc tính của các phần tử con bên trong Row này */
+    margin: 0;
+    /* Ví dụ: chỉnh lại margin */
+    padding: 0px;
+    /* Ví dụ: chỉnh lại padding */
+    // flex: 1;
+    /* Đảm bảo các cột chiếm toàn bộ không gian nếu cần */
+}
+
+.col-modal-category {
+    border-right: 1px solid rgb(225, 218, 218);
+    border-top-left-radius: $border-radius-small;
+}
+
+.btn-category-modal-cancel{
+    width: 100px;
+    height: 40px;
+    border-radius: $border-radius-small;
+    background-color: white;
+    margin-right: 15px;
+    border: 0.5px solid rgb(225, 218, 218);
+
+    &:hover{
+        background-color: rgb(231, 233, 235);
+    }
+    &:active{
+        background-color: rgb(211, 214, 216);
+    }
+}
+.btn-category-modal-active{
+    width: 100px;
+    height: 40px;
+    border-radius: $border-radius-small;
+    background-color: #ee4d2d;
+    border: 0.5px solid rgb(225, 218, 218);
+    color:white;
+    &:hover{
+        background-color: #ee3b18;
+        color:white;
+    }
+    &:active{
+        background-color: #f2320c;
+        color:white;
+    }
+    &:disabled{
+        background-color: #ee7158;
+        cursor: not-allowed;
+    }
+}

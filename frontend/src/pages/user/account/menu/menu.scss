@@ -1,0 +1,13 @@
+@import '../../../../variables.scss';
+
+.item-hover {
+    &:hover {
+        .color-item {
+            color: $primary-color;
+        }
+    }
+}
+
+.item-active {
+    color: $primary-color;
+}

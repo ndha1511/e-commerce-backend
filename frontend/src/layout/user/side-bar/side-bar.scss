@@ -1,0 +1,22 @@
+@import '../../../variables.scss';
+
+.side-bar-container {
+    height: 35px;
+    background-color: #EBEBEB;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.side-bar-item {
+    cursor: pointer;
+    &:hover {
+        color: $primary-color
+    }
+}
+
+.side-bar-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

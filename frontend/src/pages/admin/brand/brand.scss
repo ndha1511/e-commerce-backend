@@ -1,0 +1,17 @@
+.brand-shadow {
+    transition: box-shadow 0.3s ease; /* Hiệu ứng chuyển đổi trong 0.3 giây */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng ban đầu */
+    border-radius: 5px;
+}
+
+.brand-shadow:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Đổ bóng khi hover */
+}
+.brand-card-icons {
+    display: none;
+    font-size: 500px;
+}
+
+.brand-card:hover .brand-card-icons {
+    display: flex;
+}

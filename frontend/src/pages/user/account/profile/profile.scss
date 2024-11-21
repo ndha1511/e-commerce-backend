@@ -1,0 +1,32 @@
+@import '../../../../variables.scss';
+
+.profile-container {
+    margin: auto;
+    padding: 20px;
+    min-height: 520px;
+    background-color: #fff;
+    border-radius: $border-radius-small;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+
+.profile-container form {
+    margin-top: 20px;
+    padding-left: 40px;
+}
+
+.profile-content {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+
+@media (max-width: 768px) {
+    .profile-container form {
+        padding-left: 0;
+    }
+
+    .profile-content {
+        flex-direction: column-reverse;
+    }
+}

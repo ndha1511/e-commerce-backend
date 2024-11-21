@@ -1,0 +1,357 @@
+// Importing external styles
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+@import 'variables.scss'; // Custom variables
+@import "react-image-gallery/styles/scss/image-gallery.scss";
+@import 'simplebar-react/dist/simplebar.min.css';
+
+// Global styles and custom classes
+body,
+pre {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", system-ui;
+  font-size: $font-normal;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 500;
+}
+span{
+  color: #333;
+}
+.none-select{
+  user-select: none;
+} 
+.custom-tooltip .tooltip-inner{
+  background-color: red !important; /* Màu nền đỏ */
+  color: white; /* Màu chữ trắng */
+  border-radius: 4px; /* Tùy chọn: bo góc */
+}
+/* Để thêm hiệu ứng bo góc cho mũi tên */
+.custom-tooltip .tooltip-arrow::before {
+  content: '';
+  position: absolute;
+  border-width: 5px; /* Độ dày của mũi tên */
+  border-style: solid;
+  border-color: transparent transparent red transparent; /* Màu mũi tên */
+  
+}
+.custom-tooltip1 .tooltip-arrow::before {
+  content: '';
+  position: absolute;
+  border-width: 5px; /* Độ dày của mũi tên */
+  border-style: solid;
+  top:50%;
+  right: 1px;
+  border-color: transparent red transparent transparent;
+  transform: translateY(-50%);
+}
+.tooltip-inner {
+  max-width: 1000px !important;
+  background-color: $primary-color !important;
+}
+.no-shadow {
+  box-shadow: none !important;
+}
+
+.simplebar-scrollbar::before {
+  background-color: #ff6347 !important; 
+  border-radius: 10px; 
+  width: 8px; 
+  transition: background-color 0.3s ease; 
+}
+
+// ======================== text ===============================
+
+.primary {
+  color: $primary-color;
+}
+
+.secondary {
+  color: $secondary-color;
+}
+
+.warning {
+  color: $warning-color;
+}
+
+
+.muted {
+  color: $muted-color;
+}
+.text-light-cs {
+  color: rgb(129, 121, 121)
+}
+.success {
+  color: $success-color;
+}
+
+.text-blur {
+  color: rgba(0, 0, 0, 0.5)
+}
+.text-orange{
+  color: #f3a877;
+}
+.text-small {
+  font-size: $font-small;
+}
+
+.text-normal {
+  font-size: $font-normal;
+}
+
+.text-medium {
+  font-size: $font-medium;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.text-wm {
+  font-weight: 500;
+}
+
+.text-large {
+  font-size: $font-large;
+}
+
+.text-line-through {
+  text-decoration: line-through;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+// ================================================================
+
+// ======================== background ============================
+
+.background-primary {
+  background-color: $primary-color;
+  color: #fff;
+}
+
+.background-secondary {
+  background-color: $secondary-color;
+  color: #fff;
+}
+
+.background-warning {
+  background-color: $warning-color;
+  color: #fff;
+}
+
+.background-muted {
+  background-color: $muted-color;
+  color: black;
+}
+
+.bg-main {
+
+  background-color: rgb(246, 246, 246);
+}
+
+// ================================================================
+
+// ======================== border ================================
+
+.border-color-secondary {
+  border: 1px solid $secondary-color;
+  border-radius: $border-radius-small;
+}
+
+.border-color-primary {
+  border: 1px solid $primary-color;
+  border-radius: $border-radius-small;
+}
+.bd-red{
+  border: 0.5px solid red;
+}
+.border-radius-small {
+  border-radius: $border-radius-small;
+}
+
+.border-radius-medium {
+  border-radius: $border-radius-medium;
+}
+
+.bd-tl-radius-sm {
+  border-top-left-radius: $border-radius-small;
+}
+
+.bd-tr-radius-sm {
+  border-top-right-radius: $border-radius-small;
+}
+
+// ================================================================
+
+// ======================== tag a =================================
+
+.a-disable-default {
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+}
+
+// ================================================================
+
+// ========================= button ===============================
+
+.button-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 5px;
+  padding: 5px 15px 5px 15px;
+  border-radius: $border-radius-small;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.button-hover {
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.btn-pointer {
+  cursor: pointer;
+}
+
+.btn-ir {
+  width: 20px;
+  height: 20px;
+}
+
+// ================================================================
+
+// ========================= input ================================
+
+.hidden-button-file[type="file"] {
+  display: none;
+}
+
+// ================================================================
+
+// ========================= ul ===================================
+
+.disable-dot {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+// ================================================================
+
+
+@media (max-width: 768px) {
+  body {
+    font-size: $font-small;
+  }
+
+  .text-medium {
+    font-size: $font-normal;
+  }
+
+  .text-small {
+    font-size: 8px;
+  }
+}
+
+
+pre {
+
+  white-space: pre;
+  /* Đảm bảo giữ nguyên định dạng dòng và khoảng trắng */
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.loading-container {
+  position: relative;
+}
+
+.loading-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.image-gallery-content .image-gallery-slide .image-gallery-image {
+  max-height: calc(100vh - 120px);
+}
+
+.no-spinner {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+.no-spinner::-webkit-inner-spin-button, 
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Chrome, Safari, Edge */
+  margin: 0; 
+}
+// ================================================================= page =================================================================
+.pagination{
+  margin-bottom: 0;
+}
+.pagination .active > .page-link {
+  box-shadow: none !important;
+  background-color:  rgb(241, 124, 61); // Màu nền
+  color: white; // Màu chữ
+  border-color:  rgb(241, 122, 58); // Màu viền
+
+  &:hover {
+      background-color:  rgb(238, 111, 43); // Màu nền khi hover
+      color: white; // Màu chữ khi hover
+  }
+}
+.page-link{
+  color: rgb(241, 121, 56);
+
+  &:hover{
+    color: rgb(241, 121, 56);
+  }
+  &:active{
+    box-shadow: none !important;
+  }
+}
+.page-item {
+  margin-bottom: 0;
+}
+.pointer-events-none {
+  pointer-events: none;
+  user-select: none;
+}
+
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  row-gap: 10px;
+  column-gap: 10px;
+  justify-items: center;
+}
+
+@media (max-width: 768px) {
+  .products {
+      grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+.shadow-all {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
+}
+
+.shadow-all:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+
+}

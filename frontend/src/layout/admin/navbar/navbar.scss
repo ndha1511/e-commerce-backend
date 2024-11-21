@@ -1,0 +1,145 @@
+@import '../../../variables.scss';
+
+.menu-navbar {
+    cursor: pointer;
+    span{
+        color: rgb(82, 81, 81);
+        transition: color 0.3s ease;
+        font-weight: 500;
+        i{
+            font-size: 14px;
+         
+        }
+    }
+    &:hover {
+        color: $primary-color;
+
+        .menu-child {
+            pointer-events: none;
+        }
+    }
+
+    span:hover {
+        color: rgb(235, 105, 35);
+
+        .menu-child {
+            pointer-events: none;
+        }
+    }
+
+    .menu-child {
+        pointer-events: all;
+    }
+}
+.menu-navbar-active{
+    cursor: pointer;
+    border-left: 4px solid rgb(235, 105, 35);
+    background-color: #f5f1ee;
+    span{
+        color:rgb(235, 105, 35);
+        
+    }
+}
+.custom-row-menu>* {
+
+    margin: 0;
+    /* Ví dụ: chỉnh lại margin */
+    padding: 0px;
+    display: flex;
+    align-items: center;
+  
+}
+.search-category-admin {
+    border: 1px solid rgb(180, 173, 173);
+    border-radius: $border-radius-small;
+    width: 33%;
+    height: 40px;
+    padding: 3px 10px 3px 10px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white
+}
+
+.input-search-category-admin {
+    border: none;
+    flex: 1;
+
+    &:focus {
+        // outline: 1px solid $info-color
+        outline: none;
+    }
+
+}
+.menu-name-dashboard {
+    font-size: 14px;
+}
+
+.menu-name-child {
+    font-size: 12px;
+}
+.custom-table-category>:not(caption)>*>* {
+    padding: 0;
+    &:nth-child(1){
+        width: 15%;
+    }
+    &:nth-child(2) {
+        width: 25%;
+    }
+
+    &:nth-child(3),
+    &:nth-child(4) {
+        width: 12%;
+    }
+    &:nth-child(5){
+        width: 12.5%;
+    }
+    &:nth-child(6){
+        width: 5%;
+    }
+}
+
+.custom-table-category thead tr th {
+    vertical-align: middle;
+    text-align: center;
+    height: 50px;
+    background-color: #a6c9cf;
+}
+.custom-table-category tbody tr td {
+    vertical-align: middle;
+    padding: 10px;
+    text-align: center;
+    // background-color: #a6c9cf;
+    font-size: $font-normal;
+    background-color: #ffffff;  
+}
+.custom-table-category-cs thead tr th {
+    vertical-align: middle;
+    height: 30px;
+    background-color: #a6c9cf;
+}
+.custom-background-category {
+    position: relative;
+    background-color: #e7e7e7; /* Màu nền của div */
+    // padding: 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+
+.custom-background-category::before {
+    content: "";
+    position: absolute;
+    top: -10px; /* Vị trí của mũi tên so với div */
+    left: 49.1%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #d13c13; /* Màu của mũi tên giống với màu nền */
+}
+.title-navbar-top{
+    height: 64px;
+    background-color: rgb(241, 122, 58);
+}

@@ -1,0 +1,47 @@
+.menu-cate-user{
+    &:hover{
+        *{
+            color: red;
+        }
+    }
+    &:active{
+        *{
+            color:red;
+        }
+    }
+}
+.selected-cate-user * {
+    color: red;
+}
+.option-filter-user{
+    background-color: rgb(245, 243, 243);
+}
+.btn-filter-cate-user{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border:none;
+    padding: 10px 15px 10px 15px;
+    color: black;
+    border-radius: 5px;
+    background-color: white;
+    &:hover{
+        color: red;
+    }
+}
+.btn-filter-cate-user-active{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border:none;
+    padding: 10px 15px 10px 15px;
+    color: white;
+    background-color: red;
+    border-radius: 5px;
+}
+.err-cate {
+    border: 0.5px solid red;
+    *{
+        color: red;
+    }
+}

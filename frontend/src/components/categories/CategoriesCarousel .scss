@@ -1,0 +1,68 @@
+.categories-carousel {
+  max-width: 100%;
+  padding: 20px 0px 20px 0px;
+}
+
+.category-item {
+  width: 120px;
+  height: 150px;
+  border: 0.2px solid rgb(234, 230, 230);
+  cursor: pointer;
+}
+
+.items-categories {
+  max-height: 300px;
+}
+
+.category-icon {
+  width: 84px;
+  height: 88px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.title-categories {
+  padding: 10px 0px 10px 0px;
+
+  span {
+    font-size: 16px;
+    color: rgb(111, 108, 108);
+    font-family: 'roboto';
+    font-weight: 500;
+    // margin-left: 47px;
+
+  }
+}
+
+.carousel-control-next {
+  /* Màu nền tùy chỉnh */
+  border-radius: 50%;
+  /* Bo tròn nút */
+  width: 40px;
+  height: 40px;
+  top: 50%;
+  /* Căn giữa nút theo chiều dọc */
+  transform: translateY(-50%);
+}
+
+.carousel-control-next-icon {
+  filter: invert(1);
+  /* Đổi màu biểu tượng nếu cần */
+}
+
+
+.carousel-control-prev {
+  /* Màu nền tùy chỉnh */
+  border-radius: 50%;
+  /* Bo tròn nút */
+  width: 40px;
+  height: 40px;
+  top: 50%;
+  /* Căn giữa nút theo chiều dọc */
+  transform: translateY(-50%);
+}
+
+.carousel-control-prev-icon {
+  filter: invert(1);
+  /* Đổi màu biểu tượng nếu cần */
+}
