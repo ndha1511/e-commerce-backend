@@ -25,7 +25,7 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
     @Override
     public Category save(Category category) {
         long count = categoryRepository.count();
-        count++;
+        count +=2;
         category.setNumId(count);
         if(category.getParentId() != null) {
             Category parent = categoryRepository.findById(category.getParentId())
@@ -77,6 +77,11 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
     public Category findByUrl(String url) throws DataNotFoundException {
         return categoryRepository.findByUrlPath(url)
                 .orElseThrow(() -> new DataNotFoundException("category not found"));
+    }
+
+    @Override
+    public List<Category> findAllCategories(List<String> categoryId) {
+        return categoryRepository.findAllById(categoryId);
     }
 
     private List<CategoryResponse> getSubCategories(String parentId) {

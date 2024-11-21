@@ -10,6 +10,7 @@ import com.code.ecommercebackend.services.brand.BrandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class BrandController {
     private final BrandService brandService;
     private final BrandMapper brandMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Response createBrand(@Valid @ModelAttribute CreateBrandRequest createBrandRequest)
     throws Exception {
@@ -30,6 +32,7 @@ public class BrandController {
                 brandService.save(brand)
         );
     }
+
     @GetMapping
     public Response getBrands(@RequestParam(defaultValue = "1") int pageNo,
                                   @RequestParam(defaultValue = "40") int size,

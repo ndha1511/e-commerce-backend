@@ -10,14 +10,13 @@ import com.code.ecommercebackend.dtos.response.address.ProvinceResponse;
 import com.code.ecommercebackend.dtos.response.address.WardResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.address.AddressMapper;
-import com.code.ecommercebackend.mappers.address.UserAddressMapper;
 import com.code.ecommercebackend.models.Address;
-import com.code.ecommercebackend.models.UserAddress;
 import com.code.ecommercebackend.services.address.AddressService;
 import com.code.ecommercebackend.services.address.RestAddressService;
 import com.code.ecommercebackend.services.address.UserAddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.List;
 public class AddressController {
     private final RestAddressService restAddressService;
     private final UserAddressService userAddressService;
-    private final UserAddressMapper userAddressMapper;
     private final AddressMapper addressMapper;
     private final AddressService addressService;
 
@@ -62,6 +60,7 @@ public class AddressController {
     }
 
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{userId}")
     public Response findAddressesByUserId(@PathVariable String userId) {
         return new ResponseSuccess<>(
@@ -71,6 +70,7 @@ public class AddressController {
         );
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add-user-address")
     public Response addUserAddress(@RequestBody UserAddressDto userAddressDto) throws DataNotFoundException {
         return new ResponseSuccess<>(
@@ -79,6 +79,7 @@ public class AddressController {
                 userAddressService.saveUserAddress(userAddressDto)
         );
     }
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/update-user-address/{id}")
     public Response upUserAddress(@RequestBody UserAddressDto userAddressDto, @PathVariable String id ) throws DataNotFoundException {
         return new ResponseSuccess<>(
@@ -87,8 +88,10 @@ public class AddressController {
                 userAddressService.updateAddress(userAddressDto,id)
         );
     }
+
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete-user-address/{id}")
-    public Response removeUserAddress( @PathVariable String id ) throws DataNotFoundException {
+    public Response removeUserAddress( @PathVariable String id ) {
         userAddressService.deleteById(id);
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
@@ -97,8 +100,9 @@ public class AddressController {
         );
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public Response addAddress(@RequestBody AddressDto addressDto) throws DataNotFoundException {
+    public Response addAddress(@RequestBody AddressDto addressDto) {
         Address address = addressMapper.toAddress(addressDto);
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),

@@ -1,9 +1,12 @@
 package com.code.ecommercebackend.services.message;
 
 import com.code.ecommercebackend.dtos.request.message.MessageKafka;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
+import com.code.ecommercebackend.models.Conversation;
 import com.code.ecommercebackend.models.Message;
 import com.code.ecommercebackend.models.enums.MessageStatus;
 import com.code.ecommercebackend.repositories.MessageRepository;
+import com.code.ecommercebackend.repositories.RoomRepository;
 import com.code.ecommercebackend.utils.S3Upload;
 import com.code.ecommercebackend.utils.SocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,9 +25,10 @@ public class MessageListener {
     private final ObjectMapper objectMapper;
     private final MessageRepository messageRepository;
     private final SocketHandler socketHandler;
+    private final RoomRepository roomRepository;
 
     @KafkaListener(topics = "send-file-topic", groupId = "send-file-topic")
-    public void uploadFileAsync(ConsumerRecord<String, byte[]> record) throws IOException {
+    public void uploadFileAsync(ConsumerRecord<String, byte[]> record) throws IOException, DataNotFoundException {
         MessageKafka messageKafka = getMessage(record);
         Message message = messageKafka.getMessage();
         byte[] fileResource = messageKafka.getFile();
@@ -32,6 +36,14 @@ public class MessageListener {
         message.setContent(s3Upload.uploadFile(fileResource, "abc"));
         message.setMessageStatus(MessageStatus.SENT);
         messageRepository.save(message);
+        Conversation roomReceiver =roomRepository.findBySenderAndReceiver(message.getReceiver(), message.getSender())
+                .orElseThrow(()-> new DataNotFoundException("There is no message with that sender and receiver"));
+        roomReceiver.setLastMessageSender(message.getMessageType());
+        Conversation roomSender =roomRepository.findBySenderAndReceiver(message.getSender(), message.getReceiver())
+                .orElseThrow(()-> new DataNotFoundException("There is no message with that sender and receiver"));
+        roomSender.setLastMessageSender(message.getMessageType());
+        roomRepository.save(roomReceiver);
+        roomRepository.save(roomSender);
         socketHandler.sendToSocket(message);
         socketHandler.sendToSocketSender(message);
     }

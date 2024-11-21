@@ -39,6 +39,14 @@ services:
     networks:
       - app-network
 
+  recommend-system:
+    container_name: recommend-system
+    image: hoanganh1511/recommend-system:1.0
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge

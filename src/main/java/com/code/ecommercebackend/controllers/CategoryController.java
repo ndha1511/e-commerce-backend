@@ -9,6 +9,7 @@ import com.code.ecommercebackend.services.category.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Response createCategory(@Valid @ModelAttribute final CreateCategoryRequest categoryDto)
     throws Exception {
@@ -59,6 +61,18 @@ public class CategoryController {
                 categoryService.findCategoryByUrlRoot(url)
         );
     }
+
+    @GetMapping("/list")
+    public Response getListCategory(@RequestParam String categoryId) {
+        List<String> categoryIdList = Arrays.stream(categoryId.split(";")).toList();
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                categoryService.findAllCategories(categoryIdList)
+        );
+    }
+
+
 
 
 

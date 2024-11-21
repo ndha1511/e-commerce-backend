@@ -8,6 +8,7 @@ import com.code.ecommercebackend.services.voucher.VoucherService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class VoucherController {
     private final VoucherService voucherService;
     private final VoucherMapper voucherMapper;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PostMapping
     public Response createVoucher(@Valid @RequestBody VoucherRequest voucherRequest) {
         return new ResponseSuccess<>(
@@ -28,6 +30,7 @@ public class VoucherController {
         );
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{userId}")
     public Response getVoucherById(@PathVariable String userId,
                                    @RequestParam(required = false, defaultValue = "1") int pageNo,

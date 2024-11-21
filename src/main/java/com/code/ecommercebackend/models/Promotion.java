@@ -2,6 +2,7 @@ package com.code.ecommercebackend.models;
 
 import com.code.ecommercebackend.models.enums.DiscountType;
 import com.code.ecommercebackend.models.enums.LoopState;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +27,10 @@ public class Promotion extends BaseModel {
     @Field(name = "discount_value")
     private Double discountValue;
     @Field(name = "start_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime startDate;
     @Field(name = "end_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime endDate;
     @Field(name = "loop_state")
     private LoopState loopState;

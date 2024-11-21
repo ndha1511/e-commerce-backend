@@ -52,7 +52,11 @@ public class VariantServiceImpl extends BaseServiceImpl<Variant, String> impleme
         if(attr2 != null) {
             variant = variantRepository
                     .findByProductIdAndAttributeValue1AndAttributeValue2(productId, attr1, attr2)
-                    .orElseThrow(() -> new DataNotFoundException("variant not found"));
+                    .orElse(null);
+            if(variant == null) {
+                variant = variantRepository.findByProductIdAndAttributeValue1AndAttributeValue2(productId, attr2, attr1)
+                        .orElseThrow(() -> new DataNotFoundException("variant not found"));
+            }
         } else {
             variant = variantRepository
                     .findByProductIdAndAttributeValue1(productId, attr1)

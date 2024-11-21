@@ -11,9 +11,12 @@ import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.models.Product;
 import com.code.ecommercebackend.services.attribute.AttributeService;
+import com.code.ecommercebackend.services.auth.JwtService;
 import com.code.ecommercebackend.services.category.CategoryService;
 import com.code.ecommercebackend.services.excel.ExcelService;
+import com.code.ecommercebackend.services.historySearch.HistorySearchService;
 import com.code.ecommercebackend.services.product.ProductService;
+import com.code.ecommercebackend.utils.CookieHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
@@ -39,6 +43,9 @@ public class ProductController {
     private final AttributeService attributeService;
     private final ExcelService excelService;
     private final CategoryService categoryService;
+    private final HistorySearchService historySearchService;
+    private final CookieHandler cookieHandler;
+    private final JwtService jwtService;
 
     @GetMapping
     public Response getProducts(
@@ -60,6 +67,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PostMapping
     public Response createProduct(@Valid @ModelAttribute CreateProductRequest createProductRequest)
     throws Exception {
@@ -75,6 +83,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping("/attributes")
     public Response createProductAttributes(@Valid @ModelAttribute CreateAttributeRequest createAttributeRequest)
         throws Exception {
@@ -112,6 +121,7 @@ public class ProductController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/download-sample-excel")
     public ResponseEntity<InputStreamResource> downloadSampleExcel(
             @RequestParam String categoryId
@@ -148,7 +158,34 @@ public class ProductController {
 
     }
 
+    @GetMapping("/key-word/{keyWord}")
+    public Response getProductByKeyWord(@PathVariable String keyWord,
+                                        @RequestParam(defaultValue = "1") int page,
+                                        @RequestParam(defaultValue = "40") int size,
+                                        @RequestParam(required = false) String[] search,
+                                        @RequestParam(required = false) String[] sort,
+                                        HttpServletRequest request) {
+        List<String> searchList = new ArrayList<>();
+        searchList.add("searchNames:" + keyWord);
+        if(search != null) {
+            searchList.addAll(Arrays.asList(search));
+        }
+        search = searchList.toArray(new String[0]);
+        String userId = "";
+        String token = cookieHandler.getCookie(request, "refresh_token");
+        if(token != null) {
+            userId = jwtService.extractUsername(token);
+        }
+        historySearchService.saveHistorySearch(userId, keyWord);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                productService.getPageProduct(page, size, search, sort)
+        );
 
+    }
+
+//    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PostMapping("/import-excel")
     public Response importExcel(@ModelAttribute ImportExcelRequest importExcelRequest) throws Exception {
         excelService.importProductExcel(importExcelRequest.getFile());

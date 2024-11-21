@@ -12,6 +12,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Document(collection = "products")
 @Getter
@@ -50,16 +51,16 @@ public class Product extends BaseModel {
 
 
     public void createUrlPath() {
-        this.urlPath = this.productName.toLowerCase().trim().replaceAll("[ ,.\\\\]+", "-");;
+        this.urlPath = this.productName.toLowerCase().trim().replaceAll("[ |&,/.\\\\]+", "-");;
     }
 
     public void normalizerName() {
         List<String> namesNormalize = new ArrayList<>();
-        String normalize = this.productName.replaceAll("[^a-zA-Z0-9\\s]", "").trim();
+        namesNormalize.add(this.productName.toLowerCase());
+        String temp = Normalizer.normalize(this.productName, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        String normalize = pattern.matcher(temp).replaceAll("").toLowerCase();
         namesNormalize.add(normalize);
-        String normalizedText = Normalizer.normalize(normalize, Normalizer.Form.NFD);
-        String noAccentText = normalizedText.replaceAll("\\p{M}", "");
-        namesNormalize.add(noAccentText);
         this.searchNames = namesNormalize;
 
     }

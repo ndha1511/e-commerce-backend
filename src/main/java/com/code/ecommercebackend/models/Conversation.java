@@ -24,7 +24,6 @@ public class Conversation extends BaseModel {
     @Field(name = "send_date")
     private LocalDateTime sendDate;
     private  Object lastMessageSender;
-    private  Object lastMessageReceiver;
     private int count;
     private String avatarSender;
     private String avatarReceiver;

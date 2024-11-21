@@ -58,7 +58,7 @@ public class ExcelServiceImpl implements ExcelService {
         row1.setHeightInPoints(60);
         Row row2 = sheet.createRow(2);
         row2.setHeightInPoints(60);
-        
+
 
         String[] headers = {
                 "Ngành hàng", "Tên sản phẩm", "Mô tả sản phẩm", "Mã sản phẩm",
@@ -165,12 +165,12 @@ public class ExcelServiceImpl implements ExcelService {
         Workbook workbook = getWorkbook(file);
         Sheet sheet = workbook.getSheetAt(0);
         List<ProductExcel> productExcelList = new ArrayList<>();
-        for(int i = 3; i < sheet.getPhysicalNumberOfRows(); i++) {
+        for (int i = 3; i < sheet.getPhysicalNumberOfRows(); i++) {
             Row row = sheet.getRow(i);
             ProductExcel productExcel = new ProductExcel();
-            for(int j = 0; j < row.getLastCellNum(); j++) {
+            for (int j = 0; j < row.getLastCellNum(); j++) {
                 Cell cell = row.getCell(j);
-                if(cell == null) continue;
+                if (cell == null) continue;
                 switch (cell.getCellType()) {
                     case Cell.CELL_TYPE_STRING:
                         setProductValue(productExcelList, productExcel, j, i, cell.getStringCellValue());
@@ -182,7 +182,7 @@ public class ExcelServiceImpl implements ExcelService {
                         break;
                 }
             }
-            if(!productExcelList.contains(productExcel)) {
+            if (!productExcelList.contains(productExcel)) {
                 productExcelList.add(productExcel);
             } else {
                 int index = productExcelList.indexOf(productExcel);
@@ -192,14 +192,16 @@ public class ExcelServiceImpl implements ExcelService {
         Set<String> inventoryIds = new HashSet<>();
         double totalPrice = 0;
         int totalQuantity = 0;
-        for(ProductExcel productExcel : productExcelList) {
+        for (ProductExcel productExcel : productExcelList) {
             Product product = productMapper.toProductFromProductExcel(productExcel);
             product.createUrlPath();
+            product.normalizerName();
+            product.setNumId(productRepository.count() + 1);
             productRepository.save(product);
             List<ProductAttribute> attributes = productExcel.getAttributes()
                     .stream().peek(attr -> attr.setProductId(product.getId())).toList();
             productAttributeRepository.saveAll(attributes);
-            for(VariantExcel variantExcel : productExcel.getVariants()) {
+            for (VariantExcel variantExcel : productExcel.getVariants()) {
                 Variant variant = new Variant();
                 variant.setProduct(product);
                 variant.setPrice(variantExcel.getPrice());
@@ -225,6 +227,7 @@ public class ExcelServiceImpl implements ExcelService {
         purchaseOrder.setOrderDate(LocalDateTime.now());
         purchaseOrder.setInventories(inventoryIds);
         purchaseOrder.setTotalPrice(totalPrice);
+        purchaseOrder.setImportStaffName("admin");
         purchaseOrder.setTotalQuantity(totalQuantity);
         purchaseOrderRepository.save(purchaseOrder);
 
@@ -246,17 +249,26 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private void setProductValue(
-                                 List<ProductExcel> productExcelList,
-                                 ProductExcel productExcel,
-                                 int cellIdx,
-                                 int rowIdx,
-                                 Object value) throws DataNotFoundException {
+            List<ProductExcel> productExcelList,
+            ProductExcel productExcel,
+            int cellIdx,
+            int rowIdx,
+            Object value) throws DataNotFoundException {
         List<ProductAttribute> attributes;
         List<AttributeValue> attributeValues;
         List<VariantExcel> variants;
         AttributeValue attributeValue;
         List<String> images;
         VariantExcel variant;
+        int rowMinus = 0;
+        if(!productExcelList.isEmpty() && productExcelList.size() >= 2) {
+            for (int i = 0; i < productExcelList.size() - 1; i++) {
+                ProductExcel productExcel1 = productExcelList.get(i);
+                if(productExcel1.getVariants() != null) {
+                    rowMinus += productExcel1.getVariants().size();
+                }
+            }
+        }
         switch (cellIdx) {
             // category
             case 0:
@@ -267,7 +279,7 @@ public class ExcelServiceImpl implements ExcelService {
                 String parentId = null;
                 for (String categoryName : categoryNames) {
                     Category category;
-                    if(parentId == null) {
+                    if (parentId == null) {
                         category = categoryRepository.findByCategoryName(categoryName)
                                 .orElseThrow(() -> new DataNotFoundException("category not found"));
                     } else {
@@ -329,12 +341,12 @@ public class ExcelServiceImpl implements ExcelService {
                 }
                 attributeValue = new AttributeValue();
                 attributeValue.setValue(attributeValueStr);
-                if(!attributeValues.contains(attributeValue)) {
+                if (!attributeValues.contains(attributeValue)) {
                     attributeValues.add(attributeValue);
                 }
                 attributes.get(0).setAttributeValues(attributeValues);
                 variants = productExcel.getVariants();
-                if(variants == null) {
+                if (variants == null) {
                     variants = new ArrayList<>();
                 }
                 variant = new VariantExcel();
@@ -345,13 +357,13 @@ public class ExcelServiceImpl implements ExcelService {
 
             // attribute 1 image
             case 6:
-                if(value != null) {
+                if (value != null) {
                     attributes = productExcel.getAttributes();
                     attributeValues = attributes.get(0).getAttributeValues();
                     Optional<AttributeValue> attrValue = attributeValues.stream()
                             .filter(v -> (v.getImage() != null && v.getImage().equals(value)))
                             .findFirst();
-                    if(attrValue.isEmpty()) {
+                    if (attrValue.isEmpty()) {
                         attributeValues.get(attributeValues.size() - 1).setImage((String) value);
                     }
                     attributes.get(0).setAttributeValues(attributeValues);
@@ -360,11 +372,11 @@ public class ExcelServiceImpl implements ExcelService {
 
             // attribute name 2
             case 7:
-                if(value != null) {
+                if (value != null) {
                     attributes = productExcel.getAttributes();
-                    if(attributes.size() < 2) {
+                    if (attributes.size() < 2) {
                         ProductAttribute productAttribute = new ProductAttribute();
-                        productAttribute.setAttributeName((String) value );
+                        productAttribute.setAttributeName((String) value);
                         attributes.add(productAttribute);
                         productExcel.setAttributes(attributes);
 
@@ -374,44 +386,62 @@ public class ExcelServiceImpl implements ExcelService {
 
             // attribute 2 value
             case 8:
-                attributes = productExcel.getAttributes();
-                if(attributes.size() == 2) {
-                    if(value == null) throw new DataNotFoundException("attribute name 2 value must be not null");
-                    attributeValues = attributes.get(1).getAttributeValues();
-                    if(attributeValues == null) {
-                        attributeValues = new ArrayList<>();
+                if (value != null) {
+                    attributes = productExcel.getAttributes();
+                    if (attributes.size() == 2) {
+                        attributeValues = attributes.get(1).getAttributeValues();
+                        if (attributeValues == null) {
+                            attributeValues = new ArrayList<>();
+                        }
+                        attributeValue = new AttributeValue();
+                        attributeValue.setValue((String) value);
+                        if (!attributeValues.contains(attributeValue)) {
+                            attributeValues.add(attributeValue);
+                        }
+                        attributes.get(1).setAttributeValues(attributeValues);
+                        productExcel.setAttributes(attributes);
                     }
-                    attributeValue = new AttributeValue();
-                    attributeValue.setValue((String) value);
-                    if(!attributeValues.contains(attributeValue)) {
-                        attributeValues.add(attributeValue);
+                    variants = productExcel.getVariants();
+                    if(variants.size() == 1) {
+                        variants.get(0).setAttributeValue2((String) value);
+                    } else {
+                        variants.get(rowIdx - 3 - rowMinus).setAttributeValue2((String) value);
                     }
-                    attributes.get(1).setAttributeValues(attributeValues);
-                    productExcel.setAttributes(attributes);
+
+                    productExcel.setVariants(variants);
                 }
-                variants = productExcel.getVariants();
-                variants.get(rowIdx - 3).setAttributeValue2((String) value);
-                productExcel.setVariants(variants);
+
 
                 break;
 
             // import price
             case 9:
-                if(value == null) throw new DataNotFoundException("import price must be not null");
+                if (value == null) throw new DataNotFoundException("import price must be not null");
+
                 double importPrice = (double) value;
                 variants = productExcel.getVariants();
-                variants.get(rowIdx - 3).setImportPrice(importPrice);
+                if(variants.size() == 1) {
+                    variants.get(0).setImportPrice(importPrice);
+                } else {
+                    variants.get(rowIdx - 3 - rowMinus).setImportPrice(importPrice);
+                }
                 productExcel.setVariants(variants);
                 break;
 
             // price
             case 10:
-                if(value == null) throw new DataNotFoundException("price must be not null");
+                if (value == null) throw new DataNotFoundException("price must be not null");
+
                 double price = (double) value;
                 variants = productExcel.getVariants();
-                variants.get(rowIdx - 3).setPrice(price);
+                if(variants.size() == 1) {
+                    variants.get(0).setPrice(price);
+                } else {
+                    variants.get(rowIdx - 3 - rowMinus).setPrice(price);
+                }
+
                 productExcel.setVariants(variants);
-                if(productExcel.getRegularPrice() == 0) {
+                if (productExcel.getRegularPrice() == 0) {
                     productExcel.setRegularPrice(price);
                 } else {
                     productExcel.setRegularPrice(Math.min(price, productExcel.getRegularPrice()));
@@ -420,26 +450,35 @@ public class ExcelServiceImpl implements ExcelService {
 
             // quantity
             case 11:
-                if(value == null) throw new DataNotFoundException("quantity must be not null");
-                int quantity = (int)((double) value);
+                if (value == null) throw new DataNotFoundException("quantity must be not null");
+                int quantity = (int) ((double) value);
                 variants = productExcel.getVariants();
-                variants.get(rowIdx - 3).setQuantity(quantity);
+                if(variants.size() == 1) {
+                    variants.get(0).setQuantity(quantity);
+                } else {
+                    variants.get(rowIdx - 3 - rowMinus).setQuantity(quantity);
+                }
                 productExcel.setVariants(variants);
                 productExcel.setTotalQuantity(productExcel.getTotalQuantity() + quantity);
                 break;
 
             // sku
             case 12:
-                if(value != null) {
+                if (value != null) {
                     variants = productExcel.getVariants();
-                    variants.get(rowIdx - 3).setQuantity(productExcel.getTotalQuantity());
+                    if(variants.size() == 1) {
+                        variants.get(0).setQuantity(productExcel.getTotalQuantity());
+                    } else {
+                        variants.get(rowIdx - 3 - rowMinus).setQuantity(productExcel.getTotalQuantity());
+                    }
+
                     productExcel.setVariants(variants);
                 }
                 break;
 
             // brand
             case 13:
-                if(value == null) throw new DataNotFoundException("brand must be not null");
+                if (value == null) throw new DataNotFoundException("brand must be not null");
                 Brand brand = brandRepository.findByBrandName((String) value)
                         .orElseThrow(() -> new DataNotFoundException("brand not found"));
                 productExcel.setBrandId(brand.getId());
@@ -447,19 +486,19 @@ public class ExcelServiceImpl implements ExcelService {
 
             // thumbnail
             case 14:
-                if(value == null) throw new DataNotFoundException("thumbnail must be not null");
+                if (value == null) throw new DataNotFoundException("thumbnail must be not null");
                 productExcel.setThumbnail((String) value);
                 break;
 
             // image required
             case 15:
             case 16:
-                if(value == null) throw new DataNotFoundException("image must be not null");
+                if (value == null) throw new DataNotFoundException("image must be not null");
                 images = productExcel.getImages();
-                if(images == null) {
+                if (images == null) {
                     images = new ArrayList<>();
                 }
-                if(!images.contains((String) value))
+                if (!images.contains((String) value))
                     images.add((String) value);
                 productExcel.setImages(images);
                 break;
@@ -471,12 +510,12 @@ public class ExcelServiceImpl implements ExcelService {
             case 20:
             case 21:
             case 22:
-                if(value != null) {
+                if (value != null) {
                     images = productExcel.getImages();
-                    if(images == null) {
+                    if (images == null) {
                         images = new ArrayList<>();
                     }
-                    if(!images.contains((String) value))
+                    if (!images.contains((String) value))
                         images.add((String) value);
                     productExcel.setImages(images);
                 }
@@ -485,15 +524,15 @@ public class ExcelServiceImpl implements ExcelService {
             // tag
             case 23:
             case 24:
-                if(value == null) throw new DataNotFoundException("image must be not null");
+                if (value == null) throw new DataNotFoundException("image must be not null");
                 List<Tag> tags = productExcel.getTags();
-                if(tags == null) {
+                if (tags == null) {
                     tags = new ArrayList<>();
                 }
                 Tag tag = new Tag();
                 tag.setTagName(cellIdx == 23 ? "Chất liệu" : "Xuất xứ");
                 tag.setTagValue((String) value);
-                if(!tags.contains(tag)) {
+                if (!tags.contains(tag)) {
                     tags.add(tag);
                 }
                 productExcel.setTags(tags);
@@ -501,8 +540,8 @@ public class ExcelServiceImpl implements ExcelService {
 
             // weight
             case 25:
-                if(value == null) throw new DataNotFoundException("weight must be not null");
-                productExcel.setWeight((int)((double) value));
+                if (value == null) throw new DataNotFoundException("weight must be not null");
+                productExcel.setWeight((int) ((double) value));
                 break;
             default:
                 break;

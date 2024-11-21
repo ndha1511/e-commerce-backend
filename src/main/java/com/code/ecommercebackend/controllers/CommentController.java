@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class CommentController {
 
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public Response createComment(@ModelAttribute @Valid CommentRequest commentRequest, HttpServletRequest request)
     throws Exception {

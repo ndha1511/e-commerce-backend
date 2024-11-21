@@ -18,7 +18,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -29,19 +31,17 @@ public class PaymentListener {
     private final ObjectMapper objectMapper;
     private final CartRepository cartRepository;
     private final VariantRepository variantRepository;
-    private final UserRepository userRepository;
-    private final UserBehaviorRepository userBehaviorRepository;
     private final RedissonClient redissonClient;
     private final InventoryCustomRepository inventoryCustomRepository;
     private final InventoryRepository inventoryRepository;
     private final OrderRepository orderRepository;
     private final VoucherRepository voucherRepository;
     private final VoucherUsageRepository voucherUsageRepository;
+    private final ProductRepository productRepository;
 
     @KafkaListener(topics = "order-topic", groupId = "order-topic")
     public void handleOrder(ConsumerRecord<String, byte[]> record) throws IOException {
         deleteCart(record);
-        saveUserBehavior(record);
     }
 
 
@@ -72,7 +72,7 @@ public class PaymentListener {
     }
 
     @KafkaListener(topics = "inventory-topic", groupId = "inventory")
-    public void inventory(ConsumerRecord<String, byte[]> record) throws IOException {
+    public void inventory(ConsumerRecord<String, byte[]> record) throws IOException, InterruptedException {
 
         log.info("start inventory......");
 
@@ -80,6 +80,10 @@ public class PaymentListener {
         OrderRequest orderRequest = kafkaMessageOrder.getOrderRequest();
         Order order = kafkaMessageOrder.getOrder();
         List<OrderItem> orderItems = orderRequest.getOrderItems();
+
+        List<Inventory> inventoriesBackup = new ArrayList<>();
+        List<Product> productsBackup = new ArrayList<>();
+
         for (OrderItem orderItem : orderItems) {
             RLock lock = redissonClient.getLock("productLock:" + orderItem.getVariantId());
             try {
@@ -88,6 +92,7 @@ public class PaymentListener {
                         int buyQuantity = orderItem.getQuantity();
                         List<Inventory> inventories = inventoryCustomRepository
                                 .getInventoryByVariantId(orderItem.getVariantId());
+                        inventoriesBackup.addAll(inventories);
                         if(!inventories.isEmpty()) {
                             for (Inventory inventory : inventories) {
                                 int quantityInStock = inventory.getImportQuantity() - inventory.getSaleQuantity();
@@ -108,21 +113,31 @@ public class PaymentListener {
                             }
                             if(buyQuantity == 0) {
                                inventoryRepository.saveAll(inventories);
+                               Product product = Objects.requireNonNull(variantRepository.findById(orderItem.getVariantId())
+                                       .orElse(null)).getProduct();
+                               productsBackup.add(product);
+                               product.setTotalQuantity(product.getTotalQuantity() - orderItem.getQuantity());
+                               product.setBuyQuantity(product.getBuyQuantity() + orderItem.getQuantity());
+                               productRepository.save(product);
 
                             } else {
+                                throw new RuntimeException("Not enough stock for item: " + orderItem.getVariantId());
 
                             }
                         } else {
                             // thông báo hết hàng
+                            throw new RuntimeException("Not enough stock for item: " + orderItem.getVariantId());
                         }
                     } finally {
                         lock.unlock();
                     }
                 } else {
-
+                    throw new RuntimeException("Not enough stock for item: " + orderItem.getVariantId());
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Lock interrupted", e);
+            } catch (Exception e) {
+                inventoryRepository.saveAll(inventoriesBackup);
+                productRepository.saveAll(productsBackup);
+                throw e;
             }
         }
         if(orderRequest.getVoucherCode() != null) {
@@ -139,33 +154,6 @@ public class PaymentListener {
         orderRepository.save(order);
 
         log.info("end inventory......");
-
-    }
-
-    public void saveUserBehavior(ConsumerRecord<String, byte[]> record) throws IOException {
-        log.info("start save user behavior......");
-
-        KafkaMessageOrder kafkaMessageOrder = getKafkaMessageOrder(record);
-        OrderRequest orderRequest = kafkaMessageOrder.getOrderRequest();
-
-        User user = userRepository.findById(orderRequest.getUserId())
-                .orElse(null);
-        for (OrderItem orderItem : orderRequest.getOrderItems()) {
-            Variant variant = variantRepository.findById(orderItem.getVariantId())
-                    .orElse(null);
-            if (variant != null) {
-
-                UserBehavior userBehavior = new UserBehavior();
-                userBehavior.setBehavior(2);
-                userBehavior.setUserId(user != null ? user.getNumId() : 0);
-                userBehavior.setProductId(variant.getProduct().getNumId());
-                userBehavior.setBuyQuantity(orderItem.getQuantity());
-                userBehaviorRepository.save(userBehavior);
-            }
-        }
-
-        log.info("end save user behavior......");
-
 
     }
 

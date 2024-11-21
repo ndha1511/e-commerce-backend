@@ -73,7 +73,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message,String> implemen
         roomReceiver.setCount(roomReceiver.getCount() +1);
         Optional<User> userReceiver = userRepository.findByEmail(message.getReceiver());
         userReceiver.ifPresent(value -> roomReceiver.setAvatarReceiver(value.getAvatar()));
-        roomReceiver.setLastMessageReceiver(message.getContent());
+        roomReceiver.setLastMessageSender(message.getContent());
         roomReceiver.setSendDate(LocalDateTime.now());
         Conversation roomSender =roomRepository.findBySenderAndReceiver(message.getSender(), message.getReceiver())
                 .orElseThrow(()-> new DataNotFoundException("There is no message with that sender and receiver"));

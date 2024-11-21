@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseError handleDataNotFoundException(DataNotFoundException ex) {
-        return new ResponseError(HttpStatus.FORBIDDEN.value(), List.of(ex.getMessage()));
+        return new ResponseError(HttpStatus.NOT_FOUND.value(), List.of(ex.getMessage()));
     }
 
 

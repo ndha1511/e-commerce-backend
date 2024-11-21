@@ -77,7 +77,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
         String token = cookieHandler.getCookie(request, "access_token");
         Product product = productRepository.findByUrlPath(url)
                 .orElseThrow(() -> new DataNotFoundException("product not found"));
-        commonFunction.saveUserBehavior(token, 1, product.getNumId(), null, null);
+        commonFunction.saveUserBehavior(token, 2, product.getNumId(), null);
         List<ProductAttribute> attributes = productAttributeRepository.findByProductId(product.getId());
         ProductResponse productResponse = mapToProductResponse(product);
         productResponse.setAttributes(attributes);
@@ -92,6 +92,12 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
         attributeResponse.setAttributes(attributes);
         attributeResponse.setVariants(variants);
         return attributeResponse;
+    }
+
+    @Override
+    public List<ProductResponse> getProductResponseByNumIds(List<Long> ids) {
+        List<Product> products = productRepository.findAllByNumIdIn(ids);
+        return mapToProductResponses(products);
     }
 
 

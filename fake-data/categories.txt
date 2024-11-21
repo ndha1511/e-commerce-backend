@@ -1,0 +1,20 @@
+Thời trang nam, https://sales-app-bucket.s3.ap-southeast-1.amazonaws.com/dce33e4c-f069-42f5-9bdc-5f5442f53a4a_ao-nam.jpeg
+Thời trang nữ, https://sales-app-bucket.s3.ap-southeast-1.amazonaws.com/bd49556d-eaa0-4c5a-bc09-9ebe39db43ed_ao-nu.png
+Điện thoại & phụ kiện, https://sales-app-bucket.s3.ap-southeast-1.amazonaws.com/5c0ceeb0-8be8-4ad1-a93c-8986a5788929_iphone-16-pro-white-titan-6-638621709608529210-650x650.jpg
+Thiết bị điện tử, https://down-vn.img.susercontent.com/file/978b9e4cb61c611aaaf58664fae133c5
+Máy tính & Laptop, https://down-vn.img.susercontent.com/file/c3f3edfaa9f6dafc4825b77d8449999d
+Máy ảnh & Máy quay phim, https://down-vn.img.susercontent.com/file/ec14dd4fc238e676e43be2a911414d4d
+Đồng hồ, https://down-vn.img.susercontent.com/file/86c294aae72ca1db5f541790f7796260
+Thiết bị điện gia dụng, https://down-vn.img.susercontent.com/file/7abfbfee3c4844652b4a8245e473d857
+Bánh kẹo, https://vanchuyenvietthai.com/wp-content/uploads/2023/03/z3399334014511_d91ab8480b34cba63ed8326ac8a8ee48.jpg
+Thể thao & du lịch, https://down-vn.img.susercontent.com/file/6cb7e633f8b63757463b676bd19a50e4
+Thời trang trẻ em, https://sales-app-bucket.s3.ap-southeast-1.amazonaws.com/119cfd18-f13d-4ded-ac1b-e9fa88d4479c_kidscollage-1024x737.jpg
+Mẹ & bé, https://down-vn.img.susercontent.com/file/099edde1ab31df35bc255912bab54a5e
+Nhà cửa & đời sống, https://down-vn.img.susercontent.com/file/24b194a695ea59d384768b7b471d563f
+Sắc đẹp, https://down-vn.img.susercontent.com/file/ef1f336ecc6f97b790d5aae9916dcb72
+Sức khỏe, https://down-vn.img.susercontent.com/file/49119e891a44fa135f5f6f5fd4cfc747
+Đồ chơi, https://down-vn.img.susercontent.com/file/ce8f8abc726cafff671d0e5311caa684
+Trang sức, https://down-vn.img.susercontent.com/file/8e71245b9659ea72c1b4e737be5cf42e
+Dụng cụ học tập, https://bizweb.dktcdn.net/thumb/1024x1024/100/454/747/products/dung-cu-ht-5-mon.jpg?v=1714788052653
+Sách vở & Truyện tranh, https://nhasachmienphi.com/images/thumbnail/nhasachmienphi-7-vien-ngoc-rong-dragon-ball.jpg
+Giặt giũ & chăm sóc nhà cửa, https://down-vn.img.susercontent.com/file/cd8e0d2e6c14c4904058ae20821d0763
