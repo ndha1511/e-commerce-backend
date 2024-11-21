@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class ProductRecommend {
     @JsonProperty("product_id")
-    private int productId;
+    private long productId;
     @JsonProperty("predicted_rating")
     private String predictedRating;
 

@@ -10,18 +10,23 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 
-@Document(collection = "user_behavior")
+@Document(collection = "product_features")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserBehavior {
+public class ProductFeature {
     @Id
     private String id;
     @Field(name = "user_id")
     private long userId;
     @Field(name = "product_id")
     private long productId;
+    @Field(name = "product_name")
+    private String productName;
+    private String category;
+    private String brand;
+    private Double price;
     private Integer rating;
     @Field(name = "count_view")
     private int countView;

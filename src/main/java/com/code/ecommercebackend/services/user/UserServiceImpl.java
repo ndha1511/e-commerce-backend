@@ -40,4 +40,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, String> implements Us
             user.setDateOfBirth(userUpdate.getDateOfBirth());
             return userRepository.save(user);
         }
+
+    @Override
+    public User findByUsername(String username)  {
+        if(username == null) return null;
+        return userRepository.findByUsername(username).orElseThrow(null);
+    }
 }

@@ -1,14 +1,17 @@
 package com.code.ecommercebackend.fakeData;
 
 import com.code.ecommercebackend.models.Category;
+import com.code.ecommercebackend.models.Product;
 import com.code.ecommercebackend.models.User;
+import com.code.ecommercebackend.models.ProductFeature;
 import com.code.ecommercebackend.models.enums.Role;
 import com.code.ecommercebackend.repositories.CategoryRepository;
+import com.code.ecommercebackend.repositories.ProductRepository;
+import com.code.ecommercebackend.repositories.UserBehaviorRepository;
 import com.code.ecommercebackend.repositories.UserRepository;
 import com.code.ecommercebackend.services.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -17,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 @Configuration
@@ -26,6 +30,8 @@ public class FakeData {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final UserBehaviorRepository userBehaviorRepository;
 
     public void fakeUsers() {
         String filePath = "fake-data/vietnamese_users.txt";
@@ -96,10 +102,25 @@ public class FakeData {
         }
     }
 
+    public void fakeUserBehavior() {
+        List<Product> products = productRepository.findAll();
+        Random rand = new Random();
+        for (Product product : products) {
+            ProductFeature userBehavior = new ProductFeature();
+            userBehavior.setCountView(rand.nextInt(100) + 1);
+            userBehavior.setUserId(rand.nextInt(137) + 2);
+            userBehavior.setRating(rand.nextInt(5) + 1);
+            userBehavior.setProductId(product.getNumId());
+            userBehaviorRepository.save(userBehavior);
+        }
+
+    }
+
 //    @Bean
     public CommandLineRunner commandLineRunner(){
         return args -> {
 //            fakeCategories();
+//            fakeUserBehavior();
         };
     }
 

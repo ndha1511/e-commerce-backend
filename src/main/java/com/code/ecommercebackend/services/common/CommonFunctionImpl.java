@@ -1,7 +1,7 @@
 package com.code.ecommercebackend.services.common;
 
 import com.code.ecommercebackend.models.User;
-import com.code.ecommercebackend.models.UserBehavior;
+import com.code.ecommercebackend.models.ProductFeature;
 import com.code.ecommercebackend.repositories.UserBehaviorRepository;
 import com.code.ecommercebackend.repositories.UserRepository;
 import com.code.ecommercebackend.services.auth.JwtService;
@@ -21,9 +21,9 @@ public class CommonFunctionImpl implements CommonFunction {
             String username = jwtService.extractUsername(token);
             User user = userRepository.findByUsername(username).orElse(null);
             if(user != null) {
-                UserBehavior userBehavior = userBehaviorRepository.findByUserIdAndProductId(
+                ProductFeature userBehavior = userBehaviorRepository.findByUserIdAndProductId(
                         user.getNumId(), productId
-                ).orElse(new UserBehavior());
+                ).orElse(new ProductFeature());
                 userBehavior.setUserId(user.getNumId());
                 userBehavior.setProductId(productId);
                 if(behavior != 1) {
