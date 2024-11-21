@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class Notification extends BaseModel {
     @Field(name = "user_id")
     private String userId;
+    private String image;
     private String content;
     private String title;
     private boolean seen;

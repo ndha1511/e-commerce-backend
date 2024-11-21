@@ -6,7 +6,8 @@ import com.code.ecommercebackend.services.BaseService;
 
 import java.util.List;
 
-public interface RoomService extends BaseService <Conversation , Long>{
+public interface RoomService extends BaseService <Conversation , String>{
     List<Conversation> getRoomsBySender(String sender);
     String getRoomIdBySenderAndReceiver(String sender, String receiver, boolean createIfNotExists) throws DataNotFoundException;
+    List<Conversation> updateRoomById(String roomId) throws DataNotFoundException;
 }

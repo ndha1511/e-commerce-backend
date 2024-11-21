@@ -25,7 +25,7 @@ public class CategoryImpl extends BaseServiceImpl<Category, String> implements C
     @Override
     public Category save(Category category) {
         long count = categoryRepository.count();
-        count++;
+        count +=2;
         category.setNumId(count);
         if(category.getParentId() != null) {
             Category parent = categoryRepository.findById(category.getParentId())

@@ -2,8 +2,10 @@ package com.code.ecommercebackend.utils;
 
 import com.code.ecommercebackend.dtos.response.comment.CommentResponse;
 import com.code.ecommercebackend.dtos.response.message.MessageResponse;
+import com.code.ecommercebackend.dtos.response.notification.NotificationResponse;
 import com.code.ecommercebackend.models.Comment;
 import com.code.ecommercebackend.models.Message;
+import com.code.ecommercebackend.models.Notification;
 import com.code.ecommercebackend.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,5 +35,11 @@ public class SocketHandler {
         response.setData(comment);
         response.setType("comment");
         messagingTemplate.convertAndSend("/topic/"  + comment.getProductId(), response);
+    }
+    public void sendNotificationToSocket(Notification notification) {
+        NotificationResponse<Notification> response = new NotificationResponse<>();
+        response.setData(notification);
+        response.setType("notification");
+        messagingTemplate.convertAndSend("/topic/notification/"  + notification.getUserId(), response);
     }
 }
