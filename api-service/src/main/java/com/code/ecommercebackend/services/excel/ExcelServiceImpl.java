@@ -208,7 +208,7 @@ public class ExcelServiceImpl implements ExcelService {
                 variant.setAttributeValue1(variantExcel.getAttributeValue1());
                 variant.setAttributeValue2(variantExcel.getAttributeValue2());
                 variantRepository.save(variant);
-                InventoryDetail inventory = new InventoryDetail();
+                Inventory inventory = new Inventory();
                 inventory.setProductId(product.getId());
                 inventory.setVariantId(variant.getId());
                 inventory.setImportDate(LocalDateTime.now());

@@ -92,7 +92,7 @@ public class CrawlDataService {
                             variant.setPrice(product.getPrice());
                             variant.setProduct(myProduct);
                             variantRepository.save(variant);
-                            InventoryDetail inventory = new InventoryDetail();
+                            Inventory inventory = new Inventory();
                             inventory.setProductId(myProduct.getId());
                             inventory.setVariantId(variant.getId());
                             inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
@@ -110,7 +110,7 @@ public class CrawlDataService {
                         variant.setPrice(product.getPrice());
                         variant.setProduct(myProduct);
                         variantRepository.save(variant);
-                        InventoryDetail inventory = new InventoryDetail();
+                        Inventory inventory = new Inventory();
                         inventory.setProductId(myProduct.getId());
                         inventory.setVariantId(variant.getId());
                         inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
@@ -138,7 +138,7 @@ public class CrawlDataService {
 
                 purchaseOrderRepository.save(purchaseOrder);
             } else {
-                InventoryDetail inventory = new InventoryDetail();
+                Inventory inventory = new Inventory();
                 inventory.setProductId(myProduct.getId());
                 inventory.setImportDate(LocalDateTime.now());
                 inventory.setInventoryStatus(InventoryStatus.IN_STOCK);

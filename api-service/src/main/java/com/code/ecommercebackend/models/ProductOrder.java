@@ -14,10 +14,12 @@ import java.util.List;
 public class  ProductOrder {
     @Field(name = "product_id")
     private String productId;
+    @Field(name = "variant_id")
+    private String variantId;
     @Field(name = "product_name")
     private String productName;
     @Field(name = "inventories")
-    private List<String> inventories;
+    private List<InventoryOrder> inventoryOrders;
     private List<String> attributes;
     private double price;
     private int quantity;

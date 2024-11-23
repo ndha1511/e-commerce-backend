@@ -81,7 +81,7 @@ public class PaymentListener {
         Order order = kafkaMessageOrder.getOrder();
         List<OrderItem> orderItems = orderRequest.getOrderItems();
 
-        List<InventoryDetail> inventoriesBackup = new ArrayList<>();
+        List<Inventory> inventoriesBackup = new ArrayList<>();
         List<Product> productsBackup = new ArrayList<>();
 
         for (OrderItem orderItem : orderItems) {
@@ -90,11 +90,12 @@ public class PaymentListener {
                 if (lock.tryLock(60, 65, TimeUnit.SECONDS)) {
                     try {
                         int buyQuantity = orderItem.getQuantity();
-                        List<InventoryDetail> inventories = inventoryCustomRepository
+                        List<Inventory> inventories = inventoryCustomRepository
                                 .getInventoryByVariantId(orderItem.getVariantId());
                         inventoriesBackup.addAll(inventories);
+                        List<InventoryOrder> inventoryOrders = new ArrayList<>();
                         if(!inventories.isEmpty()) {
-                            for (InventoryDetail inventory : inventories) {
+                            for (Inventory inventory : inventories) {
                                 int quantityInStock = inventory.getImportQuantity() - inventory.getSaleQuantity();
                                 if(quantityInStock >= buyQuantity) {
                                     inventory.setSaleQuantity(inventory.getSaleQuantity() + buyQuantity);
@@ -102,6 +103,10 @@ public class PaymentListener {
                                         inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
                                     }
                                     buyQuantity = 0;
+                                    InventoryOrder inventoryOrder = new InventoryOrder();
+                                    inventoryOrder.setId(inventory.getId());
+                                    inventoryOrder.setQuantity(buyQuantity);
+                                    inventoryOrders.add(inventoryOrder);
                                     break;
                                 } else {
                                     buyQuantity = buyQuantity - quantityInStock;
@@ -109,6 +114,10 @@ public class PaymentListener {
                                     if(inventory.getSaleQuantity() == inventory.getImportQuantity()) {
                                         inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
                                     }
+                                    InventoryOrder inventoryOrder = new InventoryOrder();
+                                    inventoryOrder.setId(inventory.getId());
+                                    inventoryOrder.setQuantity(quantityInStock);
+                                    inventoryOrders.add(inventoryOrder);
                                 }
                             }
                             if(buyQuantity == 0) {
@@ -119,6 +128,9 @@ public class PaymentListener {
                                product.setTotalQuantity(product.getTotalQuantity() - orderItem.getQuantity());
                                product.setBuyQuantity(product.getBuyQuantity() + orderItem.getQuantity());
                                productRepository.save(product);
+                                order.getProductOrders().stream().filter(po -> po.getVariantId().equals(orderItem.getVariantId()))
+                                        .findFirst().ifPresent(productOrder -> productOrder.setInventoryOrders(inventoryOrders));
+                                orderRepository.save(order);
 
                             } else {
                                 throw new RuntimeException("Not enough stock for item: " + orderItem.getVariantId());

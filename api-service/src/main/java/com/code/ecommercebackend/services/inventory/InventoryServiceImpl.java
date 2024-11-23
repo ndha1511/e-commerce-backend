@@ -4,7 +4,7 @@ import com.code.ecommercebackend.dtos.request.inventory.CreateInventoryRequest;
 import com.code.ecommercebackend.dtos.request.inventory.InventoryDto;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.inventory.InventoryMapper;
-import com.code.ecommercebackend.models.InventoryDetail;
+import com.code.ecommercebackend.models.Inventory;
 import com.code.ecommercebackend.models.Product;
 import com.code.ecommercebackend.models.PurchaseOrder;
 import com.code.ecommercebackend.models.User;
@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class InventoryServiceImpl extends BaseServiceImpl<InventoryDetail, String> implements InventoryService {
+public class InventoryServiceImpl extends BaseServiceImpl<Inventory, String> implements InventoryService {
     private final InventoryRepository inventoryRepository;
     private final InventoryMapper inventoryMapper;
     private final PurchaseOrderRepository purchaseOrderRepository;
@@ -35,7 +35,7 @@ public class InventoryServiceImpl extends BaseServiceImpl<InventoryDetail, Strin
     private final CookieHandler cookieHandler;
     private final UserRepository userRepository;
 
-    public InventoryServiceImpl(MongoRepository<InventoryDetail, String> repository,
+    public InventoryServiceImpl(MongoRepository<Inventory, String> repository,
                                 InventoryRepository inventoryRepository,
                                 InventoryMapper inventoryMapper, PurchaseOrderRepository purchaseOrderRepository, ProductRepository productRepository, JwtService jwtService, CookieHandler cookieHandler, UserRepository userRepository) {
         super(repository);
@@ -52,9 +52,9 @@ public class InventoryServiceImpl extends BaseServiceImpl<InventoryDetail, Strin
     @Transactional(rollbackFor = Exception.class)
     public void saveInventory(CreateInventoryRequest createInventoryRequest, HttpServletRequest request) throws DataNotFoundException {
         List<InventoryDto> inventoriesDto = createInventoryRequest.getInventories();
-        List<InventoryDetail> inventories = inventoriesDto.stream()
+        List<Inventory> inventories = inventoriesDto.stream()
                 .map(inventoryMapper::toInventory).toList();
-        for (InventoryDetail inventory: inventories) {
+        for (Inventory inventory: inventories) {
             inventory.setImportDate(LocalDateTime.now());
             Product product = productRepository.findById(inventory.getProductId())
                     .orElseThrow(() -> new DataNotFoundException("product not found"));
@@ -75,9 +75,9 @@ public class InventoryServiceImpl extends BaseServiceImpl<InventoryDetail, Strin
 
     }
 
-    private void savePurchaseOrder(List<InventoryDetail> inventories, String staffName) {
+    private void savePurchaseOrder(List<Inventory> inventories, String staffName) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        Set<String> inventoriesId = inventories.stream().map(InventoryDetail::getId).collect(Collectors.toSet());
+        Set<String> inventoriesId = inventories.stream().map(Inventory::getId).collect(Collectors.toSet());
         purchaseOrder.setInventories(inventoriesId);
         purchaseOrder.setOrderDate(LocalDateTime.now());
         purchaseOrder.setTotalPrice(inventories.stream()
@@ -85,7 +85,7 @@ public class InventoryServiceImpl extends BaseServiceImpl<InventoryDetail, Strin
                 .sum());
         purchaseOrder.setImportStaffName(staffName);
         purchaseOrder.setTotalQuantity(inventories.stream()
-                .mapToInt(InventoryDetail::getImportQuantity).sum());
+                .mapToInt(Inventory::getImportQuantity).sum());
         purchaseOrderRepository.save(purchaseOrder);
 
     }
