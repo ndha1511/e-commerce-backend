@@ -3,12 +3,8 @@ package com.code.ecommercebackend.services.statistics;
 import com.code.ecommercebackend.dtos.response.statistics.Revenue;
 import com.code.ecommercebackend.dtos.response.statistics.RevenueMonth;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
-import com.code.ecommercebackend.models.InventoryDetail;
-import com.code.ecommercebackend.models.Order;
-import com.code.ecommercebackend.models.Product;
-import com.code.ecommercebackend.models.ProductOrder;
+import com.code.ecommercebackend.models.*;
 import com.code.ecommercebackend.repositories.InventoryRepository;
-import com.code.ecommercebackend.repositories.ProductRepository;
 import com.code.ecommercebackend.repositories.customizations.order.OrderRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +15,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class StatisticsServiceImpl implements StatisticsService{
-    private final ProductRepository productRepository;
     private final InventoryRepository inventoryRepository;
     private final OrderRepositoryCustom orderRepositoryCustom;
 
@@ -40,11 +35,12 @@ public class StatisticsServiceImpl implements StatisticsService{
             revenue += currentRevenue;
             List<ProductOrder> productResponses = order.getProductOrders();
             for (ProductOrder productOrder : productResponses) {
-                List<String> inventoryId = productOrder.getInventories();
-                for (InventoryDetail inventory : inventoryRepository.findAllById(inventoryId)) {
-                    profit += productOrder.getAmount() - (inventory.getImportPrice() * productOrder.getQuantity());
+                List<InventoryOrder> inventoryOrders = productOrder.getInventoryOrders();
+                for (InventoryOrder inventoryOrder : inventoryOrders) {
+                    Inventory inventory = inventoryRepository.findById(inventoryOrder.getId())
+                            .orElseThrow(() -> new DataNotFoundException("Inventory not found"));
+                    profit += productOrder.getAmount() - (inventory.getImportPrice() * inventoryOrder.getQuantity());
                 }
-
             }
 
         }
@@ -70,9 +66,11 @@ public class StatisticsServiceImpl implements StatisticsService{
             double revenue = order.getTotalAmount() - order.getShippingAmount();
             List<ProductOrder> productResponses = order.getProductOrders();
             for (ProductOrder productOrder : productResponses) {
-                List<String> inventoryId = productOrder.getInventories();
-                for (InventoryDetail inventory : inventoryRepository.findAllById(inventoryId)) {
-                    profit += productOrder.getAmount() - (inventory.getImportPrice() * productOrder.getQuantity());
+                List<InventoryOrder> inventoryOrders = productOrder.getInventoryOrders();
+                for (InventoryOrder inventoryOrder : inventoryOrders) {
+                    Inventory inventory = inventoryRepository.findById(inventoryOrder.getId())
+                            .orElseThrow(() -> new DataNotFoundException("inventory not found"));
+                    profit += inventory.getImportPrice() * inventoryOrder.getQuantity();
                 }
 
             }

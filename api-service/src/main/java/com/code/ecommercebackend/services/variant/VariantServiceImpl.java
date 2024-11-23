@@ -4,7 +4,7 @@ import com.code.ecommercebackend.dtos.response.variant.VariantResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.attribute.VariantMapper;
 import com.code.ecommercebackend.models.AttributeValue;
-import com.code.ecommercebackend.models.InventoryDetail;
+import com.code.ecommercebackend.models.Inventory;
 import com.code.ecommercebackend.models.ProductAttribute;
 import com.code.ecommercebackend.models.Variant;
 import com.code.ecommercebackend.repositories.InventoryRepository;
@@ -84,11 +84,11 @@ public class VariantServiceImpl extends BaseServiceImpl<Variant, String> impleme
 
     public VariantResponse mapToVariantResponse(Variant variant) {
         VariantResponse variantResponse = variantMapper.toVariantResponse(variant);
-        List<InventoryDetail> inventories = inventoryRepository.findByVariantId(variant.getId());
+        List<Inventory> inventories = inventoryRepository.findByVariantId(variant.getId());
         int quantity = Math.max(0,
                 inventories.stream().mapToInt(i -> i.getImportQuantity() - i.getSaleQuantity()).sum());
         int buyQuantity = Math.max(0,
-                inventories.stream().mapToInt(InventoryDetail::getSaleQuantity).sum());
+                inventories.stream().mapToInt(Inventory::getSaleQuantity).sum());
         variantResponse.setQuantity(quantity);
         variantResponse.setBuyQuantity(buyQuantity);
         List<ProductAttribute> attributes = productAttributeRepository.findByProductId(variant.getProduct().getId());

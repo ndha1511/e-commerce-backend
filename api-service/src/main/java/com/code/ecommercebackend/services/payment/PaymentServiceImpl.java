@@ -100,6 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
             totalAmount += amount;
             ProductOrder productOrder = ProductOrder.builder()
                     .price(variant.getPrice() - discount)
+                    .variantId(variant.getId())
                     .image((image != null) ? image : variant.getProduct().getThumbnail())
                     .productId(variant.getProduct().getId())
                     .productName(variant.getProduct().getProductName())

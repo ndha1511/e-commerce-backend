@@ -1,9 +1,9 @@
 package com.code.ecommercebackend.repositories.customizations.inventory;
 
-import com.code.ecommercebackend.models.InventoryDetail;
+import com.code.ecommercebackend.models.Inventory;
 
 import java.util.List;
 
 public interface InventoryCustomRepository {
-    List<InventoryDetail> getInventoryByVariantId(String variantId);
+    List<Inventory> getInventoryByVariantId(String variantId);
 }
