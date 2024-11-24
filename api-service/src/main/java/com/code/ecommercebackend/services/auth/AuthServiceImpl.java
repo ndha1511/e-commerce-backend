@@ -211,6 +211,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private TokenResponse saveToken(User user) {
+        List<Token> tokens = tokenRepository.findAllByUserId(user.getId());
+        if(!tokens.isEmpty() && tokens.size() >= 2) {
+            Token tokenDelete = tokens.get(tokens.size() - 1);
+            tokenRepository.delete(tokenDelete);
+        }
         UserDetail userDetail = new UserDetail(user);
         Token token = Token.builder()
                 .accessToken(jwtService.generateToken(userDetail))
