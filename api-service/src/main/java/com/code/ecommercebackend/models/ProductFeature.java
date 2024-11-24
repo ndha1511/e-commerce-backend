@@ -27,7 +27,7 @@ public class ProductFeature {
     private String category;
     private String brand;
     private Double price;
-    private Integer rating;
+    private Float rating;
     @Field(name = "count_view")
     private Integer countView;
 }
