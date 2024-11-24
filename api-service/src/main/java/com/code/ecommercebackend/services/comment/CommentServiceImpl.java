@@ -67,7 +67,7 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
         String token = cookieHandler.getCookie(request, "access_token");
         commonFunction.saveUserBehavior(token, 1,
                 commentRequest.getProductNumId(),
-                commentRequest.getRating());
+                (float) commentRequest.getRating());
         productOrders.forEach(po -> {
             if (po.getProductId().equals(commentRequest.getProductId())) {
                 if (po.getAttributes().equals(commentRequest.getAttributes())) {

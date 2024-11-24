@@ -6,10 +6,7 @@ import com.code.ecommercebackend.dtos.response.product.ProductResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.*;
-import com.code.ecommercebackend.repositories.ProductAttributeRepository;
-import com.code.ecommercebackend.repositories.ProductRepository;
-import com.code.ecommercebackend.repositories.PromotionRepository;
-import com.code.ecommercebackend.repositories.VariantRepository;
+import com.code.ecommercebackend.repositories.*;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import com.code.ecommercebackend.services.common.CommonFunction;
 import com.code.ecommercebackend.utils.CookieHandler;
@@ -18,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +30,9 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     private final CookieHandler cookieHandler;
     private final CommonFunction commonFunction;
     private final VariantRepository variantRepository;
+    private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductFeatureRepository productFeatureRepository;
 
     public ProductServiceImpl(
             MongoRepository<Product, String> repository,
@@ -41,7 +42,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
             ProductAttributeRepository productAttributeRepository,
             CookieHandler cookieHandler,
             VariantRepository variantRepository,
-            CommonFunction commonFunction) {
+            CommonFunction commonFunction, BrandRepository brandRepository, CategoryRepository categoryRepository, ProductFeatureRepository productFeatureRepository) {
         super(repository);
         this.productMapper = productMapper;
         this.promotionRepository = promotionRepository;
@@ -50,12 +51,26 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
         this.variantRepository = variantRepository;
         this.cookieHandler = cookieHandler;
         this.commonFunction = commonFunction;
+        this.brandRepository = brandRepository;
+        this.categoryRepository = categoryRepository;
+        this.productFeatureRepository = productFeatureRepository;
     }
 
     @Override
     public Product save(Product product) {
         long numId = productRepository.count() + 1;
         product.setNumId(numId);
+        ProductFeature productFeature = new ProductFeature();
+        productFeature.setProductId(product.getNumId());
+        productFeature.setProductName(product.getProductName());
+        if(product.getBrandId() != null) {
+            brandRepository.findById(product.getBrandId()).ifPresent(brand -> productFeature.setBrand(brand.getBrandName()));
+        }
+        List<String> categories = new ArrayList<>(product.getCategories());
+        categoryRepository.findById(categories.get(categories.size() - 1)).ifPresent(category -> productFeature.setCategory(category.getCategoryName()));
+        productFeature.setPrice(product.getRegularPrice());
+        productFeature.setCountView(0);
+        productFeatureRepository.save(productFeature);
         return super.save(product);
     }
 

@@ -33,7 +33,7 @@ public class RecommendController {
             username = jwtService.extractUsername(cookieHandler.getCookie(request, "refresh_token"));
         }
         long userId = 0;
-        if (username == null || username.isEmpty()) {
+        if (username != null && !username.isEmpty()) {
             User user = userService.findByUsername(username);
             if (user != null) {
                 userId = user.getNumId();
