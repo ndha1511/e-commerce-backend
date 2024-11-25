@@ -19,9 +19,9 @@ public class VoucherController {
     private final VoucherService voucherService;
     private final VoucherMapper voucherMapper;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     @PostMapping
-    public Response createVoucher(@Valid @RequestBody VoucherRequest voucherRequest) {
+    public Response createVoucher(@Valid @ModelAttribute VoucherRequest voucherRequest) {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",

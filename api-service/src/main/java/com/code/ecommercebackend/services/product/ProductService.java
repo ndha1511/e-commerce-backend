@@ -16,5 +16,6 @@ public interface ProductService extends BaseService<Product, String> {
     ProductResponse findByUrl(String url, HttpServletRequest request) throws DataNotFoundException;
     AttributeResponse findAttributeByProductId(String productId);
     List<ProductResponse> getProductResponseByNumIds(List<Long> ids);
+    List<ProductResponse> getProductResponseById(Iterable<String> ids);
 
 }

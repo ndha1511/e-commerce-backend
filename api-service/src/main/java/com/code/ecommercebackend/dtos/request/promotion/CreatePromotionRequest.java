@@ -1,14 +1,14 @@
 package com.code.ecommercebackend.dtos.request.promotion;
 
 import com.code.ecommercebackend.models.enums.DiscountType;
-import com.code.ecommercebackend.models.enums.LoopState;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,9 +18,10 @@ public class CreatePromotionRequest {
     @NotNull(message = "discount type must be not null")
     private DiscountType discountType;
     private Double discountValue;
+    private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private LoopState loopState;
-    private boolean applyAll;
-    private Set<String> applyFor;
+    private boolean view;
+    private MultipartFile image;
+    private List<String> applyFor;
 }

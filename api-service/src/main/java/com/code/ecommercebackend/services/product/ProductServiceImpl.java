@@ -115,6 +115,12 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
         return mapToProductResponses(products);
     }
 
+    @Override
+    public List<ProductResponse> getProductResponseById(Iterable<String> ids) {
+        List<Product> products = productRepository.findAllById(ids);
+        return mapToProductResponses(products);
+    }
+
 
     public List<ProductResponse> mapToProductResponses(List<Product> products) {
         List<ProductResponse> productResponses = new java.util.ArrayList<>(products

@@ -1,8 +1,8 @@
 package com.code.ecommercebackend.models;
 
 import com.code.ecommercebackend.models.enums.DiscountType;
-import com.code.ecommercebackend.models.enums.ScopeUsage;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,8 +37,11 @@ public class Voucher extends BaseModel {
     private double minOrder;
     @Field(name = "max_price")
     private double maxPrice;
+    @JsonIgnore
     @Field(name = "apply_all")
     private boolean applyAll;
+    @JsonIgnore
     @Field(name = "apply_for")
     private Set<String> applyFor;
+    private String image;
 }

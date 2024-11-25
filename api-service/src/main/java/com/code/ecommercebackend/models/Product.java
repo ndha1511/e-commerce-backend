@@ -51,7 +51,7 @@ public class Product extends BaseModel {
 
 
     public void createUrlPath() {
-        this.urlPath = this.productName.toLowerCase().trim().replaceAll("[ |&,/.\\\\]+", "-");;
+        this.urlPath = this.productName.toLowerCase().trim().replaceAll("[ \\[\\]|&,/.\\\\]+", "-");
     }
 
     public void normalizerName() {
