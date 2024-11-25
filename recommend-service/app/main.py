@@ -46,6 +46,8 @@ def get_data(user_id, product_id, top_n = 10):
     content_df = data[['product_id', 'product_name', 'brand',
                        'category', 'price']]
 
+    content_df = content_df.drop_duplicates()
+
     content_df['Content'] = content_df.apply(lambda row: ' '.join(row.dropna().astype(str)), axis=1)
 
     # Use TF-IDF vectorizer to convert content into a matrix of TF-IDF features

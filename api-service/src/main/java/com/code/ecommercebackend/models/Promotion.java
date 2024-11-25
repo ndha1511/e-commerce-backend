@@ -1,7 +1,6 @@
 package com.code.ecommercebackend.models;
 
 import com.code.ecommercebackend.models.enums.DiscountType;
-import com.code.ecommercebackend.models.enums.LoopState;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Document(collection = "discounts")
 @Getter
@@ -22,6 +21,7 @@ import java.util.Set;
 public class Promotion extends BaseModel {
     @Field(name = "promotion_name")
     private String promotionName;
+    private String description;
     @Field(name = "discount_type")
     private DiscountType discountType;
     @Field(name = "discount_value")
@@ -32,12 +32,19 @@ public class Promotion extends BaseModel {
     @Field(name = "end_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime endDate;
-    @Field(name = "loop_state")
-    private LoopState loopState;
+    @Field(name = "flash_sale")
+    private boolean flashSale;
+    private String image;
+    private boolean view;
     @Field(name = "apply_all")
     private boolean applyAll;
     @Field(name = "apply_for")
     @Indexed
-    private Set<String> applyFor;
+    private List<String> applyFor;
+    private String url;
+
+    public void createUrlPath() {
+        this.url = this.promotionName.toLowerCase().trim().replaceAll("[ \\[\\]|&,/.\\\\]+", "-");
+    }
 
 }

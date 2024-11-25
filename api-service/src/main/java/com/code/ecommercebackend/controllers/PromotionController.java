@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.prefix}/promotions")
@@ -22,14 +19,48 @@ public class PromotionController {
     private final PromotionService promotionService;
     private final PromotionMapper promotionMapper;
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public Response createPromotion(@Valid @RequestBody CreatePromotionRequest createPromotionRequest) {
+    public Response createPromotion(@Valid @ModelAttribute CreatePromotionRequest createPromotionRequest) {
         Promotion promotion = promotionMapper.toPromotion(createPromotionRequest);
         return new ResponseSuccess<>(
                 HttpStatus.CREATED.value(),
                 "success",
                 promotionService.save(promotion)
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public Response getAllPromotions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "40") int size,
+            @RequestParam(required = false) String[] search,
+            @RequestParam(required = false) String[] sort
+    ) {
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success",
+                promotionService.getPageData(page, size, search, sort, Promotion.class)
+        );
+    }
+
+    @GetMapping("/carousel")
+    public Response getPromotionCarousel() {
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success",
+                promotionService.getPromotionsCarousel()
+        );
+    }
+
+    @GetMapping("/products/{promotionId}")
+    public Response getProductsByPromotionId(@PathVariable String promotionId)
+    throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success",
+                promotionService.getProductsByPromotionId(promotionId)
         );
     }
 }
