@@ -2,6 +2,7 @@ package com.code.ecommercebackend.controllers;
 
 import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.Order;
 import com.code.ecommercebackend.services.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,17 @@ public class OrderController {
                 HttpStatus.OK.value(),
                 "success",
                 orderService.getPageData(page, size, search, sort, Order.class)
+        );
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/orderId/{orderId}")
+    public Response getOrdersByOrderId(
+            @PathVariable String orderId) throws DataNotFoundException {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                orderService.findById(orderId)
         );
     }
 
