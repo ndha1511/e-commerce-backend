@@ -84,10 +84,10 @@ public class PaymentServiceImpl implements PaymentService {
             AttributeValue attrValue = attrValues.stream().filter(value -> value.getValue()
                     .equals(variant.getAttributeValue1())).findFirst().orElse(null);
             String image = attrValue != null ? attrValue.getImage() : null;
-            Optional<Promotion> optPromotion = promotionRepository.findFirstByCurrentDateAndProductId(variant.getProduct().getId(),
+            List<Promotion> promotions = promotionRepository.findFirstByCurrentDateAndProductId(variant.getProduct().getId(),
                     Sort.by(Sort.Direction.DESC, "startDate"));
-            if (optPromotion.isPresent()) {
-                Promotion promotion = optPromotion.get();
+            if (!promotions.isEmpty()) {
+                Promotion promotion = promotions.get(0);
 
                 if (promotion.getDiscountType().equals(DiscountType.PERCENT)) {
                     discount = variant.getPrice() * promotion.getDiscountValue();

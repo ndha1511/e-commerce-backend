@@ -104,12 +104,15 @@ public class CartServiceImpl extends BaseServiceImpl<Cart, String> implements Ca
         for(int i = 0; i < variants.size(); i++) {
             VariantResponse variant = variantServiceImpl.mapToVariantResponse(variants.get(i));
             Product product = variant.getProduct();
-            Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
+            List<Promotion> promotions = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
                     Sort.by(Sort.Direction.DESC, "startDate"));
+
             ProductCartResponse productCartResponse = new ProductCartResponse();
             productCartResponse.setVariantResponse(variant);
             productCartResponse.setQuantity(productCarts.get(i).getQuantity());
-            opPromotion.ifPresent(productCartResponse::setPromotion);
+            if(!promotions.isEmpty()) {
+                productCartResponse.setPromotion(promotions.get(0));
+            }
             productCartResponses.add(productCartResponse);
         }
 

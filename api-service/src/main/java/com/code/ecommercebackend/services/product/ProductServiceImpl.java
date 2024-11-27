@@ -127,10 +127,10 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
                 .stream().map(productMapper::toProductResponse).toList());
         int index = 0;
         for (Product product : products) {
-            Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
+            List<Promotion> promotions = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
                     Sort.by(Sort.Direction.DESC, "startDate"));
-            if(opPromotion.isPresent()) {
-                Promotion promotion = opPromotion.get();
+            if(!promotions.isEmpty()) {
+                Promotion promotion = promotions.get(0);
                 ProductResponse newProductResponse = productResponses.get(index);
                 newProductResponse.setPromotion(promotion);
                 productResponses.set(index, newProductResponse);
@@ -142,10 +142,10 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
 
     public ProductResponse mapToProductResponse(Product product) {
         ProductResponse productResponse = productMapper.toProductResponse(product);
-        Optional<Promotion> opPromotion = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
+        List<Promotion> promotions = promotionRepository.findFirstByCurrentDateAndProductId(product.getId(),
                 Sort.by(Sort.Direction.DESC, "startDate"));
-        if(opPromotion.isPresent()) {
-            Promotion promotion = opPromotion.get();
+        if(!promotions.isEmpty()) {
+            Promotion promotion = promotions.get(0);
             productResponse.setPromotion(promotion);
         }
         return productResponse;
