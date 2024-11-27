@@ -104,8 +104,8 @@ public class PaymentListener {
                                     }
                                     buyQuantity = 0;
                                     InventoryOrder inventoryOrder = new InventoryOrder();
-                                    inventoryOrder.setId(inventory.getId());
-                                    inventoryOrder.setQuantity(buyQuantity);
+                                    inventoryOrder.setInventoryId(inventory.getId());
+                                    inventoryOrder.setQuantity(orderItem.getQuantity());
                                     inventoryOrders.add(inventoryOrder);
                                     break;
                                 } else {
@@ -115,8 +115,8 @@ public class PaymentListener {
                                         inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
                                     }
                                     InventoryOrder inventoryOrder = new InventoryOrder();
-                                    inventoryOrder.setId(inventory.getId());
-                                    inventoryOrder.setQuantity(quantityInStock);
+                                    inventoryOrder.setInventoryId(inventory.getId());
+                                    inventoryOrder.setQuantity(orderItem.getQuantity());
                                     inventoryOrders.add(inventoryOrder);
                                 }
                             }

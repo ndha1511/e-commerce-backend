@@ -78,6 +78,8 @@ public class OrderController {
                 "success"
         );
     }
+
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/confirm-cancel/{orderId}")
     public Response confirmCancel(@PathVariable String orderId)
             throws Exception {

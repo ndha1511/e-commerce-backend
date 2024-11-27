@@ -1,18 +1,20 @@
 package com.code.ecommercebackend.services.order;
 
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
-import com.code.ecommercebackend.models.Notification;
-import com.code.ecommercebackend.models.Order;
-import com.code.ecommercebackend.models.ProductOrder;
+import com.code.ecommercebackend.models.*;
+import com.code.ecommercebackend.models.enums.InventoryStatus;
 import com.code.ecommercebackend.models.enums.OrderStatus;
+import com.code.ecommercebackend.repositories.InventoryRepository;
 import com.code.ecommercebackend.repositories.NotificationRepository;
 import com.code.ecommercebackend.repositories.OrderRepository;
+import com.code.ecommercebackend.repositories.ProductRepository;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import com.code.ecommercebackend.utils.SocketHandler;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,12 +22,16 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     private final OrderRepository orderRepository;
     private final SocketHandler socketHandler;
     private final NotificationRepository notificationRepository;
+    private final InventoryRepository inventoryRepository;
+    private final ProductRepository productRepository;
 
-    public OrderServiceImpl(MongoRepository<Order, String> repository, OrderRepository orderRepository, SocketHandler socketHandler, NotificationRepository notificationRepository) {
+    public OrderServiceImpl(MongoRepository<Order, String> repository, OrderRepository orderRepository, SocketHandler socketHandler, NotificationRepository notificationRepository, InventoryRepository inventoryRepository, ProductRepository productRepository) {
         super(repository);
         this.orderRepository = orderRepository;
         this.socketHandler = socketHandler;
         this.notificationRepository = notificationRepository;
+        this.inventoryRepository = inventoryRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -78,11 +84,28 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new DataNotFoundException("Order not found"));
         List<ProductOrder> productOrders = order.getProductOrders();
+
+        List<Inventory> inventories = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         for (ProductOrder productOrder : productOrders) {
-            productOrder.setAllowComment(true);
+            Product product = productRepository.findById(productOrder.getProductId())
+                    .orElseThrow(() -> new DataNotFoundException("Product not found"));
+            product.setTotalQuantity(product.getTotalQuantity() + productOrder.getQuantity());
+            product.setBuyQuantity(product.getBuyQuantity() - productOrder.getQuantity());
+            products.add(product);
+            List<InventoryOrder> inventoryOrders = productOrder.getInventoryOrders();
+            for (InventoryOrder inventoryOrder : inventoryOrders) {
+                Inventory inventory = inventoryRepository.findById(inventoryOrder.getInventoryId())
+                        .orElseThrow(() -> new DataNotFoundException("Inventory not found"));
+                inventory.setSaleQuantity(inventory.getSaleQuantity() - inventoryOrder.getQuantity());
+                inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
+                inventories.add(inventory);
+
+            }
         }
+        inventoryRepository.saveAll(inventories);
+        productRepository.saveAll(products);
         order.setOrderStatus(OrderStatus.CANCELLED);
-        order.setProductOrders(productOrders);
         Notification notification =  saveNotification(order);
         socketHandler.sendNotificationToSocket(notification);
         orderRepository.save(order);

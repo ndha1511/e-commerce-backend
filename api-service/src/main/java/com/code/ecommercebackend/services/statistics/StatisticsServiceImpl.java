@@ -37,7 +37,7 @@ public class StatisticsServiceImpl implements StatisticsService{
             for (ProductOrder productOrder : productResponses) {
                 List<InventoryOrder> inventoryOrders = productOrder.getInventoryOrders();
                 for (InventoryOrder inventoryOrder : inventoryOrders) {
-                    Inventory inventory = inventoryRepository.findById(inventoryOrder.getId())
+                    Inventory inventory = inventoryRepository.findById(inventoryOrder.getInventoryId())
                             .orElseThrow(() -> new DataNotFoundException("Inventory not found"));
                     profit += productOrder.getAmount() - (inventory.getImportPrice() * inventoryOrder.getQuantity());
                 }
@@ -68,7 +68,7 @@ public class StatisticsServiceImpl implements StatisticsService{
             for (ProductOrder productOrder : productResponses) {
                 List<InventoryOrder> inventoryOrders = productOrder.getInventoryOrders();
                 for (InventoryOrder inventoryOrder : inventoryOrders) {
-                    Inventory inventory = inventoryRepository.findById(inventoryOrder.getId())
+                    Inventory inventory = inventoryRepository.findById(inventoryOrder.getInventoryId())
                             .orElseThrow(() -> new DataNotFoundException("inventory not found"));
                     profit += inventory.getImportPrice() * inventoryOrder.getQuantity();
                 }

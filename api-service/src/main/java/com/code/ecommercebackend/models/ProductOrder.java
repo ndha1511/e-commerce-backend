@@ -25,6 +25,7 @@ public class  ProductOrder {
     private int quantity;
     private double amount;
     private String image;
+    private String url;
     @Field(name = "allow_comment")
     private boolean allowComment;
     private boolean commented;
