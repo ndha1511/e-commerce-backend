@@ -1,9 +1,15 @@
 package com.code.ecommercebackend.fakeData;
 
+import com.code.ecommercebackend.dtos.request.payment.OrderItem;
+import com.code.ecommercebackend.dtos.request.payment.OrderRequest;
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.*;
+import com.code.ecommercebackend.models.enums.OrderStatus;
+import com.code.ecommercebackend.models.enums.PaymentMethod;
 import com.code.ecommercebackend.models.enums.Role;
 import com.code.ecommercebackend.repositories.*;
 import com.code.ecommercebackend.services.auth.AuthService;
+import com.code.ecommercebackend.services.payment.PaymentServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +32,9 @@ public class FakeData {
     private final ProductFeatureRepository userBehaviorRepository;
     private final BrandRepository brandRepository;
     private final ProductFeatureRepository productFeatureRepository;
+    private final VariantRepository variantRepository;
+    private final PaymentServiceImpl paymentServiceImpl;
+    private final OrderRepository orderRepository;
 
     public void fakeUsers() {
         String filePath = "fake-data/vietnamese_users.txt";
@@ -110,16 +119,25 @@ public class FakeData {
             productFeature.setPrice(product.getRegularPrice());
             productFeature.setCountView(rand.nextInt(100) + 1);
             productFeatureRepository.save(productFeature);
-
         }
-
     }
+
+    public void updateOrder() {
+        List<Order> orders = orderRepository.findAll();
+        for (Order order : orders) {
+            order.setOrderStatus(OrderStatus.RECEIVED);
+        }
+        orderRepository.saveAll(orders);
+    }
+
+
 
 //    @Bean
     public CommandLineRunner commandLineRunner(){
         return args -> {
 //            fakeCategories();
 //            fakeUserBehavior();
+//            updateOrder();
         };
     }
 

@@ -80,10 +80,10 @@ public abstract class PageQueryRepository<T>  {
             return Criteria.where(field).isNull();
         }
         return switch (operator) {
-            case "<" -> Criteria.where(field).lt(value);
-            case ">" -> Criteria.where(field).gt(value);
-            case "<=" -> Criteria.where(field).lte(value);
-            case ">=" -> Criteria.where(field).gte(value);
+            case "<" -> Criteria.where(field).lt(Integer.valueOf(value));
+            case ">" -> Criteria.where(field).gt(Integer.valueOf(value));
+            case "<=" -> Criteria.where(field).lte(Integer.valueOf(value));
+            case ">=" -> Criteria.where(field).gte(Integer.valueOf(value));
             case "=" -> Criteria.where(field).is(value.equals("false") ? false : value.equals("true") ? true : value);
             case "!" -> Criteria.where(field).ne(value);
             case "-" -> Criteria.where(field).exists(false);

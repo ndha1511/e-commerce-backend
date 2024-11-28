@@ -7,6 +7,7 @@ import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.*;
 import com.code.ecommercebackend.repositories.*;
+import com.code.ecommercebackend.repositories.customizations.product.ProductRepositoryCustom;
 import com.code.ecommercebackend.services.BaseServiceImpl;
 import com.code.ecommercebackend.services.common.CommonFunction;
 import com.code.ecommercebackend.utils.CookieHandler;
@@ -33,6 +34,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
     private final ProductFeatureRepository productFeatureRepository;
+    private final ProductRepositoryCustom productRepositoryCustom;
 
     public ProductServiceImpl(
             MongoRepository<Product, String> repository,
@@ -42,7 +44,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
             ProductAttributeRepository productAttributeRepository,
             CookieHandler cookieHandler,
             VariantRepository variantRepository,
-            CommonFunction commonFunction, BrandRepository brandRepository, CategoryRepository categoryRepository, ProductFeatureRepository productFeatureRepository) {
+            CommonFunction commonFunction, BrandRepository brandRepository, CategoryRepository categoryRepository, ProductFeatureRepository productFeatureRepository, ProductRepositoryCustom productRepositoryCustom) {
         super(repository);
         this.productMapper = productMapper;
         this.promotionRepository = promotionRepository;
@@ -54,6 +56,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
         this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
         this.productFeatureRepository = productFeatureRepository;
+        this.productRepositoryCustom = productRepositoryCustom;
     }
 
     @Override
@@ -75,8 +78,10 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, String> impleme
     }
 
     @Override
-    public PageResponse<ProductResponse> getPageProduct(int pageNo, int size, String[] search, String[] sort) {
-        PageResponse<Product> pageProduct = super.getPageData(pageNo, size, search, sort, Product.class);
+    public PageResponse<ProductResponse> getPageProduct(int pageNo, int size, String[] search, String[] sort,
+                                                        String rangeRegularPrice,
+                                                        String rangeRating) {
+        PageResponse<Product> pageProduct = productRepositoryCustom.getPageData(pageNo, size, search, sort, rangeRegularPrice, rangeRating);
         List<Product> products = pageProduct.getItems();
         List<ProductResponse> productResponses = mapToProductResponses(products);
         PageResponse<ProductResponse> pageResponse = new PageResponse<>();

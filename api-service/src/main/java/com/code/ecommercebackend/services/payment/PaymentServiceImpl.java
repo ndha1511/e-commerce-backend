@@ -105,11 +105,17 @@ public class PaymentServiceImpl implements PaymentService {
                     .productId(variant.getProduct().getId())
                     .url(variant.getProduct().getUrlPath())
                     .productName(variant.getProduct().getProductName())
-                    .attributes(List.of(variant.getAttributeValue1(),
-                            variant.getAttributeValue2()))
                     .quantity(item.getQuantity())
                     .amount(amount)
                     .build();
+            List<String> attributeValues = new ArrayList<>();
+            if(variant.getAttributeValue1() != null) {
+                attributeValues.add(variant.getAttributeValue1());
+            }
+            if(variant.getAttributeValue2() != null) {
+                attributeValues.add(variant.getAttributeValue2());
+            }
+            productOrder.setAttributes(attributeValues);
             productOrders.add(productOrder);
 
 

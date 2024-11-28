@@ -52,7 +52,9 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "40") int size,
             @RequestParam(required = false) String[] search,
-            @RequestParam(required = false) String[] sort
+            @RequestParam(required = false) String[] sort,
+            @RequestParam(required = false) String rangeRegularPrice,
+            @RequestParam(required = false) String rangeRating
     ) {
         List<String> searchList = new ArrayList<>();
         searchList.add("inactive=false");
@@ -63,7 +65,7 @@ public class ProductController {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
-                productService.getPageProduct(page, size, search, sort)
+                productService.getPageProduct(page, size, search, sort, rangeRegularPrice, rangeRating)
         );
     }
 
@@ -141,7 +143,9 @@ public class ProductController {
                                          @RequestParam(defaultValue = "1") int page,
                                          @RequestParam(defaultValue = "40") int size,
                                          @RequestParam(required = false) String[] search,
-                                         @RequestParam(required = false) String[] sort
+                                         @RequestParam(required = false) String[] sort,
+                                         @RequestParam(required = false) String rangeRegularPrice,
+                                         @RequestParam(required = false) String rangeRating
                                          ) throws Exception {
         Category category = categoryService.findByUrl(url);
         List<String> searchList = new ArrayList<>();
@@ -153,7 +157,7 @@ public class ProductController {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
-                productService.getPageProduct(page, size, search, sort)
+                productService.getPageProduct(page, size, search, sort, rangeRegularPrice, rangeRegularPrice)
         );
 
     }
@@ -164,6 +168,8 @@ public class ProductController {
                                         @RequestParam(defaultValue = "40") int size,
                                         @RequestParam(required = false) String[] search,
                                         @RequestParam(required = false) String[] sort,
+                                        @RequestParam(required = false) String rangeRegularPrice,
+                                        @RequestParam(required = false) String rangeRating,
                                         HttpServletRequest request) {
         List<String> searchList = new ArrayList<>();
         searchList.add("searchNames:" + keyWord);
@@ -180,7 +186,7 @@ public class ProductController {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
-                productService.getPageProduct(page, size, search, sort)
+                productService.getPageProduct(page, size, search, sort, rangeRegularPrice, rangeRating)
         );
 
     }

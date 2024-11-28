@@ -12,7 +12,7 @@ import java.util.List;
 
 
 public interface ProductService extends BaseService<Product, String> {
-    PageResponse<ProductResponse> getPageProduct(int pageNo, int size, String[] search, String[] sort);
+    PageResponse<ProductResponse> getPageProduct(int pageNo, int size, String[] search, String[] sort, String rangeRegularPrice, String rangeRating);
     ProductResponse findByUrl(String url, HttpServletRequest request) throws DataNotFoundException;
     AttributeResponse findAttributeByProductId(String productId);
     List<ProductResponse> getProductResponseByNumIds(List<Long> ids);
