@@ -1,11 +1,11 @@
 package com.code.ecommercebackend.controllers;
 
 import com.code.ecommercebackend.dtos.request.brand.CreateBrandRequest;
+import com.code.ecommercebackend.dtos.request.brand.UpdateBrandRequest;
 import com.code.ecommercebackend.dtos.response.Response;
 import com.code.ecommercebackend.dtos.response.ResponseSuccess;
 import com.code.ecommercebackend.mappers.brand.BrandMapper;
 import com.code.ecommercebackend.models.Brand;
-import com.code.ecommercebackend.models.Category;
 import com.code.ecommercebackend.services.brand.BrandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +42,15 @@ public class BrandController {
                 HttpStatus.OK.value(),
                 "success",
                 brandService.getPageData(pageNo, size, search, sort, Brand.class)
+        );
+    }
+    @PutMapping("{id}")
+    public Response updateBrand(@Valid @PathVariable String id, @ModelAttribute UpdateBrandRequest updateBrandRequest)
+            throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.CREATED.value(),
+                "success",
+                brandService.updateBrand(id, updateBrandRequest)
         );
     }
 }

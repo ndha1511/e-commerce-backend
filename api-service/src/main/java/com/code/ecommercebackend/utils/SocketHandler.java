@@ -3,10 +3,7 @@ package com.code.ecommercebackend.utils;
 import com.code.ecommercebackend.dtos.response.comment.CommentResponse;
 import com.code.ecommercebackend.dtos.response.message.MessageResponse;
 import com.code.ecommercebackend.dtos.response.notification.NotificationResponse;
-import com.code.ecommercebackend.models.Comment;
-import com.code.ecommercebackend.models.Message;
-import com.code.ecommercebackend.models.Notification;
-import com.code.ecommercebackend.models.User;
+import com.code.ecommercebackend.models.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -42,4 +39,5 @@ public class SocketHandler {
         response.setType("notification");
         messagingTemplate.convertAndSend("/topic/notification/"  + notification.getUserId(), response);
     }
+
 }

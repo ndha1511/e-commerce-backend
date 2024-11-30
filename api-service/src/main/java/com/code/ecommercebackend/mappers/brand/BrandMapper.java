@@ -1,6 +1,7 @@
 package com.code.ecommercebackend.mappers.brand;
 
 import com.code.ecommercebackend.dtos.request.brand.CreateBrandRequest;
+import com.code.ecommercebackend.dtos.request.brand.UpdateBrandRequest;
 import com.code.ecommercebackend.exceptions.DataExistsException;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.exceptions.FileNotSupportedException;
@@ -21,4 +22,10 @@ public interface BrandMapper {
     @Mapping(source = "categories", target = "categories", qualifiedByName = "checkExistCategory")
     Brand toBrand(CreateBrandRequest createBrandRequest)
             throws FileTooLargeException, FileNotSupportedException, IOException, DataExistsException, DataNotFoundException;
+    @Mapping(source = "img", target = "image", qualifiedByName = "uploadImage")
+    @Mapping(source = "categories", target = "categories", qualifiedByName = "checkExistCategory")
+    Brand toUpdateBrand(UpdateBrandRequest updateBrandRequest)
+                throws FileTooLargeException, FileNotSupportedException, IOException, DataExistsException, DataNotFoundException;
+
+
 }
