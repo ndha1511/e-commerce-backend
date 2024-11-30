@@ -6,8 +6,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Revenue {
-    private double revenue;
-    private double profit;
+    protected double revenue;
+    protected double profit;
+
+    public void addRevenue(double revenue, double profit) {
+        this.revenue += revenue;
+        this.profit += profit;
+    }
 
 
 }

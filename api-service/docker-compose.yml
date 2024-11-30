@@ -41,7 +41,7 @@ services:
 
   recommend-system:
     container_name: recommend-system
-    image: hoanganh1511/recommend-system:1.1
+    image: hoanganh1511/recommend-system:1.2
     ports:
       - "3000:3000"
     networks:

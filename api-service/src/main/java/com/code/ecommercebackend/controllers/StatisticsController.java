@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+
 
 @RestController
 @RequestMapping("${api.prefix}/statistics")
@@ -22,15 +23,11 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     @GetMapping("/total-order")
-    public Response getTotalOrder(@RequestParam(defaultValue = "-2208988800000", required = false) long startDate,
-                                  @RequestParam(defaultValue = "4102444800000", required = false) long endDate) {
-        LocalDateTime strDate = Instant.ofEpochMilli(startDate)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+    public Response getTotalOrder(LocalDate startDate,
+                                  LocalDate endDate) {
+        LocalDateTime strDate = startDate.atStartOfDay();
 
-        LocalDateTime eDate = Instant.ofEpochMilli(endDate)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+        LocalDateTime eDate = endDate.atStartOfDay();
 
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
@@ -41,11 +38,66 @@ public class StatisticsController {
 
     @GetMapping("/revenue-in-year")
     public Response getRevenueInYear(@RequestParam int year)
-    throws Exception {
+            throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "success",
                 statisticsService.revenueYear(year)
+        );
+    }
+
+    @GetMapping("/revenue-day")
+    public Response getRevenueDay(LocalDate startDate,
+                                  LocalDate endDate) throws Exception {
+        LocalDateTime strDate = startDate.atStartOfDay();
+
+        LocalDateTime eDate = endDate.atStartOfDay();
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                statisticsService.revenueDay(strDate, eDate)
+        );
+    }
+
+    @GetMapping("/total-revenue")
+    public Response getTotalRevenue(LocalDate startDate,
+                                    LocalDate endDate) throws Exception {
+        LocalDateTime strDate = startDate.atStartOfDay();
+
+        LocalDateTime eDate = endDate.atStartOfDay();
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                statisticsService.totalRevenue(strDate, eDate)
+        );
+
+    }
+
+    @GetMapping("/top-product")
+    public Response getTopProduct(LocalDate startDate,
+                                  LocalDate endDate,
+                                  @RequestParam(required = false, defaultValue = "10") int topN) throws Exception {
+        LocalDateTime strDate = startDate.atStartOfDay();
+
+        LocalDateTime eDate = endDate.atStartOfDay();
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                statisticsService.bestSellingProduct(strDate, eDate, topN)
+        );
+    }
+
+    @GetMapping("/top-user")
+    public Response getTopUser(LocalDate startDate,
+                               LocalDate endDate,
+                               @RequestParam(required = false, defaultValue = "10") int topN) throws Exception {
+        LocalDateTime strDate = startDate.atStartOfDay();
+
+        LocalDateTime eDate = endDate.atStartOfDay();
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                statisticsService.topUserBuyer(strDate, eDate, topN)
         );
     }
 }
