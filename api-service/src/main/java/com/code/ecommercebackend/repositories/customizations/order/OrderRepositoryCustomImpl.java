@@ -24,10 +24,9 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
         LocalDateTime endDate = LocalDateTime.of(year + 1, Month.JANUARY, 1, 0, 0);
 
         Query query = new Query();
-        Criteria criteriaStartDate = Criteria.where("createdAt").gte(startDate);
-        Criteria criteriaEndDate = Criteria.where("createdAt").lt(endDate);
+        Criteria criteriaDate = Criteria.where("createdAt").gte(startDate).lt(endDate);
         Criteria criteriaStatus = Criteria.where("orderStatus").in("SHIPPED_CONFIRMATION", "RECEIVED");
-        query.addCriteria(new Criteria().orOperator(criteriaStartDate, criteriaEndDate).andOperator(criteriaStatus));
+        query.addCriteria(criteriaDate.andOperator(criteriaStatus));
         query.with(Sort.by(Sort.Direction.ASC, "createdAt"));
 
         return mongoTemplate.find(query, Order.class);
@@ -37,20 +36,18 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     @Override
     public long countByStartDateEndDate(LocalDateTime startDate, LocalDateTime endDate) {
         Query query = new Query();
-        Criteria criteriaStartDate = Criteria.where("createdAt").gte(startDate);
-        Criteria criteriaEndDate = Criteria.where("createdAt").lt(endDate);
+        Criteria criteriaDate = Criteria.where("createdAt").gte(startDate).lt(endDate);
         Criteria criteriaStatus = Criteria.where("orderStatus").in("SHIPPED_CONFIRMATION", "RECEIVED");
-        query.addCriteria(new Criteria().orOperator(criteriaStartDate, criteriaEndDate).andOperator(criteriaStatus));
+        query.addCriteria(criteriaDate.andOperator(criteriaStatus));
         return mongoTemplate.count(query, Order.class);
     }
 
     @Override
     public List<Order> findByStartDateEndDate(LocalDateTime startDate, LocalDateTime endDate) {
         Query query = new Query();
-        Criteria criteriaStartDate = Criteria.where("createdAt").gte(startDate);
-        Criteria criteriaEndDate = Criteria.where("createdAt").lt(endDate);
+        Criteria criteriaDate = Criteria.where("createdAt").gte(startDate).lt(endDate);
         Criteria criteriaStatus = Criteria.where("orderStatus").in("SHIPPED_CONFIRMATION", "RECEIVED");
-        query.addCriteria(new Criteria().orOperator(criteriaStartDate, criteriaEndDate).andOperator(criteriaStatus));
+        query.addCriteria(criteriaDate.andOperator(criteriaStatus));
         return mongoTemplate.find(query, Order.class);
     }
 }
