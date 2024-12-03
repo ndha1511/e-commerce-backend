@@ -34,7 +34,6 @@ public class HistorySearchServiceImpl implements HistorySearchService {
         HistorySearch historySearch = new HistorySearch();
         if(userId != null && !userId.isEmpty()) {
             historySearch.setUserId(userId);
-        } else {
             Optional<HistorySearch> optionalHistorySearch = historySearchRepository.findByUserIdAndContent(userId, content);
             optionalHistorySearch.ifPresent(historySearchRepository::delete);
         }

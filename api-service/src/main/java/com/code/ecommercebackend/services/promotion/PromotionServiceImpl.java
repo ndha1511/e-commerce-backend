@@ -43,4 +43,10 @@ public class PromotionServiceImpl extends BaseServiceImpl<Promotion, String> imp
     public List<Promotion> getPromotionsCarousel() {
         return promotionRepository.findAllByCurrentDateAndView();
     }
+
+    @Override
+    public Promotion getPromotionByUrl(String url) throws DataNotFoundException {
+        return promotionRepository.getPromotionByUrl(url).
+                orElseThrow(() -> new DataNotFoundException("Promotion not found"));
+    }
 }
