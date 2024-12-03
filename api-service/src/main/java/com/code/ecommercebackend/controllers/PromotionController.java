@@ -19,7 +19,7 @@ public class PromotionController {
     private final PromotionService promotionService;
     private final PromotionMapper promotionMapper;
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public Response createPromotion(@Valid @ModelAttribute CreatePromotionRequest createPromotionRequest) {
         Promotion promotion = promotionMapper.toPromotion(createPromotionRequest);
@@ -61,6 +61,15 @@ public class PromotionController {
                 HttpStatus.CREATED.value(),
                 "success",
                 promotionService.getProductsByPromotionId(promotionId)
+        );
+    }
+
+    @GetMapping("/{url}")
+    public Response getPromotionByUrl(@PathVariable String url) throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                promotionService.getPromotionByUrl(url)
         );
     }
 }

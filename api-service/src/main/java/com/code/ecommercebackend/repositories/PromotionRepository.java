@@ -15,5 +15,6 @@ public interface PromotionRepository extends MongoRepository<Promotion, String> 
     List<Promotion> findAllByCurrentDateAndView();
     @Query("{ 'startDate': { $lt: ?#{T(java.time.LocalDateTime).now()} }, 'endDate': { $gt: ?#{T(java.time.LocalDateTime).now()} }, 'flash_sale': true }")
     List<Promotion> findAllByCurrentDateAndFlashSale();
+    Optional<Promotion> getPromotionByUrl(String url);
 
 }

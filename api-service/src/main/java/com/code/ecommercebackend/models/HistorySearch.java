@@ -24,6 +24,7 @@ public class HistorySearch extends BaseModel {
     @Field(name = "search_content")
     private List<String> searchContent;
 
+
     public void normalizerName(String content) {
         List<String> namesNormalize = new ArrayList<>();
         namesNormalize.add(content.toLowerCase());
