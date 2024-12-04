@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.historySearch;
 
+import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.HistorySearch;
 import com.code.ecommercebackend.repositories.HistorySearchRepository;
 import com.code.ecommercebackend.repositories.customizations.historySearch.HistorySearchRepositoryCustom;
@@ -41,5 +42,10 @@ public class HistorySearchServiceImpl implements HistorySearchService {
         historySearch.normalizerName(content);
 
         historySearchRepository.save(historySearch);
+    }
+
+    @Override
+    public void deleteHistorySearchById(String historySearchId) {
+        historySearchRepository.deleteById(historySearchId);
     }
 }
