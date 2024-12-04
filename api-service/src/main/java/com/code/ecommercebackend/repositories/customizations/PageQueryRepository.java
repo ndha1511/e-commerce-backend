@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public abstract class PageQueryRepository<T>  {
+public abstract class PageQueryRepository<T> {
 
     @Autowired
     protected MongoTemplate mongoTemplate;
@@ -51,6 +51,7 @@ public abstract class PageQueryRepository<T>  {
                 page.getContent()
         );
     }
+
     // condition = 'field:value'
     protected void addConditionQuery(Query query, String condition) {
         Matcher matcher = FILTER_PATTERN.matcher(condition);
@@ -61,6 +62,7 @@ public abstract class PageQueryRepository<T>  {
             query.addCriteria(getCriteria(field, operator, value));
         }
     }
+
     // field:asc|desc
     protected void addSort(Query query, String sort) {
         Matcher matcher = SORT_PATTERN.matcher(sort);
@@ -76,18 +78,34 @@ public abstract class PageQueryRepository<T>  {
     }
 
     protected Criteria getCriteria(String field, String operator, String value) {
-        if(value.equals("null")) {
+        if (value.equals("null")) {
             return Criteria.where(field).isNull();
         }
+
+        // Kiểm tra xem giá trị có phải là một số không (số nguyên hoặc số thực)
+        boolean isNumeric = value.matches("-?\\d+(\\.\\d+)?");  // Kiểm tra nếu là số nguyên hoặc số thực
+
+        // Nếu giá trị là số, chuyển đổi và xử lý
+        if (isNumeric) {
+            double doubleValue = Double.parseDouble(value);  // Chuyển giá trị sang kiểu double
+
+            return switch (operator) {
+                case "<" -> Criteria.where(field).lt(doubleValue);  // So sánh bé hơn
+                case ">" -> Criteria.where(field).gt(doubleValue);  // So sánh lớn hơn
+                case "<=" -> Criteria.where(field).lte(doubleValue);  // So sánh bé hơn hoặc bằng
+                case ">=" -> Criteria.where(field).gte(doubleValue);  // So sánh lớn hơn hoặc bằng
+                case "=" -> Criteria.where(field).is(doubleValue);  // So sánh bằng
+                case "!=" -> Criteria.where(field).ne(doubleValue);  // So sánh không bằng
+                default -> Criteria.where(field).regex(value.trim(), "i");  // Nếu không phải toán tử số, sử dụng regex
+            };
+        }
+
+        // Nếu không phải là số, xử lý chuỗi (kể cả trường hợp tìm kiếm theo "rating:true", "rating:false", ...)
         return switch (operator) {
-            case "<" -> Criteria.where(field).lt(Integer.valueOf(value));
-            case ">" -> Criteria.where(field).gt(Integer.valueOf(value));
-            case "<=" -> Criteria.where(field).lte(Integer.valueOf(value));
-            case ">=" -> Criteria.where(field).gte(Integer.valueOf(value));
             case "=" -> Criteria.where(field).is(value.equals("false") ? false : value.equals("true") ? true : value);
-            case "!" -> Criteria.where(field).ne(value);
-            case "-" -> Criteria.where(field).exists(false);
-            default -> Criteria.where(field).regex(value.trim(), "i");
+            case "!=" -> Criteria.where(field).ne(value);
+            case "-" -> Criteria.where(field).exists(false);  // Trường không tồn tại
+            default -> Criteria.where(field).regex(value.trim(), "i");  // Sử dụng regex cho trường hợp khác
         };
     }
 

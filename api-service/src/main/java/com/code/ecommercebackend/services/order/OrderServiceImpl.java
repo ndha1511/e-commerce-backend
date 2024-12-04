@@ -54,9 +54,6 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new DataNotFoundException("Order not found"));
         List<ProductOrder> productOrders = order.getProductOrders();
-        for (ProductOrder productOrder : productOrders) {
-            productOrder.setAllowComment(true);
-        }
         order.setOrderStatus(OrderStatus.SHIPPING);
         order.setProductOrders(productOrders);
         Notification notification =  saveNotification(order);
@@ -69,9 +66,6 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new DataNotFoundException("Order not found"));
         List<ProductOrder> productOrders = order.getProductOrders();
-        for (ProductOrder productOrder : productOrders) {
-            productOrder.setAllowComment(true);
-        }
         order.setOrderStatus(OrderStatus.SHIPPED_CONFIRMATION);
         order.setProductOrders(productOrders);
         Notification notification =  saveNotification(order);
