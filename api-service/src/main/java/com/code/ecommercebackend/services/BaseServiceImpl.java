@@ -36,9 +36,10 @@ public class BaseServiceImpl<T, ID extends Serializable> extends PageQueryReposi
     }
 
     @Override
-    public PageResponse<T> getPageData(int pageNo, int size, String[] search, String[] sort, Class<T> clazz) {
+    public PageResponse<T> getPageData(int pageNo, int size, String[] search, String[] sort, Class<T> clazz)  {
         return super.getPageData(pageNo, size, search, sort, clazz);
     }
+
     @Override
     public void deleteById(ID id) {
         repository.deleteById(id);

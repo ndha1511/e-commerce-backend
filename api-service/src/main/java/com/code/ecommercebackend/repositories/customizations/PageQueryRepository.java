@@ -82,30 +82,30 @@ public abstract class PageQueryRepository<T> {
             return Criteria.where(field).isNull();
         }
 
-        // Kiểm tra xem giá trị có phải là một số không (số nguyên hoặc số thực)
-        boolean isNumeric = value.matches("-?\\d+(\\.\\d+)?");  // Kiểm tra nếu là số nguyên hoặc số thực
 
-        // Nếu giá trị là số, chuyển đổi và xử lý
+        boolean isNumeric = value.matches("-?\\d+(\\.\\d+)?");
+
+
         if (isNumeric) {
-            double doubleValue = Double.parseDouble(value);  // Chuyển giá trị sang kiểu double
+            double doubleValue = Double.parseDouble(value);
 
             return switch (operator) {
-                case "<" -> Criteria.where(field).lt(doubleValue);  // So sánh bé hơn
-                case ">" -> Criteria.where(field).gt(doubleValue);  // So sánh lớn hơn
-                case "<=" -> Criteria.where(field).lte(doubleValue);  // So sánh bé hơn hoặc bằng
-                case ">=" -> Criteria.where(field).gte(doubleValue);  // So sánh lớn hơn hoặc bằng
-                case "=" -> Criteria.where(field).is(doubleValue);  // So sánh bằng
-                case "!=" -> Criteria.where(field).ne(doubleValue);  // So sánh không bằng
-                default -> Criteria.where(field).regex(value.trim(), "i");  // Nếu không phải toán tử số, sử dụng regex
+                case "<" -> Criteria.where(field).lt(doubleValue);
+                case ">" -> Criteria.where(field).gt(doubleValue);
+                case "<=" -> Criteria.where(field).lte(doubleValue);
+                case ">=" -> Criteria.where(field).gte(doubleValue);
+                case "=" -> Criteria.where(field).is(doubleValue);
+                case "!=" -> Criteria.where(field).ne(doubleValue);
+                default -> Criteria.where(field).regex(value.trim(), "i");
             };
         }
 
-        // Nếu không phải là số, xử lý chuỗi (kể cả trường hợp tìm kiếm theo "rating:true", "rating:false", ...)
+
         return switch (operator) {
             case "=" -> Criteria.where(field).is(value.equals("false") ? false : value.equals("true") ? true : value);
             case "!=" -> Criteria.where(field).ne(value);
-            case "-" -> Criteria.where(field).exists(false);  // Trường không tồn tại
-            default -> Criteria.where(field).regex(value.trim(), "i");  // Sử dụng regex cho trường hợp khác
+            case "-" -> Criteria.where(field).exists(false);
+            default -> Criteria.where(field).regex(value.trim(), "i");
         };
     }
 
