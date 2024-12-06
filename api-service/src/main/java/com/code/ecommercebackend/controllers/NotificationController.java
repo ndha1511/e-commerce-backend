@@ -19,7 +19,8 @@ public class NotificationController {
     public Response getNotifications( @PathVariable String userId ,
                                       @RequestParam(defaultValue = "1") int pageNo,
                               @RequestParam(defaultValue = "40") int size,
-                              @RequestParam(required = false) String[] sort) {
+                              @RequestParam(required = false) String[] sort)
+   {
         String userSearch = "userId=" + userId;
         String[] search = {userSearch};
         return new ResponseSuccess<>(

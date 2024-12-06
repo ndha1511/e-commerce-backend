@@ -3,6 +3,7 @@ package com.code.ecommercebackend.services;
 import com.code.ecommercebackend.dtos.response.PageResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 
+
 import java.util.function.Function;
 
 public interface BaseService<T, ID> {

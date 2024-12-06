@@ -6,6 +6,7 @@ import com.code.ecommercebackend.dtos.response.category.CategoryResponse;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.mappers.product.ProductMapper;
 import com.code.ecommercebackend.models.*;
+import com.code.ecommercebackend.models.enums.InventoryStatus;
 import com.code.ecommercebackend.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -36,7 +37,7 @@ public class ExcelServiceImpl implements ExcelService {
     private final PurchaseOrderRepository purchaseOrderRepository;
 
     @Override
-    public ByteArrayInputStream generateExcelImportProduct(CategoryResponse category) throws IOException, DataNotFoundException {
+    public ByteArrayInputStream generateExcelImportProduct(CategoryResponse category) throws IOException {
         List<String> categoryStr = new ArrayList<>();
         categoryToArray(category, categoryStr, category.getCategoryName());
         List<String> brandStr = brandRepository.findAll().stream()
@@ -214,6 +215,7 @@ public class ExcelServiceImpl implements ExcelService {
                 inventory.setImportDate(LocalDateTime.now());
                 inventory.setImportQuantity(variantExcel.getQuantity());
                 inventory.setImportPrice(variantExcel.getImportPrice());
+                inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
                 inventoryRepository.save(inventory);
                 inventoryIds.add(inventory.getId());
                 totalPrice += variantExcel.getImportPrice() * variantExcel.getQuantity();

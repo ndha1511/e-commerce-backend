@@ -54,7 +54,7 @@ public class ProductController {
             @RequestParam(required = false) String[] sort,
             @RequestParam(required = false) String rangeRegularPrice,
             @RequestParam(required = false) String rangeRating
-    ) {
+    ) throws Exception {
         List<String> searchList = new ArrayList<>();
         searchList.add("inactive=false");
         if(search != null) {
@@ -169,7 +169,7 @@ public class ProductController {
                                         @RequestParam(required = false) String[] sort,
                                         @RequestParam(required = false) String rangeRegularPrice,
                                         @RequestParam(required = false) String rangeRating,
-                                        HttpServletRequest request) {
+                                        HttpServletRequest request) throws Exception {
         List<String> searchList = new ArrayList<>();
         searchList.add("searchNames:" + keyWord);
         if(search != null) {

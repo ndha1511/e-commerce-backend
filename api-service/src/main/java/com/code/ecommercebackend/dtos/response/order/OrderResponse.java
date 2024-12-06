@@ -1,4 +1,4 @@
-package com.code.ecommercebackend.dtos.response.Order;
+package com.code.ecommercebackend.dtos.response.order;
 
 import lombok.Getter;
 import lombok.Setter;

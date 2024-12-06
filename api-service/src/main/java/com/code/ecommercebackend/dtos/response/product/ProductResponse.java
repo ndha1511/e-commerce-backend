@@ -4,7 +4,9 @@ import com.code.ecommercebackend.models.ProductAttribute;
 import com.code.ecommercebackend.models.Promotion;
 import com.code.ecommercebackend.models.Tag;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.Set;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductResponse {
     private String id;
