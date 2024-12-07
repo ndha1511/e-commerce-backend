@@ -6,8 +6,6 @@ import pymongo
 import numpy as np
 from flask import Flask, jsonify, request
 
-
-
 def get_content_based_recommendations(product_id, top_n, content_df, content_similarity):
     index = content_df[content_df['product_id'] == product_id].index[0]
     similarity_scores = content_similarity[index]
@@ -23,13 +21,26 @@ def get_collaborative_filtering_recommendations(user_id, top_n, trainset, algo):
     recommendations = [prediction.iid for prediction in predictions[:top_n]]
     return recommendations
 
-def get_hybrid_recommendations(user_id, product_id, top_n, content_df, content_similarity, trainset, algo):
-    content_based_recommendations = get_content_based_recommendations(product_id, top_n, content_df, content_similarity)
-    collaborative_filtering_recommendations = get_collaborative_filtering_recommendations(user_id, top_n, trainset, algo)
+def get_hybrid_recommendations(user_id, product_ids, top_n, content_df, content_similarity, trainset, algo):
+    all_content_recommendations = []
+    content_based_recommendations = []
+    if len(product_ids) > 0:
+        products_per_id = top_n // len(product_ids)
+        for product_id in product_ids:
+            recommendations = get_content_based_recommendations(product_id, products_per_id, content_df,
+                                                                content_similarity)
+            all_content_recommendations.extend(recommendations)
+        content_based_recommendations = list(set(all_content_recommendations))
+
+    collaborative_filtering_recommendations = get_collaborative_filtering_recommendations(user_id, top_n, trainset,
+                                                                                              algo)
+    content_based_recommendations = list(map(int, content_based_recommendations))
+    collaborative_filtering_recommendations = list(
+        map(int, collaborative_filtering_recommendations))
     hybrid_recommendations = list(set(content_based_recommendations + collaborative_filtering_recommendations))
     return hybrid_recommendations[:top_n]
 
-def get_data(user_id, product_id, top_n = 10):
+def get_data(user_id, product_ids, top_n = 10):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://ndha1511:B1x5UuzC0BVEioWu@cluster0.4cyuq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
@@ -40,8 +51,7 @@ def get_data(user_id, product_id, top_n = 10):
     documents = collection.find()
 
     data = pd.DataFrame(data=documents, columns=['user_id', 'product_id', 'product_name', 'brand', 'category', 'price', 'rating'])
-    # data = pd.read_csv("../fashion_products.csv")
-    # print(data.head())
+
 
     content_df = data[['product_id', 'product_name', 'brand',
                        'category', 'price']]
@@ -64,13 +74,20 @@ def get_data(user_id, product_id, top_n = 10):
     trainset = data.build_full_trainset()
     algo.fit(trainset)
 
-    if user_id == 0 and product_id != 0:
-        recommendations = get_content_based_recommendations(product_id, top_n, content_df, content_similarity)
-        return recommendations
-    if product_id == 0 and user_id != 0:
+    if user_id == 0 and len(product_ids) > 0:
+        all_recommendations = []
+        products_per_id = top_n // len(product_ids)
+        for product_id in product_ids:
+            recommendations = get_content_based_recommendations(product_id, products_per_id, content_df, content_similarity)
+            all_recommendations.extend(recommendations)
+        unique_recommendations = list(set(all_recommendations))
+        return np.array(unique_recommendations)
+
+    if len(product_ids) == 0 and user_id != 0:
         recommendations = get_collaborative_filtering_recommendations(user_id, top_n, trainset, algo)
         return np.array(recommendations, dtype=np.int64)
-    recommendations = get_hybrid_recommendations(user_id, product_id, top_n, content_df, content_similarity, trainset, algo)
+
+    recommendations = get_hybrid_recommendations(user_id, product_ids, top_n, content_df, content_similarity, trainset, algo)
     return np.array(recommendations, dtype=np.int64)
 
 
@@ -78,9 +95,9 @@ controller = Flask(__name__)
 @controller.route('/recommend', methods=['GET'])
 def recommend_products():
     user_id = request.args.get('user_id', type=int, default=0)
-    product_id = request.args.get('product_id', type=int, default=0)
+    product_ids = request.args.getlist('product_id', type=int)
     top_n = request.args.get('top_n', type=int, default=10)
-    recommendations = get_data(user_id, product_id, top_n)
+    recommendations = get_data(user_id, product_ids, top_n)
     return jsonify(recommendations.tolist())
 
 def main():

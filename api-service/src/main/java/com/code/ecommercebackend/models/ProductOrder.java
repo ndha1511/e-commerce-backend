@@ -21,6 +21,8 @@ public class  ProductOrder {
     @Field(name = "inventories")
     private List<InventoryOrder> inventoryOrders;
     private List<String> attributes;
+    @Field(name = "product_num_id")
+    private long productNumId;
     private double price;
     private int quantity;
     private double amount;

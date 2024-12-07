@@ -9,8 +9,17 @@ import java.util.Optional;
 public interface ProductFeatureRepository extends MongoRepository<ProductFeature, String> {
     Optional<ProductFeature> findByUserIdAndProductId(long userId, long productId);
     boolean existsByUserId(long userId);
-    ProductFeature findTopByOrderByCountViewDesc();
-    ProductFeature findTopByUserIdOrderByCountViewDesc(Long userId);
+
+    /**
+     * Top 5 products with the highest views
+     */
+    List<ProductFeature> findTop5ByOrderByCountViewDesc();
+
+    /**
+     * 5 most recently viewed products by the user
+     */
+    List<ProductFeature> findTop5ByUserIdOrderByViewDateDesc(long userId);
     Optional<ProductFeature> findByProductIdAndUserIdIsNull(long productId);
-    List<ProductFeature> findAllByCategoryAndUserId(String category, long userId);
+    boolean existsByUserIdAndRatingIsNotNull(long userId);
+
 }

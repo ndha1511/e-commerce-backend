@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Configuration
@@ -118,6 +119,7 @@ public class FakeData {
             categoryRepository.findById(categories.get(categories.size() - 1)).ifPresent(category -> productFeature.setCategory(category.getCategoryName()));
             productFeature.setPrice(product.getRegularPrice());
             productFeature.setCountView(rand.nextInt(100) + 1);
+            productFeature.setViewDate(LocalDateTime.now());
             productFeatureRepository.save(productFeature);
         }
     }
