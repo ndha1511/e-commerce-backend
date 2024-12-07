@@ -8,6 +8,8 @@ import com.code.ecommercebackend.services.auth.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Service
 public class CommonFunctionImpl implements CommonFunction {
@@ -36,6 +38,7 @@ public class CommonFunctionImpl implements CommonFunction {
                     if (behavior != 1) {
                         int countView = productFeatureUser.getCountView() != null ? productFeatureUser.getCountView() : 0;
                         productFeatureUser.setCountView(countView + 1);
+                        productFeatureUser.setViewDate(LocalDateTime.now());
                     } else {
                         float oldRating = productFeatureUser.getRating() != null ? productFeatureUser.getRating() : 0f;
                         if (oldRating != 0) {

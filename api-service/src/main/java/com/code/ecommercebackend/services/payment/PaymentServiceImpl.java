@@ -103,6 +103,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .variantId(variant.getId())
                     .image((image != null) ? image : variant.getProduct().getThumbnail())
                     .productId(variant.getProduct().getId())
+                    .productNumId(variant.getProduct().getNumId())
                     .url(variant.getProduct().getUrlPath())
                     .productName(variant.getProduct().getProductName())
                     .quantity(item.getQuantity())
