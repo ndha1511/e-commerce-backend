@@ -3,7 +3,10 @@ package com.code.ecommercebackend.services.recommend;
 import com.code.ecommercebackend.dtos.response.product.ProductResponse;
 import com.code.ecommercebackend.models.ProductFeature;
 import com.code.ecommercebackend.repositories.ProductFeatureRepository;
+import com.code.ecommercebackend.repositories.customizations.redis.RedisRepository;
 import com.code.ecommercebackend.services.product.ProductService;
+import com.code.ecommercebackend.utils.RedisKeyHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -25,9 +28,10 @@ public class RecommendServiceImpl implements RecommendService {
     private final ProductService productService;
     private final RestTemplate restTemplate;
     private final ProductFeatureRepository productFeatureRepository;
+    private final RedisRepository redisRepository;
 
     @Override
-    public List<ProductResponse> getProductsRecommended(Long userId, Long productId, int nRecommend, String type) {
+    public List<ProductResponse> getProductsRecommended(Long userId, Long productId, int nRecommend, String type) throws JsonProcessingException {
         String url;
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -56,17 +60,28 @@ public class RecommendServiceImpl implements RecommendService {
         String productUrl = productIds.stream().map(id -> "&product_id=" + id)
                 .reduce("", (accumulator, id) -> accumulator + id);
 
-        url =  recommendServiceUrl + "/recommend?user_id=" + userId + productUrl +"&top_n=" + nRecommend;
+        String redisKey = RedisKeyHandler.createKeyRecommend(userId, productIds, nRecommend);
 
-        ResponseEntity<List<Long>> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                new ParameterizedTypeReference<>() {
-                }
-        );
-        List<Long> productIdsRs = Objects.requireNonNull(response.getBody());
+        List<ProductResponse> result = redisRepository.getListDataFromCache(redisKey, ProductResponse.class);
 
-        return productService.getProductResponseByNumIds(productIdsRs);
+        if(result == null) {
+            url =  recommendServiceUrl + "/recommend?user_id=" + userId + productUrl +"&top_n=" + nRecommend;
+
+            ResponseEntity<List<Long>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+            List<Long> productIdsRs = Objects.requireNonNull(response.getBody());
+
+            result = productService.getProductResponseByNumIds(productIdsRs);
+
+            redisRepository.saveDataInCache(redisKey, result);
+
+        }
+
+        return result;
     }
 }
