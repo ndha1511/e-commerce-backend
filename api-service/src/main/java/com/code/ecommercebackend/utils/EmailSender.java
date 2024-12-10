@@ -1,6 +1,7 @@
 package com.code.ecommercebackend.utils;
 
 
+import com.code.ecommercebackend.models.Order;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,21 @@ public class EmailSender {
         variables.put("msgBody", details.getMsgBody());
         context.setVariables(variables);
         String htmlContent = templateEngine.process("send-email", context);
+        mimeMessageHelper.setText(htmlContent, true);
+        mailSender.send(mimeMessage);
+    }
+
+    public void sendHtmlMailOrder(Order order, String emailRecipient, String subject) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+        mimeMessageHelper.setFrom(sender);
+        mimeMessageHelper.setTo(emailRecipient);
+        mimeMessageHelper.setSubject(subject);
+        Context context = new Context();
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("order", order);
+        context.setVariables(variables);
+        String htmlContent = templateEngine.process("order", context);
         mimeMessageHelper.setText(htmlContent, true);
         mailSender.send(mimeMessage);
     }
