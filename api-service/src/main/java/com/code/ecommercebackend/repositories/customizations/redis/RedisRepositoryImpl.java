@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -41,6 +43,16 @@ public class RedisRepositoryImpl implements RedisRepository {
         if (json != null) {
             JavaType type = objectMapper.getTypeFactory().constructParametricType(PageResponse.class,
                     objectMapper.getTypeFactory().constructType(clazz));
+            return objectMapper.readValue(json, type);
+        }
+        return null;
+    }
+
+    @Override
+    public <T> List<T> getListDataFromCache(String key, Class<T> clazz) throws JsonProcessingException {
+        String json = (String) redisTemplate.opsForValue().get(key);
+        if (json != null) {
+            JavaType type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
             return objectMapper.readValue(json, type);
         }
         return null;

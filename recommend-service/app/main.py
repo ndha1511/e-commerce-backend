@@ -7,16 +7,17 @@ import numpy as np
 from flask import Flask, jsonify, request
 
 def get_content_based_recommendations(product_id, top_n, content_df, content_similarity):
+    top_n = min(top_n, len(content_df) - 1)
     index = content_df[content_df['product_id'] == product_id].index[0]
     similarity_scores = content_similarity[index]
     similar_indices = similarity_scores.argsort()[::-1][1:top_n + 1]
     recommendations = content_df.loc[similar_indices, 'product_id'].values
     return recommendations
 
-def get_collaborative_filtering_recommendations(user_id, top_n, trainset, algo):
-    testset = trainset.build_anti_testset()
-    testset = filter(lambda x: x[0] == user_id, testset)
-    predictions = algo.test(testset)
+def get_collaborative_filtering_recommendations(user_id, top_n, train_set, algo):
+    test_set = train_set.build_anti_testset()
+    test_set = filter(lambda x: x[0] == user_id, test_set)
+    predictions = algo.test(test_set)
     predictions.sort(key=lambda x: x.est, reverse=True)
     recommendations = [prediction.iid for prediction in predictions[:top_n]]
     return recommendations
@@ -52,8 +53,11 @@ def get_data(user_id, product_ids, top_n = 10):
 
     data = pd.DataFrame(data=documents, columns=['user_id', 'product_id', 'product_name', 'brand', 'category', 'price', 'rating'])
 
+    documents_content_based = collection.find({"user_id": {"$exists": False}})
 
-    content_df = data[['product_id', 'product_name', 'brand',
+    data_content_based = pd.DataFrame(data=documents_content_based, columns=['product_id', 'product_name', 'brand', 'category', 'price'])
+
+    content_df = data_content_based[['product_id', 'product_name', 'brand',
                        'category', 'price']]
 
     content_df = content_df.drop_duplicates()

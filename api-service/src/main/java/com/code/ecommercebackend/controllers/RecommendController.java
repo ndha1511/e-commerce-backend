@@ -26,7 +26,8 @@ public class RecommendController {
     public Response getProductsRecommend(HttpServletRequest request,
                                          @RequestParam(required = false) Long productId,
                                          @RequestParam(required = false, defaultValue = "10") int nRecommend,
-                                         @RequestParam(required = false, defaultValue = "content-filtering") String type) {
+                                         @RequestParam(required = false, defaultValue = "content-filtering") String type)
+    throws Exception {
         String token = cookieHandler.getCookie(request, "refresh_token");
         String username = null;
         if(token != null && !token.isEmpty()) {
