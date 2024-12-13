@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.payment;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.configurations.VnpayConfig;
 import com.code.ecommercebackend.dtos.request.payment.KafkaMessageOrder;
 import com.code.ecommercebackend.dtos.request.payment.OrderItem;
@@ -221,7 +222,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (order.isPresent()) {
             Order orderInfo = order.get();
             orderInfo.setPaymentStatus(PaymentStatus.PAID);
-            orderInfo.setPaymentDate(LocalDateTime.now());
+            orderInfo.setPaymentDate(LocalDateTimeVN.now());
             orderRepository.save(orderInfo);
             return true;
         }

@@ -1,6 +1,7 @@
 package com.code.ecommercebackend.services.message;
 
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.request.message.MessageDto;
 import com.code.ecommercebackend.dtos.request.message.MessageKafka;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
@@ -52,7 +53,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message,String> implemen
         message.setSender(messageDto.getSender());
         message.setReceiver(messageDto.getReceiver());
         message.setMessageType(MessageType.TEXT);
-        message.setSendDate(LocalDateTime.now());
+        message.setSendDate(LocalDateTimeVN.now());
         message.setContent(messageDto.getMessage());
         message.setMessageStatus(MessageStatus.SENDING);
         message.setRoomId(roomservice
@@ -73,14 +74,14 @@ public class MessageServiceImpl extends BaseServiceImpl<Message,String> implemen
         Optional<User> userReceiver = userRepository.findByEmail(message.getReceiver());
         userReceiver.ifPresent(value -> roomReceiver.setAvatarReceiver(value.getAvatar()));
         roomReceiver.setLastMessageSender(message.getContent());
-        roomReceiver.setSendDate(LocalDateTime.now());
+        roomReceiver.setSendDate(LocalDateTimeVN.now());
         Conversation roomSender =roomRepository.findBySenderAndReceiver(message.getSender(), message.getReceiver())
                 .orElseThrow(()-> new DataNotFoundException("There is no message with that sender and receiver"));
         roomSender.setSeen(false);
         roomSender.setLastMessageSender(message.getContent());
         Optional<User> userSender = userRepository.findByEmail(message.getSender());
         userSender.ifPresent(value -> roomReceiver.setAvatarReceiver(value.getAvatar()));
-        roomSender.setSendDate(LocalDateTime.now());
+        roomSender.setSendDate(LocalDateTimeVN.now());
         roomRepository.save(roomReceiver);
         roomRepository.save(roomSender);
         if(messageDto.getFile() == null){

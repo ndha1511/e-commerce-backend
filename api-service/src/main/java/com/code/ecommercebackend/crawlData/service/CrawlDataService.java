@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.crawlData.service;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.crawlData.model.Option;
 import com.code.ecommercebackend.crawlData.model.Product;
 import com.code.ecommercebackend.crawlData.model.ProductDetail;
@@ -98,7 +99,7 @@ public class CrawlDataService {
                             inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
                             inventory.setImportPrice(Math.max(product.getPrice() - venue, 10000));
                             inventory.setImportQuantity(quantity);
-                            inventory.setImportDate(LocalDateTime.now());
+                            inventory.setImportDate(LocalDateTimeVN.now());
                             inventoryRepository.save(inventory);
                             inventoryIds.add(inventory.getId());
                             totalQuantity += quantity;
@@ -116,7 +117,7 @@ public class CrawlDataService {
                         inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
                         inventory.setImportPrice(Math.max(product.getPrice() - venue, 10000));
                         inventory.setImportQuantity(quantity);
-                        inventory.setImportDate(LocalDateTime.now());
+                        inventory.setImportDate(LocalDateTimeVN.now());
                         inventoryRepository.save(inventory);
                         inventoryIds.add(inventory.getId());
                         totalQuantity += quantity;
@@ -131,7 +132,7 @@ public class CrawlDataService {
                 // purchase order
                 PurchaseOrder purchaseOrder = new PurchaseOrder();
                 purchaseOrder.setImportStaffName("Admin");
-                purchaseOrder.setOrderDate(LocalDateTime.now());
+                purchaseOrder.setOrderDate(LocalDateTimeVN.now());
                 purchaseOrder.setInventories(inventoryIds);
                 purchaseOrder.setTotalQuantity(totalQuantity);
                 purchaseOrder.setTotalPrice(totalPrice);
@@ -140,7 +141,7 @@ public class CrawlDataService {
             } else {
                 Inventory inventory = new Inventory();
                 inventory.setProductId(myProduct.getId());
-                inventory.setImportDate(LocalDateTime.now());
+                inventory.setImportDate(LocalDateTimeVN.now());
                 inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
                 inventory.setImportPrice(Math.min(product.getPrice() - venue, 10000));
                 inventory.setImportQuantity(quantity);
@@ -148,7 +149,7 @@ public class CrawlDataService {
 
                 PurchaseOrder purchaseOrder = new PurchaseOrder();
                 purchaseOrder.setImportStaffName("Admin");
-                purchaseOrder.setOrderDate(LocalDateTime.now());
+                purchaseOrder.setOrderDate(LocalDateTimeVN.now());
                 purchaseOrder.setInventories(Set.of(inventory.getId()));
                 purchaseOrder.setTotalPrice(Math.min(product.getPrice() - venue, 10000) * quantity);
                 purchaseOrder.setTotalQuantity(quantity);

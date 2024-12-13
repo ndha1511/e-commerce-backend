@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.auth;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.request.auth.ChangePasswordRequest;
 import com.code.ecommercebackend.dtos.request.auth.CreateNewPasswordRequest;
 import com.code.ecommercebackend.dtos.request.auth.LoginRequest;
@@ -24,7 +25,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
                 .otp(generateOtp())
                 .roles(Set.of(Role.ROLE_USER))
                 .verify(false)
-                .expiryDateOtp(LocalDateTime.now().plusMinutes(5))
+                .expiryDateOtp(LocalDateTimeVN.now().plusMinutes(5))
                 .build();
         user.generateUsername();
         sendMail(user);
@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
             throw new DataNotMatchedException("email already verified");
         if(!user.getOtp().equals(otp))
             throw new DataNotMatchedException("otp không chính xác");
-        if(user.getExpiryDateOtp().isBefore(LocalDateTime.now()))
+        if(user.getExpiryDateOtp().isBefore(LocalDateTimeVN.now()))
             throw new DataExpiredException("otp đã hết hạn");
         user.setVerify(true);
         userRepository.save(user);
@@ -81,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
         if(!user.getVerify()) {
             user.setOtp(generateOtp());
-            user.setExpiryDateOtp(LocalDateTime.now().plusMinutes(5));
+            user.setExpiryDateOtp(LocalDateTimeVN.now().plusMinutes(5));
             userRepository.save(user);
             sendMail(user);
             throw new UserNotVerifyException("please verify email");
@@ -96,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
         user.setOtp(generateOtp());
-        user.setExpiryDateOtp(LocalDateTime.now().plusMinutes(5));
+        user.setExpiryDateOtp(LocalDateTimeVN.now().plusMinutes(5));
         userRepository.save(user);
         sendMail(user);
 
@@ -165,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
         user.setVerifiedResetPassword(false);
         user.setOtp(generateOtp());
-        user.setExpiryDateOtp(LocalDateTime.now().plusMinutes(5));
+        user.setExpiryDateOtp(LocalDateTimeVN.now().plusMinutes(5));
         sendMail(user);
         userRepository.save(user);
     }
@@ -176,7 +176,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new DataNotFoundException("email not found"));
         if(!user.getOtp().equals(otp))
             throw new DataNotMatchedException("otp không chính xác");
-        if(user.getExpiryDateOtp().isBefore(LocalDateTime.now()))
+        if(user.getExpiryDateOtp().isBefore(LocalDateTimeVN.now()))
             throw new DataExpiredException("otp đã hết hạn");
         user.setVerifiedResetPassword(true);
         userRepository.save(user);
@@ -221,7 +221,7 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(jwtService.generateToken(userDetail))
                 .refreshToken(jwtService.generateRefreshToken(new HashMap<>(), userDetail))
                 .userId(user.getId())
-                .expiredDate(LocalDateTime.now().plusDays(30))
+                .expiredDate(LocalDateTimeVN.now().plusDays(30))
                 .build();
         tokenRepository.save(token);
         return TokenResponse.builder()

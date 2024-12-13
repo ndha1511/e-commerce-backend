@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.fakeData;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.request.payment.OrderItem;
 import com.code.ecommercebackend.dtos.request.payment.OrderRequest;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
@@ -119,7 +120,7 @@ public class FakeData {
             categoryRepository.findById(categories.get(categories.size() - 1)).ifPresent(category -> productFeature.setCategory(category.getCategoryName()));
             productFeature.setPrice(product.getRegularPrice());
             productFeature.setCountView(rand.nextInt(100) + 1);
-            productFeature.setViewDate(LocalDateTime.now());
+            productFeature.setViewDate(LocalDateTimeVN.now());
             productFeatureRepository.save(productFeature);
         }
     }

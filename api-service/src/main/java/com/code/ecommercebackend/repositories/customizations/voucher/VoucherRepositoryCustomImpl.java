@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.repositories.customizations.voucher;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.response.PageResponse;
 import com.code.ecommercebackend.models.Voucher;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public class VoucherRepositoryCustomImpl implements VoucherRepositoryCustom {
     public PageResponse<Voucher> getVoucherByUserId(String userId, int pageNo, int size) {
         Query query = new Query();
         Criteria criteria = new Criteria().andOperator(
-                Criteria.where("startDate").lt(java.time.LocalDateTime.now()),
-                Criteria.where("endDate").gt(java.time.LocalDateTime.now()),
+                Criteria.where("startDate").lt(LocalDateTimeVN.now()),
+                Criteria.where("endDate").gt(LocalDateTimeVN.now()),
                 new Criteria().orOperator(
                         Criteria.where("applyAll").is(true),
                         Criteria.where("applyFor").in(userId)

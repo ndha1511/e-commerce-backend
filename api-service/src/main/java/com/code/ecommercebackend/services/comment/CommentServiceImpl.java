@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.comment;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.request.comment.CommentReplyRequest;
 import com.code.ecommercebackend.dtos.request.comment.CommentRequest;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
@@ -60,7 +61,7 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
     public Comment save(CommentRequest commentRequest, HttpServletRequest request)
             throws DataNotFoundException, FileTooLargeException, FileNotSupportedException, IOException {
         Comment comment = commentMapper.toComment(commentRequest);
-        comment.setCommentDate(LocalDateTime.now());
+        comment.setCommentDate(LocalDateTimeVN.now());
         Order order = orderRepository.findById(commentRequest.getOrderId())
                 .orElseThrow(() -> new DataNotFoundException("Order not found"));
         List<ProductOrder> productOrders = order.getProductOrders();
@@ -92,7 +93,7 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, String> impleme
             notification.setImage(image);
         }
         notification.setTitle("Bạn vừa đánh giá sản phẩm có mã " + "SP12");
-        notification.setTime(LocalDateTime.now());
+        notification.setTime(LocalDateTimeVN.now());
         notification.setSeen(false);
         notification.setContent(commentRequest.getContent());
         notificationRepository.save(notification);
