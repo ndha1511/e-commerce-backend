@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.oauth2;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.response.auth.TokenResponse;
 import com.code.ecommercebackend.models.Token;
 import com.code.ecommercebackend.models.User;
@@ -88,7 +89,7 @@ public class Oauth2SuccessLogin implements AuthenticationSuccessHandler {
                 .accessToken(jwtService.generateToken(userDetail))
                 .refreshToken(jwtService.generateRefreshToken(new HashMap<>(), userDetail))
                 .userId(user.getId())
-                .expiredDate(LocalDateTime.now().plusDays(30))
+                .expiredDate(LocalDateTimeVN.now().plusDays(30))
                 .build();
         tokenRepository.save(token);
         return TokenResponse.builder()

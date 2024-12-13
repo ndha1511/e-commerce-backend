@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.common;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.models.User;
 import com.code.ecommercebackend.models.ProductFeature;
 import com.code.ecommercebackend.repositories.ProductFeatureRepository;
@@ -38,7 +39,7 @@ public class CommonFunctionImpl implements CommonFunction {
                     if (behavior != 1) {
                         int countView = productFeatureUser.getCountView() != null ? productFeatureUser.getCountView() : 0;
                         productFeatureUser.setCountView(countView + 1);
-                        productFeatureUser.setViewDate(LocalDateTime.now());
+                        productFeatureUser.setViewDate(LocalDateTimeVN.now());
                     } else {
                         float oldRating = productFeatureUser.getRating() != null ? productFeatureUser.getRating() : 0f;
                         if (oldRating != 0) {

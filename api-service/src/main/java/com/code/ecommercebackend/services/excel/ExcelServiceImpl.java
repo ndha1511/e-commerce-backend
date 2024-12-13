@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.excel;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.request.product.ProductExcel;
 import com.code.ecommercebackend.dtos.request.product.VariantExcel;
 import com.code.ecommercebackend.dtos.response.category.CategoryResponse;
@@ -212,7 +213,7 @@ public class ExcelServiceImpl implements ExcelService {
                 Inventory inventory = new Inventory();
                 inventory.setProductId(product.getId());
                 inventory.setVariantId(variant.getId());
-                inventory.setImportDate(LocalDateTime.now());
+                inventory.setImportDate(LocalDateTimeVN.now());
                 inventory.setImportQuantity(variantExcel.getQuantity());
                 inventory.setImportPrice(variantExcel.getImportPrice());
                 inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
@@ -225,7 +226,7 @@ public class ExcelServiceImpl implements ExcelService {
 
         // purchase order
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        purchaseOrder.setOrderDate(LocalDateTime.now());
+        purchaseOrder.setOrderDate(LocalDateTimeVN.now());
         purchaseOrder.setInventories(inventoryIds);
         purchaseOrder.setTotalPrice(totalPrice);
         purchaseOrder.setImportStaffName("admin");

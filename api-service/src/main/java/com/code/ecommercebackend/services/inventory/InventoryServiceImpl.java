@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.inventory;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.dtos.request.inventory.CreateInventoryRequest;
 import com.code.ecommercebackend.dtos.request.inventory.InventoryDto;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
@@ -55,7 +56,7 @@ public class InventoryServiceImpl extends BaseServiceImpl<Inventory, String> imp
         List<Inventory> inventories = inventoriesDto.stream()
                 .map(inventoryMapper::toInventory).toList();
         for (Inventory inventory: inventories) {
-            inventory.setImportDate(LocalDateTime.now());
+            inventory.setImportDate(LocalDateTimeVN.now());
             Product product = productRepository.findById(inventory.getProductId())
                     .orElseThrow(() -> new DataNotFoundException("product not found"));
             product.setTotalQuantity(product.getTotalQuantity() + inventory.getImportQuantity());
@@ -79,7 +80,7 @@ public class InventoryServiceImpl extends BaseServiceImpl<Inventory, String> imp
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         Set<String> inventoriesId = inventories.stream().map(Inventory::getId).collect(Collectors.toSet());
         purchaseOrder.setInventories(inventoriesId);
-        purchaseOrder.setOrderDate(LocalDateTime.now());
+        purchaseOrder.setOrderDate(LocalDateTimeVN.now());
         purchaseOrder.setTotalPrice(inventories.stream()
                 .mapToDouble(inventory -> inventory.getImportPrice() * inventory.getImportQuantity())
                 .sum());

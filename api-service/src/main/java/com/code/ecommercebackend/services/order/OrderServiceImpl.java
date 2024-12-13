@@ -1,5 +1,6 @@
 package com.code.ecommercebackend.services.order;
 
+import com.code.ecommercebackend.components.LocalDateTimeVN;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.*;
 import com.code.ecommercebackend.models.enums.InventoryStatus;
@@ -107,7 +108,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
 
     public Notification saveNotification(Order order){
         Notification notification = new Notification();
-        notification.setTime(LocalDateTime.now());
+        notification.setTime(LocalDateTimeVN.now());
         notification.setTitle("Đơn hàng của bạn đang trong trạng thái"+ order.getOrderStatus());
         notification.setContent("Chưa biết ghi gì ");
         notification.setUserId(order.getUserId());
