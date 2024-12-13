@@ -2,6 +2,8 @@ package com.code.ecommercebackend.utils;
 
 import com.code.ecommercebackend.utils.enums.RedisKeyEnum;
 
+import java.util.List;
+
 public class RedisKeyHandler {
 
     public static String createKeyWithPageQuery(int pageNo,
@@ -56,6 +58,16 @@ public class RedisKeyHandler {
 
     public static String createKeyWithId(String id, RedisKeyEnum type) {
         return type.getValue() + ":" + id;
+    }
+
+    public static String createKeyRecommend(long userId, List<Long> productIds, int nRecommend) {
+        StringBuilder key = new StringBuilder(RedisKeyEnum.RECOMMEND.getValue());
+        key.append(":").append(userId);
+        key.append(":").append(nRecommend);
+        for(Long productId : productIds) {
+            key.append(":").append(productId);
+        }
+        return key.toString();
     }
 
 }

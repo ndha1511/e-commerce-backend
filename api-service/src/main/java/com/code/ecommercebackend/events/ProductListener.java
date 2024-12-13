@@ -18,5 +18,6 @@ public class ProductListener extends AbstractMongoEventListener<Product> {
         Product product = event.getSource();
         redisRepository.removeDataFromCache(RedisKeyEnum.PRODUCT.getValue() + ":" + product.getUrlPath());
         redisRepository.removeDataFromCache(RedisKeyEnum.PRODUCTS.getValue() + "*");
+        redisRepository.removeDataFromCache(RedisKeyEnum.RECOMMEND.getValue() + "*");
     }
 }

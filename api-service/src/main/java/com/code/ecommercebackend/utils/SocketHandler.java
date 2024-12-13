@@ -40,4 +40,12 @@ public class SocketHandler {
         messagingTemplate.convertAndSend("/topic/notification/"  + notification.getUserId(), response);
     }
 
+    public <T> void sendToSocket(T message, String type, String receiver) {
+        MessageResponse<T> response = new MessageResponse<>();
+        response.setData(message);
+        response.setType(type);
+        messagingTemplate.convertAndSendToUser(receiver, "/queue/messages", response);
+
+    }
+
 }

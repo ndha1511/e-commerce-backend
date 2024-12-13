@@ -8,7 +8,10 @@ import com.code.ecommercebackend.models.enums.InventoryStatus;
 import com.code.ecommercebackend.models.enums.OrderStatus;
 import com.code.ecommercebackend.repositories.*;
 import com.code.ecommercebackend.repositories.customizations.inventory.InventoryCustomRepository;
+import com.code.ecommercebackend.utils.EmailSender;
+import com.code.ecommercebackend.utils.SocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -38,6 +41,9 @@ public class PaymentListener {
     private final VoucherRepository voucherRepository;
     private final VoucherUsageRepository voucherUsageRepository;
     private final ProductRepository productRepository;
+    private final EmailSender emailSender;
+    private final UserRepository userRepository;
+    private final SocketHandler socketHandler;
 
     @KafkaListener(topics = "order-topic", groupId = "order-topic")
     public void handleOrder(ConsumerRecord<String, byte[]> record) throws IOException {
@@ -50,6 +56,8 @@ public class PaymentListener {
 
         KafkaMessageOrder kafkaMessageOrder = getKafkaMessageOrder(record);
         OrderRequest orderRequest = kafkaMessageOrder.getOrderRequest();
+        User user = userRepository.findById(orderRequest.getUserId())
+                .orElse(null);
         if (orderRequest.getOrderFrom().equals("cart")) {
             Cart cart = cartRepository.findByUserId(orderRequest.getUserId())
                     .orElse(null);
@@ -67,7 +75,9 @@ public class PaymentListener {
                 cartRepository.save(cart);
             }
         }
-
+        if (user != null) {
+            socketHandler.sendToSocket("deleted cart", "cart", user.getEmail());
+        }
         log.info("end delete cart......");
     }
 
@@ -84,86 +94,95 @@ public class PaymentListener {
         List<Inventory> inventoriesBackup = new ArrayList<>();
         List<Product> productsBackup = new ArrayList<>();
 
+        User user = userRepository.findById(order.getUserId())
+                .orElse(null);
+
         for (OrderItem orderItem : orderItems) {
             RLock lock = redissonClient.getLock("productLock:" + orderItem.getVariantId());
-            try {
-                if (lock.tryLock(60, 65, TimeUnit.SECONDS)) {
-                    try {
-                        int buyQuantity = orderItem.getQuantity();
-                        List<Inventory> inventories = inventoryCustomRepository
-                                .getInventoryByVariantId(orderItem.getVariantId());
-                        inventoriesBackup.addAll(inventories);
-                        List<InventoryOrder> inventoryOrders = new ArrayList<>();
-                        if(!inventories.isEmpty()) {
-                            for (Inventory inventory : inventories) {
-                                int quantityInStock = inventory.getImportQuantity() - inventory.getSaleQuantity();
-                                if(quantityInStock >= buyQuantity) {
-                                    inventory.setSaleQuantity(inventory.getSaleQuantity() + buyQuantity);
-                                    if(inventory.getSaleQuantity() == inventory.getImportQuantity()) {
-                                        inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
-                                    }
-                                    buyQuantity = 0;
-                                    InventoryOrder inventoryOrder = new InventoryOrder();
-                                    inventoryOrder.setInventoryId(inventory.getId());
-                                    inventoryOrder.setQuantity(orderItem.getQuantity());
-                                    inventoryOrders.add(inventoryOrder);
-                                    break;
-                                } else {
-                                    buyQuantity = buyQuantity - quantityInStock;
-                                    inventory.setSaleQuantity(inventory.getSaleQuantity() + (buyQuantity - quantityInStock));
-                                    if(inventory.getSaleQuantity() == inventory.getImportQuantity()) {
-                                        inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
-                                    }
-                                    InventoryOrder inventoryOrder = new InventoryOrder();
-                                    inventoryOrder.setInventoryId(inventory.getId());
-                                    inventoryOrder.setQuantity(orderItem.getQuantity());
-                                    inventoryOrders.add(inventoryOrder);
+
+            if (lock.tryLock(60, 65, TimeUnit.SECONDS)) {
+                try {
+                    int buyQuantity = orderItem.getQuantity();
+                    List<Inventory> inventories = inventoryCustomRepository
+                            .getInventoryByVariantId(orderItem.getVariantId());
+                    inventoriesBackup.addAll(inventories);
+                    List<InventoryOrder> inventoryOrders = new ArrayList<>();
+                    if (!inventories.isEmpty()) {
+                        for (Inventory inventory : inventories) {
+                            int quantityInStock = inventory.getImportQuantity() - inventory.getSaleQuantity();
+                            if (quantityInStock >= buyQuantity) {
+                                inventory.setSaleQuantity(inventory.getSaleQuantity() + buyQuantity);
+                                if (inventory.getSaleQuantity() == inventory.getImportQuantity()) {
+                                    inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
                                 }
-                            }
-                            if(buyQuantity == 0) {
-                               inventoryRepository.saveAll(inventories);
-                               Product product = Objects.requireNonNull(variantRepository.findById(orderItem.getVariantId())
-                                       .orElse(null)).getProduct();
-                               productsBackup.add(product);
-                               product.setTotalQuantity(product.getTotalQuantity() - orderItem.getQuantity());
-                               product.setBuyQuantity(product.getBuyQuantity() + orderItem.getQuantity());
-                               productRepository.save(product);
-                                order.getProductOrders().stream().filter(po -> po.getVariantId().equals(orderItem.getVariantId()))
-                                        .findFirst().ifPresent(productOrder -> productOrder.setInventoryOrders(inventoryOrders));
-                                orderRepository.save(order);
-
+                                buyQuantity = 0;
+                                InventoryOrder inventoryOrder = new InventoryOrder();
+                                inventoryOrder.setInventoryId(inventory.getId());
+                                inventoryOrder.setQuantity(orderItem.getQuantity());
+                                inventoryOrders.add(inventoryOrder);
+                                break;
                             } else {
-                                throw new RuntimeException("Not enough stock for item: " + orderItem.getVariantId());
-
+                                buyQuantity = buyQuantity - quantityInStock;
+                                inventory.setSaleQuantity(inventory.getSaleQuantity() + (buyQuantity - quantityInStock));
+                                if (inventory.getSaleQuantity() == inventory.getImportQuantity()) {
+                                    inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
+                                }
+                                InventoryOrder inventoryOrder = new InventoryOrder();
+                                inventoryOrder.setInventoryId(inventory.getId());
+                                inventoryOrder.setQuantity(orderItem.getQuantity());
+                                inventoryOrders.add(inventoryOrder);
                             }
-                        } else {
-                            // thông báo hết hàng
-                            throw new RuntimeException("Not enough stock for item: " + orderItem.getVariantId());
                         }
-                    } finally {
-                        lock.unlock();
+                        if (buyQuantity == 0) {
+                            inventoryRepository.saveAll(inventories);
+                            Product product = Objects.requireNonNull(variantRepository.findById(orderItem.getVariantId())
+                                    .orElse(null)).getProduct();
+                            productsBackup.add(product);
+                            product.setTotalQuantity(product.getTotalQuantity() - orderItem.getQuantity());
+                            product.setBuyQuantity(product.getBuyQuantity() + orderItem.getQuantity());
+                            productRepository.save(product);
+                            order.getProductOrders().stream().filter(po -> po.getVariantId().equals(orderItem.getVariantId()))
+                                    .findFirst().ifPresent(productOrder -> productOrder.setInventoryOrders(inventoryOrders));
+
+                        } else {
+                            handleErrorOrder(inventoriesBackup, productsBackup, order, user);
+                            return;
+
+                        }
+                    } else {
+                        handleErrorOrder(inventoriesBackup, productsBackup, order, user);
+                        return;
                     }
-                } else {
-                    throw new RuntimeException("Not enough stock for item: " + orderItem.getVariantId());
+                } finally {
+                    lock.unlock();
                 }
-            } catch (Exception e) {
-                inventoryRepository.saveAll(inventoriesBackup);
-                productRepository.saveAll(productsBackup);
-                throw e;
+            } else {
+                handleErrorOrder(inventoriesBackup, productsBackup, order, user);
+                return;
             }
+
         }
-        if(orderRequest.getVoucherCode() != null) {
+        if (orderRequest.getVoucherCode() != null) {
             Voucher voucher = voucherRepository.findByCode(orderRequest.getVoucherCode())
                     .orElse(null);
-            if(voucher != null) {
+            if (voucher != null) {
                 VoucherUsage voucherUsage = new VoucherUsage();
                 voucherUsage.setVoucherId(orderRequest.getVoucherCode());
                 voucherUsage.setUserId(orderRequest.getUserId());
                 voucherUsageRepository.save(voucherUsage);
             }
-        };
+        }
+
         order.setOrderStatus(OrderStatus.AWAITING_PICKUP);
         orderRepository.save(order);
+        if (user != null) {
+            try {
+                emailSender.sendHtmlMailOrder(order, user.getEmail(), "OSON đặt hàng thành công");
+            } catch (MessagingException e) {
+                log.error("=========== send mail error =========");
+                log.error(e.getMessage());
+            }
+        }
 
         log.info("end inventory......");
 
@@ -173,5 +192,19 @@ public class PaymentListener {
     private KafkaMessageOrder getKafkaMessageOrder(ConsumerRecord<String, byte[]> record) throws IOException {
         byte[] messageBytes = record.value();
         return objectMapper.readValue(messageBytes, KafkaMessageOrder.class);
+    }
+
+    private void handleErrorOrder(List<Inventory> inventoriesBackup, List<Product> productsBackup, Order order, User user) {
+        inventoryRepository.saveAll(inventoriesBackup);
+        productRepository.saveAll(productsBackup);
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+        if (user != null) {
+            try {
+                emailSender.sendHtmlMailOrder(order, user.getEmail(), "OSON đặt thất bại");
+            } catch (MessagingException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 }
