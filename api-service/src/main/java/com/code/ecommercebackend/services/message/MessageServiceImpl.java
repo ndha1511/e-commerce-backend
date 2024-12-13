@@ -87,6 +87,7 @@ public class MessageServiceImpl extends BaseServiceImpl<Message,String> implemen
             message.setMessageStatus(MessageStatus.SENT);
             super.save(message);
             socketHandler.sendToSocket(message);
+            socketHandler.sendToSocketSender(message);
         }
 
         return message;
