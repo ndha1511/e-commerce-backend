@@ -27,7 +27,6 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -49,6 +48,8 @@ public class PaymentServiceImpl implements PaymentService {
     private String ghtkToken;
     @Value("${front-end-url}")
     private String vnp_ReturnUrl;
+    @Value("${call-back-url}")
+    private String callBackUrl;
 
     @Override
     public Fee calcFee(String pickProvince,
@@ -167,7 +168,7 @@ public class PaymentServiceImpl implements PaymentService {
         vnp_Params.put("vnp_Locale", "vn");
         String vnp_ReturnUrl_rs = vnp_ReturnUrl;
         vnp_ReturnUrl_rs += "/payment/result";
-        String APP_RETURN_URL = "http://localhost:8080/api/v1/payment/success";
+        String APP_RETURN_URL = callBackUrl + "/api/v1/payment/success";
         vnp_Params.put("vnp_ReturnUrl", APP_RETURN_URL + "?orderId=" + orderId +
                 "&return_url=" + vnp_ReturnUrl_rs);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
@@ -242,7 +243,7 @@ public class PaymentServiceImpl implements PaymentService {
         order.setShippingAddress(orderRequest.getUserAddress());
         order.setNote(orderRequest.getNote());
         order.setShippingAmount(orderRequest.getDeliveryFee());
-        Voucher voucher = voucherRepository.findByCode(orderRequest.getVoucherCode())
+        Voucher voucher = voucherRepository.findById(orderRequest.getVoucherCode())
                 .orElse(null);
         if (voucher != null) {
             checkVoucher(order, voucher, orderRequest.getUserId());
