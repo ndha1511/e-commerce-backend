@@ -4,6 +4,7 @@ import com.code.ecommercebackend.dtos.response.product.ProductSelling;
 import com.code.ecommercebackend.dtos.response.statistics.Revenue;
 import com.code.ecommercebackend.dtos.response.statistics.RevenueDay;
 import com.code.ecommercebackend.dtos.response.statistics.RevenueMonth;
+import com.code.ecommercebackend.dtos.response.statistics.TopProductSelling;
 import com.code.ecommercebackend.dtos.response.user.UserAmount;
 import com.code.ecommercebackend.exceptions.DataNotFoundException;
 import com.code.ecommercebackend.models.*;
@@ -198,5 +199,37 @@ public class StatisticsServiceImpl implements StatisticsService{
             userAmounts.add(userAmount);
         }
         return userAmounts;
+    }
+
+    @Override
+    public List<ProductSelling> topBestSellingAndOutOfStock() throws DataNotFoundException {
+        return getProductSelling("top");
+    }
+
+    @Override
+    public List<ProductSelling> productSlowSelling() throws DataNotFoundException {
+        return getProductSelling("");
+    }
+
+    private List<ProductSelling> getProductSelling(String mode) throws DataNotFoundException {
+        LocalDateTime now = LocalDateTime.now().minusMonths(3);
+        List<TopProductSelling> topProductSelling;
+        if(mode.equals("top")) {
+            topProductSelling = inventoryRepository.getTop5BestSelling(now);
+        } else {
+            topProductSelling = inventoryRepository.findBottom5ProductsBySalesAndLowImportQuantity(now);
+        }
+        List<ProductSelling> productSelling = new ArrayList<>();
+        for(TopProductSelling p: topProductSelling) {
+            Product product = productRepository.findById(p.getId())
+                    .orElseThrow(() -> new DataNotFoundException("product not found"));
+            ProductSelling pSelling = new ProductSelling();
+            pSelling.setProduct(product);
+            pSelling.setQuantity(p.getTotalSaleQuantity());
+            pSelling.setImportQuantity(p.getTotalImportQuantity());
+            productSelling.add(pSelling);
+        }
+
+        return productSelling;
     }
 }

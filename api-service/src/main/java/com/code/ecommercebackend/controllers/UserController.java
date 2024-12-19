@@ -107,5 +107,15 @@ public class UserController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @GetMapping("/email/{email}")
+    public Response getUserByEmail(@PathVariable String email) throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                userService.findByEmail(email)
+        );
+    }
+
 
 }

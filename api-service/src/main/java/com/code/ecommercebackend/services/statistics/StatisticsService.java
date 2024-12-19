@@ -18,4 +18,6 @@ public interface StatisticsService {
     List<RevenueMonth> revenueYear(int year) throws DataNotFoundException;
     List<RevenueDay> revenueDay(LocalDateTime startDate, LocalDateTime endDate) throws DataNotFoundException;
     List<UserAmount> topUserBuyer(LocalDateTime startDate, LocalDateTime endDate, int top) throws DataNotFoundException;
+    List<ProductSelling> topBestSellingAndOutOfStock() throws DataNotFoundException;
+    List<ProductSelling> productSlowSelling() throws DataNotFoundException;
 }

@@ -9,4 +9,5 @@ import lombok.Setter;
 public class ProductSelling {
     private Product product;
     private Long quantity;
+    private Long importQuantity;
 }

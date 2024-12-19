@@ -100,4 +100,24 @@ public class StatisticsController {
                 statisticsService.topUserBuyer(strDate, eDate, topN)
         );
     }
+
+    @GetMapping("/top-product-selling")
+    public Response getTopProductSelling()
+    throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "",
+                statisticsService.topBestSellingAndOutOfStock()
+        );
+    }
+
+    @GetMapping("/bottom-product-selling")
+    public Response bottomProductSelling()
+            throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "",
+                statisticsService.productSlowSelling()
+        );
+    }
 }
