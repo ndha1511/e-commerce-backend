@@ -50,4 +50,7 @@ public class KafkaProducerConfig {
     @Bean
     public NewTopic sendFileTopic() { return new NewTopic("send-file-topic", 1, (short) 1); }
 
+    @Bean
+    public NewTopic cancelOrderTopic() { return new NewTopic("cancel-order-topic", 1, (short) 1); }
+
 }

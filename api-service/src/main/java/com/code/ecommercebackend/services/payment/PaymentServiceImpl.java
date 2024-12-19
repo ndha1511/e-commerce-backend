@@ -243,11 +243,13 @@ public class PaymentServiceImpl implements PaymentService {
         order.setShippingAddress(orderRequest.getUserAddress());
         order.setNote(orderRequest.getNote());
         order.setShippingAmount(orderRequest.getDeliveryFee());
-        Voucher voucher = voucherRepository.findById(orderRequest.getVoucherCode())
-                .orElse(null);
-        if (voucher != null) {
-            checkVoucher(order, voucher, orderRequest.getUserId());
-            calcVoucher(order, voucher);
+        if(orderRequest.getVoucherCode() != null) {
+            Voucher voucher = voucherRepository.findById(orderRequest.getVoucherCode())
+                    .orElse(null);
+            if (voucher != null) {
+                checkVoucher(order, voucher, orderRequest.getUserId());
+                calcVoucher(order, voucher);
+            }
         }
         order.calcFinalAmount();
         return order;

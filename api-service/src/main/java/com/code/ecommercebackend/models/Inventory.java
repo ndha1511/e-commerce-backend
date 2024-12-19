@@ -32,4 +32,18 @@ public class Inventory extends BaseModel {
     private InventoryStatus inventoryStatus;
     @Field(name = "import_price")
     private double importPrice;
+
+    public Inventory(Inventory other) {
+        this.setId(other.getId());
+        this.setCreatedAt(other.getCreatedAt());
+        this.setUpdatedAt(other.getUpdatedAt());
+        this.productId = other.getProductId();
+        this.variantId = other.getVariantId();
+        this.importQuantity = other.getImportQuantity();
+        this.saleQuantity = other.getSaleQuantity();
+        this.importDate = other.getImportDate();
+        this.inventoryStatus = other.getInventoryStatus();
+        this.importPrice = other.getImportPrice();
+
+    }
 }

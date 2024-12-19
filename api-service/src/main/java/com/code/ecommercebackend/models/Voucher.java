@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
@@ -20,7 +19,6 @@ import java.util.Set;
 public class Voucher extends BaseModel {
     @Field(name = "voucher_name")
     private String voucherName;
-    @Indexed(unique = true)
     private String code;
     @Field(name = "discount_type")
     private DiscountType discountType;

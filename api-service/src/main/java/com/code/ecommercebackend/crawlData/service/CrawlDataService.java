@@ -126,6 +126,24 @@ public class CrawlDataService {
 
                 }
 
+                if(options.isEmpty()) {
+                    Variant variant = new Variant();
+                    variant.setProduct(myProduct);
+                    variant.setPrice(product.getPrice());
+                    variantRepository.save(variant);
+                    Inventory inventory = new Inventory();
+                    inventory.setProductId(myProduct.getId());
+                    inventory.setVariantId(variant.getId());
+                    inventory.setInventoryStatus(InventoryStatus.IN_STOCK);
+                    inventory.setImportPrice(Math.max(product.getPrice() - venue, 10000));
+                    inventory.setImportQuantity(quantity);
+                    inventory.setImportDate(LocalDateTimeVN.now());
+                    inventoryRepository.save(inventory);
+                    inventoryIds.add(inventory.getId());
+                    totalQuantity += quantity;
+                    totalPrice += Math.max(product.getPrice() - venue, 10000) * quantity;
+                }
+
                 myProduct.setTotalQuantity(totalQuantity);
                 productRepository.save(myProduct);
 
