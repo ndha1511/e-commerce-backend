@@ -42,6 +42,7 @@ def get_hybrid_recommendations(user_id, product_ids, top_n, content_df, content_
     return hybrid_recommendations[:top_n]
 
 def get_data(user_id, product_ids, top_n = 10):
+    print("call api")
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://ndha1511:B1x5UuzC0BVEioWu@cluster0.4cyuq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 
@@ -49,7 +50,7 @@ def get_data(user_id, product_ids, top_n = 10):
 
     collection = database["product_features"]
 
-    documents = collection.find()
+    documents = collection.find({"user_id": {"$exists": True}, "rating": {"$exists": True}})
 
     data = pd.DataFrame(data=documents, columns=['user_id', 'product_id', 'product_name', 'brand', 'category', 'price', 'rating'])
 
@@ -71,9 +72,11 @@ def get_data(user_id, product_ids, top_n = 10):
     content_similarity = linear_kernel(content_matrix, content_matrix)
 
     reader = Reader(rating_scale=(1, 5))
+
     data = Dataset.load_from_df(data[['user_id',
                                       'product_id',
                                       'rating']], reader)
+
     algo = SVD()
     trainset = data.build_full_trainset()
     algo.fit(trainset)
