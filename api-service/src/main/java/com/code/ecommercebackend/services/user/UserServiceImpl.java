@@ -46,4 +46,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, String> implements Us
         if(username == null) return null;
         return userRepository.findByUsername(username).orElseThrow(null);
     }
+
+    @Override
+    public User findByEmail(String email) throws DataNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+    }
 }
