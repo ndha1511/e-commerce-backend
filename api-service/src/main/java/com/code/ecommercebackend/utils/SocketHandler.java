@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class SocketHandler {
     private final SimpMessagingTemplate messagingTemplate;
 
+
     public void sendToSocket(Message message) {
         MessageResponse<Message> response = new MessageResponse<>();
         response.setData(message);
@@ -47,5 +48,6 @@ public class SocketHandler {
         messagingTemplate.convertAndSendToUser(receiver, "/queue/messages", response);
 
     }
+
 
 }

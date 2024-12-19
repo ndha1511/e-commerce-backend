@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -100,12 +101,12 @@ public class PaymentListener {
         for (OrderItem orderItem : orderItems) {
             RLock lock = redissonClient.getLock("productLock:" + orderItem.getVariantId());
 
-            if (lock.tryLock(60, 65, TimeUnit.SECONDS)) {
+            if (lock.tryLock(200, 225, TimeUnit.SECONDS)) {
                 try {
                     int buyQuantity = orderItem.getQuantity();
                     List<Inventory> inventories = inventoryCustomRepository
                             .getInventoryByVariantId(orderItem.getVariantId());
-                    inventoriesBackup.addAll(inventories);
+                    inventoriesBackup = inventories.stream().map(Inventory::new).toList();
                     List<InventoryOrder> inventoryOrders = new ArrayList<>();
                     if (!inventories.isEmpty()) {
                         for (Inventory inventory : inventories) {
@@ -123,7 +124,7 @@ public class PaymentListener {
                                 break;
                             } else {
                                 buyQuantity = buyQuantity - quantityInStock;
-                                inventory.setSaleQuantity(inventory.getSaleQuantity() + (buyQuantity - quantityInStock));
+                                inventory.setSaleQuantity(inventory.getSaleQuantity() + quantityInStock);
                                 if (inventory.getSaleQuantity() == inventory.getImportQuantity()) {
                                     inventory.setInventoryStatus(InventoryStatus.OUT_OF_STOCK);
                                 }
@@ -163,7 +164,7 @@ public class PaymentListener {
 
         }
         if (orderRequest.getVoucherCode() != null) {
-            Voucher voucher = voucherRepository.findByCode(orderRequest.getVoucherCode())
+            Voucher voucher = voucherRepository.findById(orderRequest.getVoucherCode())
                     .orElse(null);
             if (voucher != null) {
                 VoucherUsage voucherUsage = new VoucherUsage();
